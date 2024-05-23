@@ -55,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <body>
           <NextUIProvider className='h-full'>{children}</NextUIProvider>
         </body>
+        <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "615380cec5704e799e9e6102b74b5944"}'></script><!-- End Cloudflare Web Analytics -->
       </html>
     </>
   );
