@@ -34,22 +34,10 @@ document.querySelector('#change-content-state').addEventListener('click', _ => {
       _.target.style = '';
       _.target.classList.remove('visible');
       document.querySelector('#app-main').removeEventListener('animationend', aniEnd);
-      (_ => {
-        try {
-          const { ipcRenderer } = require('electron');
-          ipcRenderer.send('change-window-height', document.querySelector('#app-tool').scrollHeight + 4 * 2);
-        } catch (e) {}
-      })();
     }
   } else {
     document.querySelector('#change-content-state').classList.add('pack_up');
     changeContentState(true);
-    (_ => {
-      try {
-        const { ipcRenderer } = require('electron');
-        ipcRenderer.send('change-window-height', 'full');
-      } catch (e) {}
-    })();
     document.querySelector('#app-main').classList.add('visible');
     document.querySelector('#app-main').style = 'animation: 0.2s ease 1 reverse app-main-visible;';
     document.querySelector('#app-main').addEventListener('animationend', aniEnd);
