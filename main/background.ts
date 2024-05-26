@@ -2,7 +2,7 @@ import path from 'path';
 import { app, ipcMain, screen } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, Menu } from 'electron';
 import Store from 'electron-store';
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
 
@@ -27,6 +27,7 @@ if (!gotTheLock) {
   });
 }
 const store = new Store();
+Menu.setApplicationMenu(null);
 // setupTitlebar();
 
 function getProviderPath(params: string) {
@@ -68,7 +69,6 @@ function getProviderPath(params: string) {
     skipTaskbar: true,
     resizable: true,
   });
-  mainWindow.setMenu(null);
   mainWindow.webContents.setUserAgent(
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
   );
@@ -158,7 +158,6 @@ ipcMain.on('settings-window', async (event, arg) => {
     maximizable: true,
     resizable: true,
   });
-  settingsWindow.setMenu(null);
   settingsWindow.on('close', () => {
     settingsWindow_g = undefined;
   });
@@ -178,7 +177,5 @@ ipcMain.on('ai-window', async (event, arg) => {
     maximizable: true,
     resizable: true,
   });
-  window.setMenu(null);
-
   await window.loadURL(getProviderPath('/ai'));
 });
