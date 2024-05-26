@@ -24,18 +24,18 @@ navigator.serviceWorker &&
       console.error('Error in serviceWorker registration: ', error);
     });
 
-document.querySelector('#change-content-state').addEventListener('click', _ => {
-  if (document.querySelector('#change-content-state').classList.contains('pack_up')) {
-    document.querySelector('#change-content-state').classList.remove('pack_up');
+document.getElementById('change-content-state').addEventListener('click', _ => {
+  if (document.getElementById('change-content-state').classList.contains('pack_up')) {
+    document.getElementById('change-content-state').classList.remove('pack_up');
     changeContentState(false);
-    document.querySelector('#app-main').classList.remove('visible');
+    document.getElementById('app-main').classList.remove('visible');
   } else {
-    document.querySelector('#change-content-state').classList.add('pack_up');
+    document.getElementById('change-content-state').classList.add('pack_up');
     changeContentState(true);
-    document.querySelector('#app-main').classList.add('visible');
+    document.getElementById('app-main').classList.add('visible');
   }
 });
-!localStorage.getItem('desktop-tool/putAway') && document.querySelector('#change-content-state').click();
+!localStorage.getItem('desktop-tool/putAway') && document.getElementById('change-content-state').click();
 function changeContentState(pack_up) {
   if (pack_up) {
     document.querySelector('#change-content-state > .text').innerHTML = `<mdui-icon name="arrow_upward"></mdui-icon>
@@ -48,11 +48,11 @@ function changeContentState(pack_up) {
   }
 }
 
-if (document.querySelector('#close-window'))
-  document.querySelector('#close-window').addEventListener('click', _ => {
+if (document.getElementById('close-window'))
+  document.getElementById('close-window').addEventListener('click', _ => {
     window.ipc.send('close-window');
   });
-document.querySelector('#shutdown-sys').addEventListener('click', _ => {
+document.getElementById('shutdown-sys').addEventListener('click', _ => {
   window.ipc.send('sys-shutdown');
 });
 
@@ -210,9 +210,9 @@ async function start() {
     try {
       const hiddenCloseWindow = await getConfigSync('display.hidden.closeWindow');
       if (hiddenCloseWindow) {
-        document.querySelector('#close-window').style.display = 'none';
+        document.getElementById('close-window').style.display = 'none';
       } else {
-        document.querySelector('#close-window').style.display = 'inline-block';
+        document.getElementById('close-window').style.display = 'inline-block';
       }
     } catch (error) {}
   })();
@@ -220,9 +220,9 @@ async function start() {
     try {
       const hiddenRefreshWindow = await getConfigSync('display.hidden.refreshWindow');
       if (hiddenRefreshWindow) {
-        document.querySelector('#refresh-window').style.display = 'none';
+        document.getElementById('refresh-window').style.display = 'none';
       } else {
-        document.querySelector('#refresh-window').style.display = 'inline-block';
+        document.getElementById('refresh-window').style.display = 'inline-block';
       }
     } catch (error) {}
   })();
@@ -247,9 +247,9 @@ async function start() {
         try {
           const hiddenCloseWindow = await getConfigSync('display.hidden.closeWindow');
           if (hiddenCloseWindow) {
-            document.querySelector('#close-window').style.display = 'none';
+            document.getElementById('close-window').style.display = 'none';
           } else {
-            document.querySelector('#close-window').style.display = 'inline-block';
+            document.getElementById('close-window').style.display = 'inline-block';
           }
         } catch (error) {}
       })();
@@ -257,9 +257,9 @@ async function start() {
         try {
           const hiddenRefreshWindow = await getConfigSync('display.hidden.refreshWindow');
           if (hiddenRefreshWindow) {
-            document.querySelector('#refresh-window').style.display = 'none';
+            document.getElementById('refresh-window').style.display = 'none';
           } else {
-            document.querySelector('#refresh-window').style.display = 'inline-block';
+            document.getElementById('refresh-window').style.display = 'inline-block';
           }
         } catch (error) {}
       })();
