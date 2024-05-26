@@ -307,7 +307,7 @@ async function start() {
     let weekNow = getWeekNumber(classSchedule.weekStartDate, inputTime);
     let weekTotal = inputTime.week();
 
-    document.getElementById('weekNumber').textContent = `Week#${weekNow}/${weekTotal}`;
+    document.getElementById('weekNumber').textContent = `#${weekNow}/${weekTotal}`;
 
     let classes = listClassesForDay(classSchedule, getWeekDate(changed).toLowerCase(), Math.abs(weekChanged % 2) == 1);
     if (Object.keys(classes).length === 0 || !classes) {
