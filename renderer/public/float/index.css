@@ -18,7 +18,7 @@ body {
   height: 100%;
   box-sizing: border-box;
   font-family: Arial, Helvetica, 'NotoSansSC', sans-serif;
-  line-height: 100%;
+  line-height: 100% !important;
   background-color: transparent !important;
   overflow: hidden;
   word-break: break-all;
@@ -73,18 +73,6 @@ body {
 }
 #app-main.visible {
   display: block;
-}
-@keyframes app-main-visible {
-  0% {
-    overflow: hidden;
-    height: 100%;
-    opacity: 1;
-  }
-  100% {
-    overflow: hidden;
-    height: 0%;
-    opacity: 0;
-  }
 }
 
 #app-main .content .class-list {

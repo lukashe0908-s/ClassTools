@@ -40,18 +40,14 @@
       <div class="content scrollbar-hide">
         <!-- 课程表 -->
         <div class="class-list"></div>
-        <span style="font-size: 16px; display: flex; align-items: center; flex-wrap: wrap">
-          * Edition:
-          <b>Legacy</b>
+        <span style="font-size: 16px; display: flex; align-items: center; flex-wrap: wrap; line-height: 100%">
+          <span>
+            * Edition:
+            <b>Legacy</b>
+          </span>
           <mdui-checkbox style="scale: 0.8" id="PicListController" checked></mdui-checkbox>
+          <span id="weekNumber" style="background-color: #fff8; padding: 4px; border-radius: 4px; line-height: 100%"></span>
         </span>
-        <img
-            style="max-width: 20%"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            draggable="false"
-            src="https://pic4.58cdn.com.cn/nowater/c06b291b-19e4-4325-b750-0ab40e9579c3/n_v2b86460ed45684e8fb0f9620fd51774fe.jpg"
-        />
         <div
           style="
             max-width: 100%;
@@ -86,34 +82,6 @@
           />
           <img
             id="bing-wallpaper3"
-            style="max-width: 100%; scroll-snap-align: center"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            draggable="false"
-          />
-          <img
-            id="bing-wallpaper4"
-            style="max-width: 100%; scroll-snap-align: center"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            draggable="false"
-          />
-          <img
-            id="bing-wallpaper5"
-            style="max-width: 100%; scroll-snap-align: center"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            draggable="false"
-          />
-          <img
-            id="bing-wallpaper6"
-            style="max-width: 100%; scroll-snap-align: center"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            draggable="false"
-          />
-          <img
-            id="bing-wallpaper7"
             style="max-width: 100%; scroll-snap-align: center"
             loading="lazy"
             referrerpolicy="no-referrer"
@@ -172,18 +140,15 @@
           cursor: pointer;
         "
         class="transition-all"
-      >
-        --°
-      </div>
+      ></div>
     </div>
   </body>
   <script src="/float/lib/mdui/mdui.global.js"></script>
   <script src="/float/lib/loadsh.min.js"></script>
   <script src="/float/lib/dayjs.min.js"></script>
-  <script src="/float/index.js"></script>
-  <script src="/float/penetrate.js"></script>
-  <script src="/float/weather.js"></script>
+  <script src="/float/lib/dayjs-weekOfYear.js"></script>
   <script>
+    dayjs.extend(window.dayjs_plugin_weekOfYear);
     mdui.setColorScheme('#4f8ac4');
     (async () => {
       try {
@@ -210,7 +175,7 @@
             return JSON.parse(localStorage.getItem('wallpaper_data'));
           }
           let wallpaper_data = await (
-            await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=7', {
+            await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=3', {
               headers: {},
             })
           ).json();
@@ -228,31 +193,12 @@
         document.querySelector('#bing-wallpaper2').src = 'https://www.bing.com' + url;
         url = wallpaper_data?.images[2]?.url;
         document.querySelector('#bing-wallpaper3').src = 'https://www.bing.com' + url;
-        url = wallpaper_data?.images[3]?.url;
-        document.querySelector('#bing-wallpaper4').src = 'https://www.bing.com' + url;
-        url = wallpaper_data?.images[4]?.url;
-        document.querySelector('#bing-wallpaper5').src = 'https://www.bing.com' + url;
-        url = wallpaper_data?.images[5]?.url;
-        document.querySelector('#bing-wallpaper6').src = 'https://www.bing.com' + url;
-        url = wallpaper_data?.images[6]?.url;
-        document.querySelector('#bing-wallpaper7').src = 'https://www.bing.com' + url;
-
-        localStorage.getItem('desktop-tool/scrollPicList') &&
-          (document.querySelector('#PicList').scrollTop = localStorage.getItem('desktop-tool/scrollPicList'));
-        document.querySelector('#PicList').addEventListener(
-          'scroll',
-          _.throttle(event => {
-            // console.log(event.target.scrollTop);
-            if (event.target.scrollTop >= 200) {
-              localStorage.setItem('desktop-tool/scrollPicList', event.target.scrollTop);
-            } else {
-              localStorage.removeItem('desktop-tool/scrollPicList');
-            }
-          }, 500)
-        );
       } catch (error) {
         console.error(error);
       }
     })();
   </script>
+  <script src="/float/index.js"></script>
+  <script src="/float/penetrate.js"></script>
+  <script src="/float/weather.js"></script>
 </html>

@@ -26,6 +26,8 @@ export default function App() {
         </Card> */}
         <div className='flex gap-4 flex-wrap'>
           <Button
+            color='primary'
+            variant='bordered'
             onClick={() => {
               var serviceWorker = navigator.serviceWorker;
               serviceWorker.getRegistrations
@@ -45,6 +47,8 @@ export default function App() {
             删除Service Worker
           </Button>
           <Button
+            color='primary'
+            variant='bordered'
             onClick={async () => {
               caches.delete('desktop-tool').then(function (e) {
                 console.log('cache storage', e);
@@ -57,7 +61,7 @@ export default function App() {
           </Button>
         </div>
         <Divider></Divider>
-        <div className='flex items-center bg-yellow-100 rounded-lg w-fit px-4'>
+        <div className='flex flex-wrap items-center bg-yellow-100 rounded-lg w-fit px-4'>
           <span className='font-black text-lg'>字体测试：</span>
           <span className='text-[80px]'>𰻝𱁬</span>
         </div>

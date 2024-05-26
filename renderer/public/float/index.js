@@ -28,23 +28,11 @@ document.querySelector('#change-content-state').addEventListener('click', _ => {
   if (document.querySelector('#change-content-state').classList.contains('pack_up')) {
     document.querySelector('#change-content-state').classList.remove('pack_up');
     changeContentState(false);
-    document.querySelector('#app-main').style = 'animation: 0.2s ease 1 app-main-visible;';
-    document.querySelector('#app-main').addEventListener('animationend', aniEnd);
-    function aniEnd(_) {
-      _.target.style = '';
-      _.target.classList.remove('visible');
-      document.querySelector('#app-main').removeEventListener('animationend', aniEnd);
-    }
+    document.querySelector('#app-main').classList.remove('visible');
   } else {
     document.querySelector('#change-content-state').classList.add('pack_up');
     changeContentState(true);
     document.querySelector('#app-main').classList.add('visible');
-    document.querySelector('#app-main').style = 'animation: 0.2s ease 1 reverse app-main-visible;';
-    document.querySelector('#app-main').addEventListener('animationend', aniEnd);
-    function aniEnd(_) {
-      _.target.style = '';
-      document.querySelector('#app-main').removeEventListener('animationend', aniEnd);
-    }
   }
 });
 !localStorage.getItem('desktop-tool/putAway') && document.querySelector('#change-content-state').click();
@@ -315,11 +303,13 @@ async function start() {
     let changed = await getChangeDay(true, inputTime);
     if (changed) changed = changed.set('h', inputTime.get('h')).set('m', inputTime.get('m')).set('s', inputTime.get('s'));
 
-    let classes = listClassesForDay(
-      classSchedule,
-      getWeekDate(changed).toLowerCase(),
-      getWeekNumber(classSchedule.weekStartDate, changed) % 2 == 1
-    );
+    let weekChanged = getWeekNumber(classSchedule.weekStartDate, changed);
+    let weekNow = getWeekNumber(classSchedule.weekStartDate, inputTime);
+    let weekTotal = inputTime.week();
+
+    document.getElementById('weekNumber').textContent = `Week#${weekNow}/${weekTotal}`;
+
+    let classes = listClassesForDay(classSchedule, getWeekDate(changed).toLowerCase(), Math.abs(weekChanged % 2) == 1);
     if (Object.keys(classes).length === 0 || !classes) {
       classes = [
         { startTime: '11:45', endTime: '14:19', subject: 'Example' },

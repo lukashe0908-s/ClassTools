@@ -10,6 +10,7 @@ import DateRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import FormatColorTextOutlinedIcon from '@mui/icons-material/FormatColorTextOutlined';
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
+import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
 
 export default function Template({ children }) {
   return (
@@ -50,6 +51,11 @@ export default function Template({ children }) {
               <NavigationItem link={'/settings/debug'}>
                 <BugReportOutlinedIcon className='pr-1'></BugReportOutlinedIcon>Debug
               </NavigationItem>
+              <NavigationSub>
+                <NavigationItem link={'/settings/debug/labs'}>
+                  <ScienceOutlinedIcon className='pr-1'></ScienceOutlinedIcon>Labs
+                </NavigationItem>
+              </NavigationSub>
             </Navigation>
           </div>
         </div>
