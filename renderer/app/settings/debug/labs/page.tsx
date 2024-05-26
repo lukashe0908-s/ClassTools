@@ -11,7 +11,7 @@ export default function App() {
           <Card className='md:w-fit'>
             <CardBody className='block whitespace-pre-wrap'>
               <span className='text-red-400'>WARNING: EXPERIMENTAL FEATURES AHEAD!</span>
-              <span className='hidden md:inline'>{`\nIf you are an enterprise admin you should not be using these flags in production.`}</span>
+              <span className='hidden md:inline'>{``}</span>
             </CardBody>
           </Card>
         </div>
