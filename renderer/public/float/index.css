@@ -11,6 +11,12 @@
   src: url('app://-/static/NotoSansSC-VariableFont_wght.woff2'), url('/static/NotoSansSC-VariableFont_wght.woff2');
   font-display: swap;
 }
+@font-face {
+  font-family: 'zpix';
+  src: url('app://-/static/zpix.ttf'), url('/static/zpix.ttf');
+  font-display: swap;
+}
+
 
 html,
 body {
