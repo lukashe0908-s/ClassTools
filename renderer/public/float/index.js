@@ -328,7 +328,7 @@ async function start() {
       if (startTime && endTime && subject) {
         // 创建新的<div>元素
         const classElement = document.createElement('div');
-        classElement.innerHTML = `<span style="font-size:0.8em;border-radius:min(0.25em, 12px);background:#0001;padding:0 4px;margin-right:0.25em;color:grey;font-family:'zpix',sans-serif;">${startTime}<span style="margin:0 0.2em;">-</span>${endTime}</span><span>${subject}</span>`;
+        classElement.innerHTML = `<span style="font-size:0.8em;border-radius:min(0.25em, 12px);background:#0001;padding:0 4px;margin-right:0.25em;color:grey;">${startTime}<span style="margin:0 0.2em;">-</span>${endTime}</span><span>${subject}</span>`;
 
         // classElement.setAttribute('classNumber', classNumber);
         // classElement.setAttribute('startTime', startTime);
