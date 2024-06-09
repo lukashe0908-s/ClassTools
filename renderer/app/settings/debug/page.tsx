@@ -22,14 +22,14 @@ export default function App() {
         main_version = JSON.parse((await getVersionSync()) as string);
         main_version = main_version?.version;
       } catch (error) {
-        main_version = '';
+        main_version = 'Unknown';
       }
       let web_version;
       try {
         web_version = await (await fetch('/version')).text();
         web_version = dayjs(Number(web_version)).format('YYYY/M/D HH:mm:ss');
       } catch (error) {
-        web_version = '';
+        web_version = 'Unknown';
       }
       setVersionInfo(`Main: ${main_version}\nWeb: ${web_version}`);
     })();
