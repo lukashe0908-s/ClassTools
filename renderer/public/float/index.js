@@ -202,6 +202,7 @@ async function generateConfig() {
 }
 async function start() {
   let slidingPosition = (await getConfigSync('display.slidingPosition')) || 'center';
+  let progressDisplay = (await getConfigSync('display.progressDisplay')) || 'always';
   (async () => {
     const fontSize = await getConfigSync('display.fontSize');
     fontSize && (document.querySelector('body').style['font-size'] = fontSize + 'em');
@@ -239,6 +240,7 @@ async function start() {
   window.ipc &&
     window.ipc.on('sync-config', async () => {
       slidingPosition = (await getConfigSync('display.slidingPosition')) || 'center';
+      progressDisplay = (await getConfigSync('display.progressDisplay')) || 'always';
       (async () => {
         const fontSize = await getConfigSync('display.fontSize');
         fontSize && (document.querySelector('body').style['font-size'] = fontSize + 'em');
@@ -330,10 +332,8 @@ async function start() {
         const classElement = document.createElement('div');
         classElement.innerHTML = `<span style="font-size:0.8em;border-radius:min(0.25em, 12px);background:#0001;padding:0 4px;margin-right:0.25em;color:grey;">${startTime}<span style="margin:0 0.2em;">-</span>${endTime}</span><span>${subject}</span>`;
 
-        // classElement.setAttribute('classNumber', classNumber);
-        // classElement.setAttribute('startTime', startTime);
-        // classElement.setAttribute('endTime', endTime);
-        // classElement.setAttribute('subject', subject);
+        classElement.style.backgroundColor = '#fff8';
+        classElement.style.boxShadow = 'var(--mdui-elevation-level2)';
 
         // 检查是否已经上课
         let currentTime = new Date();
@@ -353,30 +353,40 @@ async function start() {
           temp_classEndTime[0],
           temp_classEndTime[1]
         );
-
+        let state = 'default';
         // console.log(currentTime, subject, classStartTime, classEndTime);
         if (temp_is_first_item) {
           temp_is_first_item = false;
           temp_scroll_item = classElement;
         }
-        classElement.style.backgroundColor = '#fff8';
         if (currentTime >= classStartTime && currentTime <= classEndTime) {
-          // 正在上的课程
+          // 正在上的课程 active
+          state = 'active';
           classElement.style.backgroundColor = 'rgba(var(--mdui-color-tertiary-container),0.7)';
           temp_scroll_item = classElement;
         } else if (currentTime > classEndTime) {
-          // 已经上的课程
+          // 已经上的课程 before
+          state = 'before';
           classElement.style.color = 'gray';
           temp_scroll_item = classElement;
+        } else {
+          // 未上的课程 after
+          state = 'after';
         }
-        // classElement.style.boxShadow = '0 0px 8px -2px rgba(0, 0, 0, 0.2)';
-        classElement.style.boxShadow = 'var(--mdui-elevation-level2)';
-        let percent = ((currentTime.getTime() - classStartTime.getTime()) / (classEndTime.getTime() - classStartTime.getTime())) * 100;
-        let subjectElement = document.createElement('div');
-        subjectElement.innerHTML = `<mdui-linear-progress style="margin-top:4px;display: flex" value="${
-          percent > 0 ? percent : 0
-        }" max="100"></mdui-linear-progress>`;
-        classElement.appendChild(subjectElement.firstChild);
+        if (progressDisplay == 'always') {
+          addProgress();
+        } else if (progressDisplay == 'active' && state == 'active') {
+          addProgress();
+        }
+
+        function addProgress() {
+          let percent = ((currentTime.getTime() - classStartTime.getTime()) / (classEndTime.getTime() - classStartTime.getTime())) * 100;
+          let subjectElement = document.createElement('div');
+          subjectElement.innerHTML = `<mdui-linear-progress style="margin-top:4px;display: flex" value="${
+            percent > 0 ? percent : 0
+          }" max="100"></mdui-linear-progress>`;
+          classElement.appendChild(subjectElement.firstChild);
+        }
 
         // 将新元素添加到容器
         contentContainer.appendChild(classElement);

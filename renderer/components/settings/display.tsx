@@ -9,6 +9,7 @@ export function Display() {
   const [fontSize, setFontSize] = useState(1.2);
   const [online, setOnline] = useState(false);
   const [slidingPosition, setSlidingPosition] = useState('center');
+  const [progressDisplay, setProgressDisplay] = useState('always');
   const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
   const [hiddenPutaway, setHiddenPutaway] = useState(false);
@@ -33,6 +34,10 @@ export function Display() {
     (async () => {
       const data = await getConfigSync('display.slidingPosition');
       data && setSlidingPosition(String(data));
+    })();
+    (async () => {
+      const data = await getConfigSync('display.progressDisplay');
+      data && setProgressDisplay(String(data));
     })();
     (async () => {
       const data = await getConfigSync('display.hidden.closeWindow');
@@ -126,6 +131,22 @@ export function Display() {
         >
           {item => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
         </Autocomplete>
+        <Autocomplete
+          label='进度条显示'
+          className='max-w-xs'
+          selectedKey={progressDisplay}
+          onSelectionChange={(value: string) => {
+            setProgressDisplay(value);
+            window.ipc?.send('set-config', 'display.progressDisplay', value);
+          }}
+          defaultItems={[
+            { value: 'always', label: 'Always' },
+            { value: 'active', label: 'When Active' },
+            { value: 'never', label: 'Never' },
+          ]}
+        >
+          {item => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
+        </Autocomplete>
       </div>
       <div className='flex gap-4 flex-wrap'>
         <Switch
@@ -135,7 +156,7 @@ export function Display() {
             window.ipc?.send('set-config', 'online', !online);
           }}
         >
-          使用在线模式
+          使用在线模式(Force Enabled)
         </Switch>
         <Switch isDisabled>自动更新主程序</Switch>
       </div>
