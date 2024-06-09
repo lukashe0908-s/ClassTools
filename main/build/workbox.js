@@ -1,6 +1,8 @@
 // File to generate the service worker.
 require('dotenv').config();
 const workboxBuild = require('workbox-build');
+const path = require('path');
+const fs = require('fs-extra');
 const { NODE_ENV } = process.env;
 const urlPattern = new RegExp(`/.*`);
 
@@ -40,3 +42,6 @@ const buildSW = () => {
 };
 
 buildSW();
+
+// Add Web Build Time
+fs.writeFile(path.resolve(process.cwd(), 'renderer/public/version'), Date.now().toString());

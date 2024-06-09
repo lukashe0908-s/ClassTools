@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs-extra';
 import { app, ipcMain, screen } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
@@ -127,6 +128,17 @@ ipcMain.on('get-config', async (event, ...arg) => {
 ipcMain.on('set-config', async (event, ...arg) => {
   store.set(arg[0], arg[1]);
   mainWindow_g.webContents.send('sync-config');
+});
+ipcMain.on('get-version', async (event, ...arg) => {
+  let path_json = '';
+  if (isProd) {
+    path_json = path.resolve(process.resourcesPath, 'app.asar', 'package.json');
+  } else {
+    path_json = path.resolve(process.cwd(), 'package.json');
+  }
+  fs.readFile(path_json, (err, data) => {
+    event.reply('get-version', data.toString());
+  });
 });
 
 ipcMain.on('mainWindow_ignoreMouseEvent', async (event, ...arg) => {

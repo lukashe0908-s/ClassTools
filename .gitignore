@@ -9,3 +9,4 @@ node_modules
 .yarn
 renderer/public/sw.js
 renderer/public/workbox-*.js
+renderer/public/version

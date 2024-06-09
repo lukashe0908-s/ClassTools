@@ -1,8 +1,12 @@
 'use client';
 import { Card, CardBody, Switch, Button, Calendar, Divider } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
+import { getVersionSync } from '../../../components/p_function';
+import dayjs from 'dayjs';
+
 export default function App() {
   const [navigatorInfo, setNavigatorInfo] = useState('');
+  const [versionInfo, setVersionInfo] = useState('');
   useEffect(() => {
     const interval = setInterval(() => {
       let foo = {};
@@ -12,6 +16,23 @@ export default function App() {
       }
       setNavigatorInfo(JSON.stringify(foo, null, '\t'));
     }, 100);
+    (async () => {
+      let main_version;
+      try {
+        main_version = JSON.parse((await getVersionSync()) as string);
+        main_version = main_version?.version;
+      } catch (error) {
+        main_version = '';
+      }
+      let web_version;
+      try {
+        web_version = await (await fetch('/version')).text();
+        web_version = dayjs(Number(web_version)).format('YYYY/M/D HH:mm:ss');
+      } catch (error) {
+        web_version = '';
+      }
+      setVersionInfo(`Main: ${main_version}\nWeb: ${web_version}`);
+    })();
     return () => {
       clearInterval(interval);
     };
@@ -61,9 +82,10 @@ export default function App() {
           </Button>
         </div>
         <Divider></Divider>
-        <div className='flex flex-wrap items-center bg-yellow-100 rounded-lg w-fit px-4'>
-          <span className='font-black text-lg'>字体测试：</span>
-          <span className='text-[80px]'>𰻝𱁬</span>
+        <div className=' bg-orange-100 rounded-lg w-fit px-4'>
+          <span className='font-bold'>Versions:</span>
+          <br />
+          <span className='whitespace-pre-wrap'>{versionInfo}</span>
         </div>
         <div>
           <Calendar aria-label='Date (No Selection)' />

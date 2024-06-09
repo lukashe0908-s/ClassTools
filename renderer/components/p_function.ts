@@ -89,6 +89,18 @@ export async function getConfigSync(arg?) {
     }
   });
 }
+export async function getVersionSync(arg?) {
+  return new Promise((resolve, reject) => {
+    try {
+      window.ipc.send('get-version', arg);
+      window.ipc.once('get-version', data => {
+        resolve(data);
+      });
+    } catch (error) {
+      resolve('');
+    }
+  });
+}
 
 export async function generateConfig() {
   let data_name = (await getConfigSync('lessonsList.name')) as Array<{
