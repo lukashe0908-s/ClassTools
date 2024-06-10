@@ -287,7 +287,7 @@ async function start() {
     async function getChangeDay(parse_out = true, currentTime) {
       const days_origin = await getConfigSync('lessonsList.changeDay');
       if (!days_origin) return;
-      const days = [...days_origin.matchAll(/(\d{4}\/\d{1,2}\/\d{1,2})[ ]*?-[ ]*?(\d{4}\/\d{1,2}\/\d{1,2})/g)];
+      const days = [...days_origin.matchAll(/(?<!\/\/[ ]*?)(\d{4}\/\d{1,2}\/\d{1,2})[ ]*?-[ ]*?(\d{4}\/\d{1,2}\/\d{1,2})/g)];
       const now = dayjs(currentTime);
       for (const key in days) {
         if (Object.prototype.hasOwnProperty.call(days, key)) {
