@@ -1,7 +1,7 @@
 (() => {
   let weatherComponent = document.querySelector('#weather');
   if (weatherComponent) {
-    weatherComponent.addEventListener('click', () => {
+    weatherComponent.addEventListener('click', async () => {
       const json = await getWeather();
       json?.fxLink && window.open(json?.fxLink);
       interval(false, true);
