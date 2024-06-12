@@ -2,21 +2,23 @@
   let weatherComponent = document.querySelector('#weather');
   if (weatherComponent) {
     weatherComponent.addEventListener('click', () => {
+      const json = await getWeather();
+      json?.fxLink && window.open(json?.fxLink);
       interval(false, true);
     });
     interval();
     async function interval(useTimeout = true, force = false) {
-      weatherComponent.style.backgroundColor = '#1a6899';
+      // weatherComponent.style.backgroundColor = '#1a6899';
       useTimeout && (weatherComponent.innerHTML = ` --° `);
       const json = await getWeather(101300505, force);
-      //   console.log(json);
-      weatherComponent.style.backgroundColor = '#228acb';
+      // console.log(json);
+      // weatherComponent.style.backgroundColor = '#228acb';
       let icon = json.now.icon;
       if (icon == 154) {
         icon = 104;
       }
       weatherComponent.innerHTML = `${icon ? `<i class="qi-${icon}"></i>` : ''}  ${json.now.text ? json.now.text + ' ' : ''}${
-        json.now.temp ? json.now.temp : '--'
+        json.now.temp ?? '--'
       }°`;
       useTimeout &&
         setTimeout(() => {
@@ -29,6 +31,7 @@ async function getWeather(location, force = false) {
   if (!force && localStorage.getItem('weather') && localStorage.getItem('weather_expires') > Date.now()) {
     return JSON.parse(localStorage.getItem('weather'));
   }
+  if (!location) return {};
   let json = await (
     await fetch(`https://api.qweather.com/v7/weather/now?location=${location}&key=bdd98ec1d87747f3a2e8b1741a5af796`, {
       referrerPolicy: 'no-referrer',
