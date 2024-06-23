@@ -201,3 +201,30 @@ export async function generateConfig() {
     });
   return new_classSchedule;
 }
+
+export function autoUnitSize(size: number) {
+  let dataSize: number, dataUnit: string;
+  if (size / Math.pow(1024, 0) < 1024) {
+    dataSize = size / Math.pow(1024, 0);
+    dataUnit = 'B';
+  } else if (size / Math.pow(1024, 1) < 1024) {
+    dataSize = size / Math.pow(1024, 1);
+    dataUnit = 'KB';
+  } else if (size / Math.pow(1024, 2) < 1024) {
+    dataSize = size / Math.pow(1024, 2);
+    dataUnit = 'MB';
+  } else {
+    dataSize = size / Math.pow(1024, 3);
+    dataUnit = 'GB';
+  }
+  return {
+    dataSize,
+    dataUnit,
+  };
+}
+
+export function formatSize(bytes: number) {
+  let size: any = autoUnitSize(bytes);
+  size = Math.trunc(size.dataSize * 100) / 100 + ' ' + size.dataUnit;
+  return size;
+}

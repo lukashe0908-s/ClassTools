@@ -1,21 +1,36 @@
 'use client';
 import { Card, CardBody, Switch, Button, Calendar, Divider } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
-import { getVersionSync } from '../../../components/p_function';
+import { getVersionSync, formatSize } from '../../../components/p_function';
 import dayjs from 'dayjs';
 
 export default function App() {
   const [navigatorInfo, setNavigatorInfo] = useState('');
   const [versionInfo, setVersionInfo] = useState('');
+  const [storageInfo, setstorageInfo] = useState('');
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      let foo = {};
-      for (const key in navigator) {
-        const element = navigator[key];
-        if (typeof element !== 'object') foo[key] = element;
-      }
-      setNavigatorInfo(JSON.stringify(foo, null, '\t'));
-    }, 100);
+    intervalFn();
+    const interval = setInterval(intervalFn, 500);
+    function intervalFn() {
+      (async () => {
+        let foo = {};
+        for (const key in navigator) {
+          const element = navigator[key];
+          if (typeof element !== 'object') foo[key] = element;
+        }
+        setNavigatorInfo(JSON.stringify(foo, null, '\t'));
+      })();
+      (async () => {
+        try {
+          let storageEstimate = await navigator.storage.estimate();
+          let storagePersisted = await navigator.storage.persisted();
+          setstorageInfo(`${formatSize(storageEstimate.usage)} / ${formatSize(storageEstimate.quota)}\nPersisted: ${storagePersisted}`);
+        } catch (error) {
+          setstorageInfo('Unknown');
+        }
+      })();
+    }
     (async () => {
       let main_version;
       try {
@@ -24,6 +39,7 @@ export default function App() {
       } catch (error) {
         main_version = 'Unknown';
       }
+      setVersionInfo(`Main: ${main_version}`);
       let web_version;
       try {
         web_version = await (await fetch('/version')).text();
@@ -36,16 +52,11 @@ export default function App() {
     return () => {
       clearInterval(interval);
     };
-  });
+  }, []);
   return (
     <>
       <div className='flex gap-5 flex-col'>
-        {/* <Card>
-          <CardBody className='block'>
-            <span className='text-red-600 font-bold text-xl'>仅供调试使用</span>
-          </CardBody>
-        </Card> */}
-        <div className='flex gap-4 flex-wrap'>
+        <div className='flex gap-2 flex-wrap'>
           <Button
             color='primary'
             variant='bordered'
@@ -65,7 +76,7 @@ export default function App() {
                   });
             }}
           >
-            删除Service Worker
+            Remove Service Worker
           </Button>
           <Button
             color='primary'
@@ -78,23 +89,36 @@ export default function App() {
               console.log(request);
             }}
           >
-            删除缓存
+            Delete Cache
+          </Button>
+          <Button
+            color='primary'
+            variant='bordered'
+            onClick={async () => {
+              let allow = await navigator.storage.persist();
+              alert(`Persiste Storage: Apply ${allow ? 'Success' : 'Failed'}`);
+            }}
+          >
+            Apply Persiste Storage
           </Button>
         </div>
         <Divider></Divider>
-        <div className=' bg-orange-100 rounded-lg w-fit px-4'>
-          <span className='font-bold'>Versions:</span>
-          <br />
-          <span className='whitespace-pre-wrap'>{versionInfo}</span>
-        </div>
-        <div>
-          <Calendar aria-label='Date (No Selection)' />
-          <div className='h-10'></div>
-        </div>
-        <div className=' bg-orange-100 rounded-lg w-fit px-4'>
-          <span className='text-lg font-bold'>Navigator:</span>
-          <br />
-          <span className='whitespace-pre-wrap'>{navigatorInfo}</span>
+        <div className='flex gap-1 flex-col'>
+          <div className=' bg-orange-100 rounded-lg w-fit px-4'>
+            <span className='font-bold'>Versions:</span>
+            <br />
+            <span className='whitespace-pre-wrap'>{versionInfo}</span>
+          </div>
+          <div className=' bg-orange-100 rounded-lg w-fit px-4'>
+            <span className='font-bold'>Storage Usage:</span>
+            <br />
+            <span className='whitespace-pre-wrap'>{storageInfo}</span>
+          </div>
+          <div className=' bg-orange-100 rounded-lg w-fit px-4'>
+            <span className='text-lg font-bold'>Navigator:</span>
+            <br />
+            <span className='whitespace-pre-wrap'>{navigatorInfo}</span>
+          </div>
         </div>
       </div>
     </>
