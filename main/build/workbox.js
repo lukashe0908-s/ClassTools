@@ -44,4 +44,4 @@ const buildSW = () => {
 buildSW();
 
 // Add Web Build Time
-// fs.writeFile(path.resolve(process.cwd(), 'renderer/public/version'), Date.now().toString());
+fs.writeFile(path.resolve(process.cwd(), 'renderer/public/version'), Date.now().toString());
