@@ -7369,7 +7369,7 @@ __metadata:
     axios: "npm:^1.6.8"
     custom-electron-titlebar: "npm:^4.2.8"
     dayjs: "npm:^1.11.11"
-    electron: "npm:^30.0.6"
+    electron: "npm:^31.3.1"
     electron-builder: "npm:^24.13.3"
     electron-serve: "npm:^1.3.0"
     electron-store: "npm:^8.2.0"
@@ -7587,16 +7587,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^30.0.6":
-  version: 30.0.6
-  resolution: "electron@npm:30.0.6"
+"electron@npm:^31.3.1":
+  version: 31.3.1
+  resolution: "electron@npm:31.3.1"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^20.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/92cc9a5013774f3b69c44fc964096e5de4217e297cd5d16cfd1654690d725c6d5acb1111d5637216ee3e12ee814336808208acbc24460d6bd2ac160be41443d1
+  checksum: 10c0/71437947b8a6aa7230dc31fcc424632b29f877e672dc64c60b48b2ba37f86c40886dda48d584b8bfec1514b37c1483eaa6bf87c224a09bbf8c495a3f81538377
   languageName: node
   linkType: hard
 

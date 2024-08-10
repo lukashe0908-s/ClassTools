@@ -100,7 +100,7 @@ export async function getVersionSync(timeout: number = 3000) {
       let timer = setTimeout(() => {
         reject(`timeout (${timeout} ms)`);
       }, timeout);
-      window.ipc.once('get-config', (data: boolean) => {
+      window.ipc.once('get-version', (data: boolean) => {
         clearTimeout(timer);
         resolve(data);
       });
