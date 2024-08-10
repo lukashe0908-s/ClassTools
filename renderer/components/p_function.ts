@@ -77,7 +77,7 @@ export async function getChangeDay(parse_out: boolean = true, currentTime?: stri
   }
 }
 
-export async function getConfigSync(name, timeout: number = 3000) {
+export async function getConfigSync(name?: string, timeout: number = 3000) {
   return new Promise((resolve, reject) => {
     try {
       window.ipc.send('get-config', name);
