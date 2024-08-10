@@ -5533,6 +5533,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/auto-launch@npm:^5":
+  version: 5.0.5
+  resolution: "@types/auto-launch@npm:5.0.5"
+  checksum: 10c0/c0aa0f1bd048a5f51cc8619b9599095a4908f6349f0e0192300de46f76280f2f35e011d7d2e69296732f5beca6ba484e0aa992b3374ff55741292c34f3c094ae
+  languageName: node
+  linkType: hard
+
 "@types/cacheable-request@npm:^6.0.1":
   version: 6.0.3
   resolution: "@types/cacheable-request@npm:6.0.3"
@@ -6178,6 +6185,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"applescript@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "applescript@npm:1.0.0"
+  checksum: 10c0/b535e7df97a3e1272d1b8e8c832494ba3933fbad879847cb83c8990c08aed5bcb097d2af200ba2e0754c3467c2367441706b7864173e1aa9ee4132f5189287f0
+  languageName: node
+  linkType: hard
+
 "archiver-utils@npm:^2.1.0":
   version: 2.1.0
   resolution: "archiver-utils@npm:2.1.0"
@@ -6315,6 +6329,19 @@ __metadata:
   version: 1.7.0
   resolution: "atomically@npm:1.7.0"
   checksum: 10c0/31f5efd5d69474681268557af4024f9e10223bb6b39fdedb5f2e19405186c4b76284fac9f6c43c9af75013cad6437e93b7168268f5ddb7aaf1cfc5fdb415f227
+  languageName: node
+  linkType: hard
+
+"auto-launch@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "auto-launch@npm:5.0.6"
+  dependencies:
+    applescript: "npm:^1.0.0"
+    mkdirp: "npm:^0.5.1"
+    path-is-absolute: "npm:^1.0.0"
+    untildify: "npm:^3.0.2"
+    winreg: "npm:1.2.4"
+  checksum: 10c0/6eee118ba9f920a2cc8ed8a5ab0da6fb07a4bae9307af6b8133e79b4ecb007b10aa520b52051c44c28a973c3917b90eeb677882b05d05f1edfb25ffc86b9feac
   languageName: node
   linkType: hard
 
@@ -7334,8 +7361,10 @@ __metadata:
     "@mui/x-date-pickers-pro": "npm:^7.5.0"
     "@mui/x-license-pro": "npm:^6.10.2"
     "@nextui-org/react": "npm:^2.3.6"
+    "@types/auto-launch": "npm:^5"
     "@types/node": "npm:^20.12.12"
     "@types/react": "npm:^18.3.2"
+    auto-launch: "npm:^5.0.6"
     autoprefixer: "npm:^10.4.19"
     axios: "npm:^1.6.8"
     custom-electron-titlebar: "npm:^4.2.8"
@@ -9756,7 +9785,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:>=0.5 0":
+"mkdirp@npm:>=0.5 0, mkdirp@npm:^0.5.1":
   version: 0.5.6
   resolution: "mkdirp@npm:0.5.6"
   dependencies:
@@ -12021,6 +12050,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"untildify@npm:^3.0.2":
+  version: 3.0.3
+  resolution: "untildify@npm:3.0.3"
+  checksum: 10c0/4c73e47320a97226e4f16f1764cd7d9ee62ec41458bd23244d3bd8f11800270d7603a9099586158dd6b911fa65f51713ced5f8a724bb73c7fa33fb3426bcb32d
+  languageName: node
+  linkType: hard
+
 "unzipper@npm:^0.10.11":
   version: 0.10.14
   resolution: "unzipper@npm:0.10.14"
@@ -12304,6 +12340,13 @@ __metadata:
   version: 2.0.1
   resolution: "wildcard@npm:2.0.1"
   checksum: 10c0/08f70cd97dd9a20aea280847a1fe8148e17cae7d231640e41eb26d2388697cbe65b67fd9e68715251c39b080c5ae4f76d71a9a69fa101d897273efdfb1b58bf7
+  languageName: node
+  linkType: hard
+
+"winreg@npm:1.2.4":
+  version: 1.2.4
+  resolution: "winreg@npm:1.2.4"
+  checksum: 10c0/25a687332e51a1928a61e0689f51a9cae9c2ff0788e984334ef6cc286b571125de186195040f746a1b74e8668590acd1a2b17521ece94b57d3c15f8afc8b67b2
   languageName: node
   linkType: hard
 

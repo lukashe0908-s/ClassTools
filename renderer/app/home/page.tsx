@@ -8,6 +8,7 @@ import CheckIcon from '@mui/icons-material/Check';
 
 export default function HomePage() {
   useEffect(() => {
+    return;
     if (!window.ipc) return;
     window.ipc.send('mainWindow_ignoreMouseEvent', false);
     let status = false;

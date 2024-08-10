@@ -2,8 +2,21 @@
 import { Card, CardBody, Switch, Button, Calendar, Divider, Checkbox, Input } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
+import { getAutoLaunchSync } from '../../../../components/p_function';
 
 export default function App() {
+  const [autoLaunch, setAutoLaunch] = useState(false);
+  const [autoLaunchE, setAutoLaunchE] = useState('Finding');
+  useEffect(() => {
+    (async () => {
+      try {
+        setAutoLaunch(await getAutoLaunchSync());
+        setAutoLaunchE(null);
+      } catch (error) {
+        setAutoLaunchE('Failed Found');
+      }
+    })();
+  }, []);
   return (
     <>
       <div className='flex gap-5 flex-col'>
@@ -27,14 +40,37 @@ export default function App() {
             </div>
           </div>
           <Divider></Divider>
-          <div className='flex gap-1 flex-wrap items-center'>
-            <span className='pr-2 font-bold'>Auto Run</span>
-            <Button color='primary' variant='bordered'>
-              Register Service
-            </Button>
-            <Button color='primary' variant='bordered'>
-              Unegister Service
-            </Button>
+          <div className='flex flex-col flex-wrap'>
+            <span className='pr-2 font-bold'>Auto Launch</span>
+            <span>
+              (Need 1.0.9 or higher)
+              <span className={`ml-4 ${autoLaunch ? 'text-green-600' : 'text-gray-500'}`}>
+                {autoLaunchE ?? (autoLaunch ? 'Found' : 'Not Found')}
+              </span>
+            </span>
+
+            <div className='flex flex-wrap gap-1'>
+              <Button
+                color='primary'
+                variant='bordered'
+                onClick={async () => {
+                  window.ipc.send('autoLaunch', 'set', true);
+                  setAutoLaunch(await getAutoLaunchSync());
+                }}
+              >
+                Enable Auto Launch
+              </Button>
+              <Button
+                color='primary'
+                variant='bordered'
+                onClick={async () => {
+                  window.ipc.send('autoLaunch', 'set', false);
+                  setAutoLaunch(await getAutoLaunchSync());
+                }}
+              >
+                Disable Auto Launch
+              </Button>
+            </div>
           </div>
           <Divider></Divider>
         </div>

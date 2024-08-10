@@ -5,6 +5,7 @@ import serve from 'electron-serve';
 import { createWindow } from './helpers';
 import { BrowserWindow, Menu } from 'electron';
 import Store from 'electron-store';
+import AutoLaunch from 'auto-launch';
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -122,14 +123,14 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-ipcMain.on('get-config', async (event, ...arg) => {
-  event.reply('get-config/' + arg[0], store.get(arg[0]));
+ipcMain.on('get-config', async (event, name: string) => {
+  event.reply('get-config/' + name, store.get(name));
 });
-ipcMain.on('set-config', async (event, ...arg) => {
-  store.set(arg[0], arg[1]);
+ipcMain.on('set-config', async (event, name: string, value: any) => {
+  store.set(name, value);
   mainWindow_g.webContents.send('sync-config');
 });
-ipcMain.on('get-version', async (event, ...arg) => {
+ipcMain.on('get-version', async event => {
   let path_json = '';
   if (isProd) {
     path_json = path.resolve(process.resourcesPath, 'app.asar', 'package.json');
@@ -141,12 +142,29 @@ ipcMain.on('get-version', async (event, ...arg) => {
   });
 });
 
-ipcMain.on('mainWindow_ignoreMouseEvent', async (event, ...arg) => {
+ipcMain.on('mainWindow_ignoreMouseEvent', async (event, value: boolean) => {
   // console.log(arg[0]);
-  if (arg[0] === true) {
+  if (value === true) {
     mainWindow_g.setIgnoreMouseEvents(true, { forward: true });
   } else {
     mainWindow_g.setIgnoreMouseEvents(false);
+  }
+});
+
+ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolean) => {
+  var AutoLauncher = new AutoLaunch({
+    name: app.getName(),
+  });
+  if (actionName === 'get') {
+    AutoLauncher.isEnabled().then(isEnabled => {
+      event.reply('autoLaunch', isEnabled);
+    });
+  } else if (actionName === 'set') {
+    if (value) {
+      AutoLauncher.enable();
+    } else {
+      AutoLauncher.disable();
+    }
   }
 });
 

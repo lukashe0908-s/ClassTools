@@ -77,27 +77,35 @@ export async function getChangeDay(parse_out: boolean = true, currentTime?: stri
   }
 }
 
-export async function getConfigSync(arg?) {
+export async function getConfigSync(name, timeout: number = 3000) {
   return new Promise((resolve, reject) => {
     try {
-      window.ipc.send('get-config', arg);
-      window.ipc.once('get-config/' + arg, data => {
+      window.ipc.send('get-config', name);
+      let timer = setTimeout(() => {
+        reject(`timeout (${timeout} ms)`);
+      }, timeout);
+      window.ipc.once('get-config/' + name, (data: boolean) => {
+        clearTimeout(timer);
         resolve(data);
       });
     } catch (error) {
-      resolve('');
+      reject(error);
     }
   });
 }
-export async function getVersionSync(arg?) {
+export async function getVersionSync(timeout: number = 3000) {
   return new Promise((resolve, reject) => {
     try {
-      window.ipc.send('get-version', arg);
-      window.ipc.once('get-version', data => {
+      window.ipc.send('get-version');
+      let timer = setTimeout(() => {
+        reject(`timeout (${timeout} ms)`);
+      }, timeout);
+      window.ipc.once('get-config', (data: boolean) => {
+        clearTimeout(timer);
         resolve(data);
       });
     } catch (error) {
-      resolve('');
+      reject(error);
     }
   });
 }
@@ -227,4 +235,21 @@ export function formatSize(bytes: number) {
   let size: any = autoUnitSize(bytes);
   size = Math.trunc(size.dataSize * 100) / 100 + ' ' + size.dataUnit;
   return size;
+}
+
+export async function getAutoLaunchSync(timeout: number = 3000): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    try {
+      window.ipc.send('autoLaunch', 'get');
+      let timer = setTimeout(() => {
+        reject(`timeout (${timeout} ms)`);
+      }, timeout);
+      window.ipc.once('autoLaunch', (data: boolean) => {
+        clearTimeout(timer);
+        resolve(data);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
