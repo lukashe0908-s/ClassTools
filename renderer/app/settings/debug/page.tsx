@@ -7,8 +7,8 @@ import { getSysInfoSync } from '../../../components/p_function';
 
 export default function App() {
   const [navigatorInfo, setNavigatorInfo] = useState('');
-  const [versionInfo, setVersionInfo] = useState('');
-  const [storageInfo, setStorageInfo] = useState('');
+  const [versionInfo, setVersionInfo] = useState('Loading');
+  const [storageInfo, setStorageInfo] = useState('Loading');
   const [sysInfo, setsysInfo] = useState('Loading');
 
   useEffect(() => {
