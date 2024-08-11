@@ -21,7 +21,7 @@ export default function App() {
         });
         setsysInfo(JSON.stringify(foo, null, '\t'));
       } catch (error) {
-        setsysInfo(error);
+        setsysInfo(error.toString());
       }
     })();
 
