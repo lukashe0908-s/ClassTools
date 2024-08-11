@@ -18,6 +18,7 @@ export default function App() {
           uuid: '*',
           mem: 'total,free,used,active,available',
           memLayout: '*',
+          osInfo: '*',
           graphics: '*',
         });
         setsysInfo(JSON.stringify(foo, null, '\t'));
