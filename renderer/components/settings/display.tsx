@@ -54,7 +54,7 @@ export function Display() {
   }, []);
   return (
     <>
-      <div className='flex w-full flex-wrap gap-3 overflow-hidden'>
+      <div className='flex w-full flex-col gap-3 overflow-hidden'>
         <Slider
           label='窗口宽度'
           step={0.01}
