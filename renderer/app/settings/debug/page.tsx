@@ -3,13 +3,28 @@ import { Card, CardBody, Switch, Button, Calendar, Divider } from '@nextui-org/r
 import { useEffect, useState } from 'react';
 import { getVersionSync, formatSize } from '../../../components/p_function';
 import dayjs from 'dayjs';
+import { getSysInfoSync } from '../../../components/p_function';
 
 export default function App() {
   const [navigatorInfo, setNavigatorInfo] = useState('');
   const [versionInfo, setVersionInfo] = useState('');
-  const [storageInfo, setstorageInfo] = useState('');
+  const [storageInfo, setStorageInfo] = useState('');
+  const [sysInfo, setsysInfo] = useState('Loading');
 
   useEffect(() => {
+    (async () => {
+      try {
+        let foo = await getSysInfoSync({
+          uuid: '*',
+          mem: 'total,free,used,active,available',
+          memLayout: '*',
+        });
+        setsysInfo(JSON.stringify(foo, null, '\t'));
+      } catch (error) {
+        setsysInfo(error);
+      }
+    })();
+
     intervalFn();
     const interval = setInterval(intervalFn, 500);
     function intervalFn() {
@@ -25,9 +40,9 @@ export default function App() {
         try {
           let storageEstimate = await navigator.storage.estimate();
           let storagePersisted = await navigator.storage.persisted();
-          setstorageInfo(`${formatSize(storageEstimate.usage)} / ${formatSize(storageEstimate.quota)}\nPersisted: ${storagePersisted}`);
+          setStorageInfo(`${formatSize(storageEstimate.usage)} / ${formatSize(storageEstimate.quota)}\nPersisted: ${storagePersisted}`);
         } catch (error) {
-          setstorageInfo('Unknown');
+          setStorageInfo('Unknown');
         }
       })();
     }
@@ -118,6 +133,11 @@ export default function App() {
             <span className='text-lg font-bold'>Navigator:</span>
             <br />
             <span className='whitespace-pre-wrap'>{navigatorInfo}</span>
+          </div>{' '}
+          <div className=' bg-orange-100 rounded-lg w-fit px-4'>
+            <span className='text-lg font-bold'>SysInfo:</span>
+            <br />
+            <span className='whitespace-pre-wrap'>{sysInfo}</span>
           </div>
         </div>
       </div>

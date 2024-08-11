@@ -8930,6 +8930,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-monaco-editor: "npm:^0.56.0"
     styled-components: "npm:^6.1.12"
+    systeminformation: "npm:^5.23.4"
     tailwindcss: "npm:^3.4.9"
     typescript: "npm:^5.5.4"
     workbox-build: "npm:^7.1.1"
@@ -13145,6 +13146,16 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 10c0/6c4032340701a9950865f7ae8ef38578d8d7053f5e10518076e6554a9381fa91bd9c6850193695c141f32b21f979c985db07265a758867bac95de05f7d8aeb39
+  languageName: node
+  linkType: hard
+
+"systeminformation@npm:^5.23.4":
+  version: 5.23.4
+  resolution: "systeminformation@npm:5.23.4"
+  bin:
+    systeminformation: lib/cli.js
+  checksum: 10c0/ed779bb3682a61f6cd049d01d9999c4c03818513d297e202e5fa6b42787b05ff2cbbfa69ad2b30773b5071987e5aba62205799e9d648cf21318eba07853b7454
+  conditions: (os=darwin | os=linux | os=win32 | os=freebsd | os=openbsd | os=netbsd | os=sunos | os=android)
   languageName: node
   linkType: hard
 

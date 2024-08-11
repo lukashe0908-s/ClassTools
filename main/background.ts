@@ -6,6 +6,7 @@ import { createWindow } from './helpers';
 import { BrowserWindow, Menu } from 'electron';
 import Store from 'electron-store';
 import AutoLaunch from 'auto-launch';
+import systeminformation from 'systeminformation';
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -168,9 +169,14 @@ ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolea
   }
 });
 
+ipcMain.on('systeminformation', async (event, action: any) => {
+  systeminformation.get(action).then(data => {
+    event.reply('systeminformation/' + action.toString(), data);
+  });
+});
+
 ipcMain.on('sys-shutdown', async (event, arg) => {
   const cp = require('child_process');
-  // cp.execSync('slidetoshutdown');
   cp.execSync('shutdown -s -t 0');
 });
 

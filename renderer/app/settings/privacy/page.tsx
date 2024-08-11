@@ -11,7 +11,7 @@ export default function App() {
             <p>你正在发送必需诊断数据</p>
             <span className='text-gray-600 text-sm'>帮助改进软件并使其保特安全、最新并按预期工作</span>
             <br /> <br />
-            <span>备份：域名2024/7到期，目前为HTTP传输</span>
+            <span>备份：域名2024/7到期</span>
           </CardBody>
         </Card>
         <div className='flex gap-4 flex-wrap'>

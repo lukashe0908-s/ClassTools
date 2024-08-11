@@ -253,3 +253,20 @@ export async function getAutoLaunchSync(timeout: number = 3000): Promise<boolean
     }
   });
 }
+
+export async function getSysInfoSync(action: any, timeout: number = 30 * 1000): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    try {
+      window.ipc.send('systeminformation', action);
+      let timer = setTimeout(() => {
+        reject(`timeout (${timeout} ms)`);
+      }, timeout);
+      window.ipc.once('systeminformation/' + action.toString(), (data: boolean) => {
+        clearTimeout(timer);
+        resolve(data);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
