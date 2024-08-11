@@ -135,7 +135,7 @@ export default function App() {
             <span className='text-lg font-bold'>Navigator:</span>
             <br />
             <span className='whitespace-pre-wrap'>{navigatorInfo}</span>
-          </div>{' '}
+          </div>
           <div className=' bg-orange-100 rounded-lg w-fit px-4'>
             <span className='text-lg font-bold'>SysInfo:</span>
             <br />
