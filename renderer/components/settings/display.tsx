@@ -54,65 +54,67 @@ export function Display() {
   }, []);
   return (
     <>
-      <Slider
-        label='窗口宽度'
-        step={0.01}
-        maxValue={1}
-        minValue={0.05}
-        marks={[
-          {
-            value: 0.1,
-            label: '0.1',
-          },
-          {
-            value: 0.2,
-            label: '0.2',
-          },
-          {
-            value: 0.3,
-            label: '0.3',
-          },
-          {
-            value: 0.4,
-            label: '0.4',
-          },
-          {
-            value: 0.5,
-            label: '0.5',
-          },
-        ]}
-        className='max-w-4xl'
-        value={windowWidth}
-        onChange={(value: number) => {
-          setWindowWidth(value);
-          window.ipc?.send('set-config', 'display.windowWidth', value);
-        }}
-      />
-      <Slider
-        label='窗口高度'
-        step={0.01}
-        maxValue={1}
-        minValue={0.05}
-        className='max-w-4xl'
-        value={windowHeight}
-        onChange={(value: number) => {
-          setWindowHeight(value);
-          window.ipc?.send('set-config', 'display.windowHeight', value);
-        }}
-      />
-      <Slider
-        label='字体大小'
-        step={0.1}
-        maxValue={5}
-        minValue={0.1}
-        showSteps={true}
-        className='max-w-4xl'
-        value={fontSize}
-        onChange={(value: number) => {
-          setFontSize(value);
-          window.ipc?.send('set-config', 'display.fontSize', value);
-        }}
-      />
+      <div className='flex w-full flex-wrap gap-3 overflow-hidden'>
+        <Slider
+          label='窗口宽度'
+          step={0.01}
+          maxValue={1}
+          minValue={0.05}
+          marks={[
+            {
+              value: 0.1,
+              label: '0.1',
+            },
+            {
+              value: 0.2,
+              label: '0.2',
+            },
+            {
+              value: 0.3,
+              label: '0.3',
+            },
+            {
+              value: 0.4,
+              label: '0.4',
+            },
+            {
+              value: 0.5,
+              label: '0.5',
+            },
+          ]}
+          className='max-w-4xl'
+          value={windowWidth}
+          onChange={(value: number) => {
+            setWindowWidth(value);
+            window.ipc?.send('set-config', 'display.windowWidth', value);
+          }}
+        />
+        <Slider
+          label='窗口高度'
+          step={0.01}
+          maxValue={1}
+          minValue={0.05}
+          className='max-w-4xl'
+          value={windowHeight}
+          onChange={(value: number) => {
+            setWindowHeight(value);
+            window.ipc?.send('set-config', 'display.windowHeight', value);
+          }}
+        />
+        <Slider
+          label='字体大小'
+          step={0.1}
+          maxValue={5}
+          minValue={0.1}
+          showSteps={true}
+          className='max-w-4xl'
+          value={fontSize}
+          onChange={(value: number) => {
+            setFontSize(value);
+            window.ipc?.send('set-config', 'display.fontSize', value);
+          }}
+        />
+      </div>
       <div className='flex w-full flex-wrap md:flex-nowrap gap-4'>
         <Autocomplete
           label='滑动位置'

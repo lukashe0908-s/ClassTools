@@ -5,6 +5,7 @@ import { NextUIProvider } from '@nextui-org/react';
 import { LicenseInfo } from '@mui/x-license-pro';
 import { Snackbar, Fade } from '@mui/material';
 import { createRoot } from 'react-dom/client';
+import 'overlayscrollbars/overlayscrollbars.css';
 
 LicenseInfo.setLicenseKey('a6cd63f803393a33165ef9d2b180b307Tz0sRT05OTk5OTk5OTk5OTk5OTk5OTk5OSxTPXByZW1pdW0sTE09cGVycGV0dWFsLEtWPTI=');
 

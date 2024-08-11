@@ -20,6 +20,7 @@ import dayjs from 'dayjs';
 import { Popper } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider, TimePicker, renderTimeViewClock, StaticTimePicker } from '@mui/x-date-pickers-pro';
+import { OverlayScrollbars } from 'overlayscrollbars';
 
 const columns = [
   {
@@ -87,9 +88,7 @@ function List({ rows, setRows, children }) {
   const refTable = useRef();
   useEffect(() => {
     const Table = refTable.current as HTMLElement;
-    Table.parentElement.classList.add('!p-0');
-    Table.parentElement.classList.add('scrollbar-hide');
-    Table.querySelector('thead').classList.add('z-[11]');
+    const osInstance = OverlayScrollbars(Table.parentElement, { scrollbars: { autoHide: 'move' } });
   }, []);
 
   return (
@@ -102,6 +101,8 @@ function List({ rows, setRows, children }) {
           ref={refTable}
           classNames={{
             base: 'max-h-[80vh] overflow-auto',
+            wrapper: 'rounded-none !p-0 scrollbar-hide',
+            thead: 'z-[11]',
           }}
         >
           <TableHeader>

@@ -11,6 +11,7 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import FormatColorTextOutlinedIcon from '@mui/icons-material/FormatColorTextOutlined';
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 export default function Template({ children }) {
   return (
@@ -18,7 +19,11 @@ export default function Template({ children }) {
       <title>Settings - Desktop Tool</title>
       <div className='flex h-full select-auto'>
         <div className='h-full flex select-none'>
-          <div className='overflow-auto scrollbar-hide border-r-2 min-w-44'>
+          <OverlayScrollbarsComponent
+            defer
+            className='overflow-auto scrollbar-hide border-r-2 min-w-44'
+            options={{ scrollbars: { autoHide: 'scroll' } }}
+          >
             <span className='block text-center font-bold text-xl p-2 [color:#F6821F]'>Dashboard</span>
             <Divider></Divider>
             <Navigation>
@@ -57,9 +62,12 @@ export default function Template({ children }) {
                 </NavigationItem>
               </NavigationSub>
             </Navigation>
-          </div>
+          </OverlayScrollbarsComponent>
         </div>
-        <div className='h-full w-full p-2 overflow-auto scrollbar-hide'>{children}</div>
+
+        <OverlayScrollbarsComponent defer className='h-full w-full p-2 scrollbar-hide' options={{ scrollbars: { autoHide: 'scroll' } }}>
+          {children}
+        </OverlayScrollbarsComponent>
       </div>
     </>
   );
