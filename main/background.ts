@@ -86,24 +86,22 @@ function getProviderPath(params: string) {
   });
   function resizeWindow() {
     const widthP = store.get('display.windowWidth');
-    if (widthP) {
+    const heightP = store.get('display.windowHeight');
+    if (widthP || heightP) {
       winWidth = (() => {
         let base = screen.getPrimaryDisplay().size.width * Number(widthP);
         if (base < 200) base = 200;
         base = Math.floor(base);
         return base;
       })();
-      mainWindow.setSize(winWidth, winHeight);
-      mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - winWidth, 0);
-    }
-    const heightP = store.get('display.windowHeight');
-    if (heightP) {
       winHeight = (() => {
         let base = screen.getPrimaryDisplay().workArea.height * Number(heightP);
         base = Math.floor(base);
         return base;
       })();
+      mainWindow.setResizable(true);
       mainWindow.setSize(winWidth, winHeight);
+      mainWindow.setResizable(false);
       mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - winWidth, 0);
     }
   }
