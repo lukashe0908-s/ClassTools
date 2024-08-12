@@ -46,6 +46,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       return true;
     };
   }, []);
+  useEffect(() => {
+    const handleDragStart = event => {
+      event.preventDefault();
+    };
+    document.body.addEventListener('drop', handleDragStart);
+    return () => {
+      document.body.removeEventListener('drop', handleDragStart);
+    };
+  }, []);
   return (
     <>
       <html lang='en'>
