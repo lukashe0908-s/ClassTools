@@ -96,8 +96,9 @@ start();
 async function getConfigSync(arg) {
   return new Promise((resolve, reject) => {
     try {
-      window.ipc.send('get-config', arg);
-      window.ipc.once('get-config/' + arg, data => {
+      let time = Date.now();
+      window.ipc.send('get-config', time, arg);
+      window.ipc.once('get-config/' + time, data => {
         resolve(data);
       });
     } catch {

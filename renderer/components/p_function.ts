@@ -80,11 +80,13 @@ export async function getChangeDay(parse_out: boolean = true, currentTime?: stri
 export async function getConfigSync(name?: string, timeout: number = 3000) {
   return new Promise((resolve, reject) => {
     try {
-      window.ipc.send('get-config', name);
+      let signal = crypto.randomUUID();
+      window.ipc.send('get-config', signal, name);
       let timer = setTimeout(() => {
         reject(`timeout (${timeout} ms)`);
       }, timeout);
-      window.ipc.once('get-config/' + name, (data: boolean) => {
+
+      window.ipc.once('get-config/' + signal, data => {
         clearTimeout(timer);
         resolve(data);
       });
@@ -257,11 +259,12 @@ export async function getAutoLaunchSync(timeout: number = 3000): Promise<boolean
 export async function getSysInfoSync(action: any, timeout: number = 30 * 1000): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
-      window.ipc.send('systeminformation', action);
+      let signal = crypto.randomUUID();
+      window.ipc.send('systeminformation', signal, action);
       let timer = setTimeout(() => {
         reject(`timeout (${timeout} ms)`);
       }, timeout);
-      window.ipc.once('systeminformation/' + action.toString(), (data: boolean) => {
+      window.ipc.once('systeminformation/' + signal, (data: boolean) => {
         clearTimeout(timer);
         resolve(data);
       });

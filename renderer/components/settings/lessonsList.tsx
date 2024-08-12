@@ -21,6 +21,7 @@ import { Popper } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider, TimePicker, renderTimeViewClock, StaticTimePicker } from '@mui/x-date-pickers-pro';
 import { OverlayScrollbars } from 'overlayscrollbars';
+import { getConfigSync } from '../p_function';
 
 const columns = [
   {
@@ -71,18 +72,6 @@ const formattedColumns = columns.map(column => ({
   headerName: column.label,
   editable: true,
 }));
-async function getConfigSync(arg) {
-  return new Promise((resolve, reject) => {
-    try {
-      window.ipc.send('get-config', arg);
-      window.ipc.once('get-config/' + arg, data => {
-        resolve(data);
-      });
-    } catch (error) {
-      resolve('');
-    }
-  });
-}
 
 function List({ rows, setRows, children }) {
   const refTable = useRef();

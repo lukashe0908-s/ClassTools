@@ -122,23 +122,15 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-ipcMain.on('get-config', async (event, name: string) => {
-  event.reply('get-config/' + name, store.get(name));
+ipcMain.on('get-config', async (event, signal, name: string) => {
+  event.reply('get-config/' + signal, store.get(name));
 });
 ipcMain.on('set-config', async (event, name: string, value: any) => {
   store.set(name, value);
   mainWindow_g.webContents.send('sync-config');
 });
 ipcMain.on('get-version', async event => {
-  let path_json = '';
-  if (isProd) {
-    path_json = path.resolve(process.resourcesPath, 'app.asar', 'package.json');
-  } else {
-    path_json = path.resolve(process.cwd(), 'package.json');
-  }
-  fs.readFile(path_json, (err, data) => {
-    event.reply('get-version', data.toString());
-  });
+  event.reply('get-version', app.getVersion());
 });
 
 ipcMain.on('mainWindow_ignoreMouseEvent', async (event, value: boolean) => {
@@ -167,9 +159,10 @@ ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolea
   }
 });
 
-ipcMain.on('systeminformation', async (event, action: any) => {
+ipcMain.on('systeminformation', async (event, signal, action: any) => {
+  console.log('signal', signal, action);
   systeminformation.get(action).then(data => {
-    event.reply('systeminformation/' + action.toString(), data);
+    event.reply('systeminformation/' + signal, data);
   });
 });
 

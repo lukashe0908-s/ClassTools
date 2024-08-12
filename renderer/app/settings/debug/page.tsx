@@ -51,8 +51,7 @@ export default function App() {
     (async () => {
       let main_version;
       try {
-        main_version = JSON.parse((await getVersionSync()) as string);
-        main_version = main_version?.version;
+        main_version = (await getVersionSync()) as string;
       } catch (error) {
         main_version = 'Unknown';
       }
