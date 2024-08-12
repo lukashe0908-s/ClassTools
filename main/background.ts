@@ -160,7 +160,6 @@ ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolea
 });
 
 ipcMain.on('systeminformation', async (event, signal, action: any) => {
-  console.log('signal', signal, action);
   systeminformation.get(action).then(data => {
     event.reply('systeminformation/' + signal, data);
   });
