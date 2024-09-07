@@ -27,6 +27,10 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+
       - name: Build
         run: |
           yarn install
@@ -46,5 +50,5 @@ jobs:
           file: build/dist/*.exe
           tag: 'latest'
           overwrite: true
-          body: ''
-          release_name: ${{ github.ref }}
+          body: 'Auto build for the latest commit'
+          release_name: 'v${{ env.VERSION }} - ${{ github.sha }}'
