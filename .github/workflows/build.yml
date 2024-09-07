@@ -46,4 +46,5 @@ jobs:
           file: build/dist/*.exe
           tag: 'latest'
           overwrite: true
-          body: '自动编译'
+          body: ''
+          release_name: ${{ github.ref }}

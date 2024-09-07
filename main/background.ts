@@ -35,9 +35,9 @@ Menu.setApplicationMenu(null);
 
 function getProviderPath(params: string) {
   if (isProd) {
+    if (store.get('online')) return `https://dt.misee.dns.navy${params}`;
     return `https://dt.misee.dns.army${params}`;
-    // if (store.get('online')) return `https://dt.misee.dns.army${params}`;
-    // return `app://-${params}`;
+    return `app://-${params}`;
   } else {
     const port = process.argv[2];
     return `http://localhost:${port}${params}`;
