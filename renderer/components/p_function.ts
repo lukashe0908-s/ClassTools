@@ -107,7 +107,7 @@ export async function getVersionSync(timeout: number = 0) {
           : setTimeout(() => {
               reject(`timeout (${timeout} ms)`);
             }, timeout);
-      window.ipc.once('get-version', (data: boolean) => {
+      window.ipc.once('get-version', (data: string) => {
         clearTimeout(timer);
         resolve(data);
       });
@@ -178,38 +178,58 @@ export async function generateConfig() {
   data_time &&
     data_time.forEach((rowDate, rowIndex) => {
       if (rowDate && rowDate['all']) {
-        let name = rowDate['all'].split('-');
-        if (name[0]) {
+        let timeStart = rowDate['all']['start'];
+        let timeEnd = rowDate['all']['end'];
+        let timeDivide = rowDate['all']['divide'];
+        if (timeStart) {
           _.mapValues(new_classSchedule.single, (value, key) => {
             !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
-            new_classSchedule.single[key][rowIndex].startTime = name[0];
+            new_classSchedule.single[key][rowIndex].startTime = timeStart;
           });
           _.mapValues(new_classSchedule.double, (value, key) => {
             !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
-            new_classSchedule.double[key][rowIndex].startTime = name[0];
+            new_classSchedule.double[key][rowIndex].startTime = timeStart;
           });
         }
-        if (name[1]) {
+        if (timeEnd) {
           _.mapValues(new_classSchedule.single, (value, key) => {
             !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
-            new_classSchedule.single[key][rowIndex].endTime = name[1];
+            new_classSchedule.single[key][rowIndex].endTime = timeEnd;
           });
           _.mapValues(new_classSchedule.double, (value, key) => {
             !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
-            new_classSchedule.double[key][rowIndex].endTime = name[1];
+            new_classSchedule.double[key][rowIndex].endTime = timeEnd;
+          });
+        }
+        if (timeDivide) {
+          _.mapValues(new_classSchedule.single, (value, key) => {
+            !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
+            new_classSchedule.single[key][rowIndex].divide = timeDivide;
+          });
+          _.mapValues(new_classSchedule.double, (value, key) => {
+            !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
+            new_classSchedule.double[key][rowIndex].divide = timeDivide;
           });
         }
       }
       _.mapValues(rowDate, function (value, key) {
         if (key != 'all') {
-          let name = rowDate[key].split('-');
+          let timeStart = rowDate['all']['start'];
+          let timeEnd = rowDate['all']['end'];
+          let timeDivide = rowDate['all']['divide'];
           !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
           !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
-          if (name) {
-            new_classSchedule.single[key][rowIndex].startTime = name[0];
-            new_classSchedule.double[key][rowIndex].startTime = name[0];
-            new_classSchedule.single[key][rowIndex].endTime = name[1];
-            new_classSchedule.double[key][rowIndex].endTime = name[1];
+          if (timeStart) {
+            new_classSchedule.single[key][rowIndex].startTime = timeStart;
+            new_classSchedule.double[key][rowIndex].startTime = timeStart;
+          }
+          if (timeEnd) {
+            new_classSchedule.single[key][rowIndex].endTime = timeEnd;
+            new_classSchedule.double[key][rowIndex].endTime = timeEnd;
+          }
+          if (timeDivide) {
+            new_classSchedule.single[key][rowIndex].divide = timeDivide;
+            new_classSchedule.double[key][rowIndex].divide = timeDivide;
           }
         }
       });

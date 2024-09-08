@@ -14,6 +14,8 @@ import {
   CircularProgress,
   getKeyValue,
   Checkbox,
+  Accordion,
+  AccordionItem,
 } from '@nextui-org/react';
 import { DataGridPremium, GridApiPro, useGridApiRef } from '@mui/x-data-grid-premium';
 import dayjs from 'dayjs';
@@ -113,8 +115,6 @@ function List({ rows, setRows, children }) {
             ))}
           </TableBody>
         </Table>
-        <Divider></Divider>
-        <CellSelectionGrid rows={rows}></CellSelectionGrid>
       </div>
     </>
   );
@@ -147,8 +147,8 @@ export function LessonsListName() {
   const [rows, setRows] = useState([{}]) as any;
   useEffect(() => {
     (async () => {
-      const data = await getConfigSync('lessonsList.name');
-      data && setRows(data);
+      const data: any = await getConfigSync('lessonsList.name');
+      if (data.length > 0) data && setRows(data);
     })();
   }, []);
 
@@ -179,7 +179,6 @@ export function LessonsListName() {
                 }
                 new_rows = new_rows.filter(value => value != undefined);
                 new_rows.push({});
-                // console.log(new_rows);
                 window.ipc?.send('set-config', 'lessonsList.name', new_rows);
                 setRows(new_rows);
               }}
@@ -187,6 +186,8 @@ export function LessonsListName() {
           );
         }}
       </List>
+      <Divider className='my-2'></Divider>
+      <CellSelectionGrid rows={rows}></CellSelectionGrid>
     </>
   );
 }
@@ -198,8 +199,8 @@ export function LessonsListTime() {
   const [weekStart, setWeekStart] = useState('') as any;
   useEffect(() => {
     (async () => {
-      const data = await getConfigSync('lessonsList.time');
-      data && setRows(data);
+      const data: any = await getConfigSync('lessonsList.time');
+      if (data.length > 0) data && setRows(data);
       setIsLoading(false);
     })();
     (async () => {
@@ -240,11 +241,48 @@ export function LessonsListTime() {
           </Checkbox>
           <List rows={rows} setRows={setRows}>
             {(row, rowIndex, columnKey) => {
-              const context = getKeyValue(row, columnKey);
-              const startTime = context && context.split('-')[0];
-              const endTime = context && context.split('-')[1];
+              let context: { [key: string]: string } | undefined = getKeyValue(row, columnKey);
+              const startTime = context?.start;
+              const endTime = context?.end;
+              const addDivide = context?.divide;
               return (
-                <div className='flex flex-col gap-1'>
+                <div
+                  className='flex flex-col gap-1'
+                  onContextMenu={event => {
+                    event.preventDefault();
+                    window.ipc.send('showContextMenu_listTime', addDivide);
+                    window.ipc.once('showContextMenu_listTime', (action, ...args) => {
+                      switch (action) {
+                        case 'divide':
+                          let checked = args[0];
+                          if (checked) {
+                            let new_rows = [...rows];
+                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
+                            new_rows[rowIndex][columnKey].divide = checked;
+                            window.ipc?.send('set-config', 'lessonsList.time', new_rows);
+                            setRows(new_rows);
+                          } else {
+                            if (rows[rowIndex][columnKey] && rows[rowIndex][columnKey].divide) {
+                              let new_rows = [...rows];
+                              delete new_rows[rowIndex][columnKey].divide;
+                              window.ipc?.send('set-config', 'lessonsList.time', new_rows);
+                              setRows(new_rows);
+                            }
+                          }
+                          break;
+                        case 'clear':
+                          let new_rows = [...rows];
+                          delete new_rows[rowIndex][columnKey];
+                          window.ipc?.send('set-config', 'lessonsList.time', new_rows);
+                          setRows(new_rows);
+                          break;
+
+                        default:
+                          break;
+                      }
+                    });
+                  }}
+                >
                   {!isEditMode ? (
                     <>
                       <LessonsListTime_TimeDisplayer
@@ -253,12 +291,9 @@ export function LessonsListTime() {
                           const time = dayjs('1970-1-1 ' + e.target.value).format('HH:mm');
                           if (time == 'Invalid Date') return;
                           let new_rows = [...rows];
-                          if (time) {
-                            if (new_rows[rowIndex][columnKey] && new_rows[rowIndex][columnKey].split('-')[1]) {
-                              new_rows[rowIndex][columnKey] = time + '-' + new_rows[rowIndex][columnKey].split('-')[1];
-                            } else {
-                              new_rows[rowIndex][columnKey] = time + '-';
-                            }
+                          if (time && e.target.value !== '') {
+                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
+                            new_rows[rowIndex][columnKey].start = time;
                           } else {
                             delete new_rows[rowIndex][columnKey];
                           }
@@ -275,7 +310,6 @@ export function LessonsListTime() {
                           }
                           new_rows = new_rows.filter(value => value != undefined);
                           new_rows.push({});
-                          // console.log(new_rows);
                           window.ipc?.send('set-config', 'lessonsList.time', new_rows);
                           setRows(new_rows);
                         }}
@@ -288,14 +322,11 @@ export function LessonsListTime() {
                           const time = dayjs('1970-1-1 ' + e.target.value).format('HH:mm');
                           if (time == 'Invalid Date') return;
                           let new_rows = [...rows];
-                          if (time) {
-                            if (new_rows[rowIndex][columnKey] && new_rows[rowIndex][columnKey].split('-')[0]) {
-                              new_rows[rowIndex][columnKey] = new_rows[rowIndex][columnKey].split('-')[0] + '-' + time;
-                            } else {
-                              new_rows[rowIndex][columnKey] = '-' + time;
-                            }
+                          if (time && e.target.value !== '') {
+                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
+                            new_rows[rowIndex][columnKey]['end'] = time;
                           } else {
-                            delete new_rows[rowIndex][columnKey];
+                            delete new_rows[rowIndex][columnKey]['end'];
                           }
                           let finished_delete = false;
                           for (let i = 0; i < new_rows.length; i++) {
@@ -310,7 +341,6 @@ export function LessonsListTime() {
                           }
                           new_rows = new_rows.filter(value => value != undefined);
                           new_rows.push({});
-                          // console.log(new_rows);
                           window.ipc?.send('set-config', 'lessonsList.time', new_rows);
                           setRows(new_rows);
                         }}
@@ -328,16 +358,13 @@ export function LessonsListTime() {
                         }}
                         ampm={false}
                         className='resize-none !outline-0 !border-0 w-full h-full rounded-sm !min-w-[14ch]'
-                        value={getKeyValue(row, columnKey) ? dayjs('1970-1-1 ' + getKeyValue(row, columnKey).split('-')[0]) : null}
+                        value={getKeyValue(row, columnKey) ? dayjs('1970-1-1 ' + startTime) : null}
                         onChange={e => {
                           const time = e.format('HH:mm');
                           let new_rows = [...rows];
                           if (time && time !== 'Invalid Date') {
-                            if (new_rows[rowIndex][columnKey] && new_rows[rowIndex][columnKey].split('-')[1]) {
-                              new_rows[rowIndex][columnKey] = time + '-' + new_rows[rowIndex][columnKey].split('-')[1];
-                            } else {
-                              new_rows[rowIndex][columnKey] = time + '-';
-                            }
+                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
+                            new_rows[rowIndex][columnKey]['start'] = time;
                           } else {
                             delete new_rows[rowIndex][columnKey];
                           }
@@ -354,7 +381,6 @@ export function LessonsListTime() {
                           }
                           new_rows = new_rows.filter(value => value != undefined);
                           new_rows.push({});
-                          // console.log(new_rows);
                           window.ipc?.send('set-config', 'lessonsList.time', new_rows);
                           setRows(new_rows);
                         }}
@@ -367,18 +393,15 @@ export function LessonsListTime() {
                         }}
                         ampm={false}
                         className='resize-none !outline-0 !border-0 w-full h-full rounded-sm'
-                        value={getKeyValue(row, columnKey) ? dayjs('1970-1-1 ' + getKeyValue(row, columnKey).split('-')[1]) : null}
+                        value={getKeyValue(row, columnKey) ? dayjs('1970-1-1 ' + endTime) : null}
                         onChange={e => {
                           const time = e.format('HH:mm');
                           let new_rows = [...rows];
                           if (time && time !== 'Invalid Date') {
-                            if (new_rows[rowIndex][columnKey] && new_rows[rowIndex][columnKey].split('-')[0]) {
-                              new_rows[rowIndex][columnKey] = new_rows[rowIndex][columnKey].split('-')[0] + '-' + time;
-                            } else {
-                              new_rows[rowIndex][columnKey] = '-' + time;
-                            }
+                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
+                            new_rows[rowIndex][columnKey]['end'] = time;
                           } else {
-                            delete new_rows[rowIndex][columnKey];
+                            delete new_rows[rowIndex][columnKey]['end'];
                           }
                           let finished_delete = false;
                           for (let i = 0; i < new_rows.length; i++) {
@@ -393,7 +416,6 @@ export function LessonsListTime() {
                           }
                           new_rows = new_rows.filter(value => value != undefined);
                           new_rows.push({});
-                          // console.log(new_rows);
                           window.ipc?.send('set-config', 'lessonsList.time', new_rows);
                           setRows(new_rows);
                         }}
@@ -403,7 +425,100 @@ export function LessonsListTime() {
                 </div>
               );
             }}
-          </List>{' '}
+          </List>
+          <Divider className='my-2'></Divider>
+          <Accordion isCompact={true} variant='shadow'>
+            <AccordionItem title='数据迁移'>
+              <div className='flex flex-wrap gap-2'>
+                <Button
+                  variant='faded'
+                  onClick={() => {
+                    const rows_ = [];
+                    for (const key in rows) {
+                      const element = rows[key];
+                      const element_ = {};
+                      if (typeof element == 'object') {
+                        for (const key in element) {
+                          const elementIn = element[key];
+                          if (typeof elementIn == 'string') {
+                            let context_: any = {};
+                            let foo = (elementIn as unknown as string).split('-')[0];
+                            if (foo) context_.start = foo;
+                            let bar = (elementIn as unknown as string).split('-')[1];
+                            if (bar) context_.end = bar;
+                            element_[key] = context_;
+                          } else {
+                            element_[key] = elementIn;
+                          }
+                        }
+                        rows_.push(element_);
+                      }
+                    }
+                    window.ipc?.send('set-config', 'lessonsList.time', rows_);
+                    setRows(rows_);
+                  }}
+                >
+                  从旧版数据格式迁移
+                </Button>
+                <Button
+                  color='danger'
+                  variant='faded'
+                  onClick={() => {
+                    const rows_ = [];
+                    for (const key in rows) {
+                      const element = rows[key];
+                      const element_ = {};
+                      if (typeof element == 'object') {
+                        for (const key in element) {
+                          const elementIn = element[key];
+                          if (typeof elementIn == 'object') {
+                            const textArray = [];
+                            textArray.push(elementIn?.start);
+                            textArray.push(elementIn?.end);
+                            // textArray.push(elementIn?.divide);
+                            element_[key] = textArray.join('-');
+                          } else {
+                            element_[key] = elementIn;
+                          }
+                        }
+                        rows_.push(element_);
+                      }
+                    }
+                    window.ipc?.send('set-config', 'lessonsList.time', rows_);
+                    setRows(rows_);
+                  }}
+                >
+                  迁移到旧版数据格式(会丢失分隔符)
+                </Button>
+              </div>
+            </AccordionItem>
+          </Accordion>
+          <Divider className='my-2'></Divider>
+          <CellSelectionGrid
+            rows={(() => {
+              const rows_ = [];
+              for (const key in rows) {
+                const element = rows[key];
+                const element_ = {};
+                if (typeof element == 'object') {
+                  for (const key in element) {
+                    const elementIn = element[key];
+                    if (typeof elementIn == 'object') {
+                      const textArray = [];
+                      textArray.push(elementIn?.start);
+                      textArray.push(elementIn?.end);
+                      textArray.push(elementIn?.divide);
+                      element_[key] = textArray.join('-');
+                    } else {
+                      element_[key] = `[Old] ${elementIn}`;
+                    }
+                  }
+                  rows_.push(element_);
+                }
+              }
+              return rows_;
+            })()}
+          ></CellSelectionGrid>
         </div>
       </div>
     </>
@@ -438,6 +553,9 @@ export function CellSelectionGrid(props) {
     includeOutliers: true,
     expand: true,
   };
+  useEffect(() => {
+    apiRef.current.autosizeColumns(autosizeOptions);
+  }, [props.rows]);
   return (
     <>
       <Button className='!z-[5]' onClick={() => apiRef.current.autosizeColumns(autosizeOptions)}>

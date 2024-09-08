@@ -170,38 +170,58 @@ async function generateConfig() {
   data_time &&
     data_time.forEach((rowDate, rowIndex) => {
       if (rowDate && rowDate['all']) {
-        let name = rowDate['all'].split('-');
-        if (name[0]) {
+        let timeStart = rowDate['all']['start'];
+        let timeEnd = rowDate['all']['end'];
+        let timeDivide = rowDate['all']['divide'];
+        if (timeStart) {
           _.mapValues(new_classSchedule.single, (value, key) => {
             !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
-            new_classSchedule.single[key][rowIndex].startTime = name[0];
+            new_classSchedule.single[key][rowIndex].startTime = timeStart;
           });
           _.mapValues(new_classSchedule.double, (value, key) => {
             !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
-            new_classSchedule.double[key][rowIndex].startTime = name[0];
+            new_classSchedule.double[key][rowIndex].startTime = timeStart;
           });
         }
-        if (name[1]) {
+        if (timeEnd) {
           _.mapValues(new_classSchedule.single, (value, key) => {
             !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
-            new_classSchedule.single[key][rowIndex].endTime = name[1];
+            new_classSchedule.single[key][rowIndex].endTime = timeEnd;
           });
           _.mapValues(new_classSchedule.double, (value, key) => {
             !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
-            new_classSchedule.double[key][rowIndex].endTime = name[1];
+            new_classSchedule.double[key][rowIndex].endTime = timeEnd;
+          });
+        }
+        if (timeDivide) {
+          _.mapValues(new_classSchedule.single, (value, key) => {
+            !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
+            new_classSchedule.single[key][rowIndex].divide = timeDivide;
+          });
+          _.mapValues(new_classSchedule.double, (value, key) => {
+            !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
+            new_classSchedule.double[key][rowIndex].divide = timeDivide;
           });
         }
       }
       _.mapValues(rowDate, function (value, key) {
         if (key != 'all') {
-          let name = rowDate[key].split('-');
+          let timeStart = rowDate['all']['start'];
+          let timeEnd = rowDate['all']['end'];
+          let timeDivide = rowDate['all']['divide'];
           !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
           !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
-          if (name) {
-            new_classSchedule.single[key][rowIndex].startTime = name[0];
-            new_classSchedule.double[key][rowIndex].startTime = name[0];
-            new_classSchedule.single[key][rowIndex].endTime = name[1];
-            new_classSchedule.double[key][rowIndex].endTime = name[1];
+          if (timeStart) {
+            new_classSchedule.single[key][rowIndex].startTime = timeStart;
+            new_classSchedule.double[key][rowIndex].startTime = timeStart;
+          }
+          if (timeEnd) {
+            new_classSchedule.single[key][rowIndex].endTime = timeEnd;
+            new_classSchedule.double[key][rowIndex].endTime = timeEnd;
+          }
+          if (timeDivide) {
+            new_classSchedule.single[key][rowIndex].divide = timeDivide;
+            new_classSchedule.double[key][rowIndex].divide = timeDivide;
           }
         }
       });
@@ -333,11 +353,12 @@ async function start() {
       temp_is_first_item = true;
     for (const classNumber in classes) {
       const classInfo = classes[classNumber];
-      const { startTime, endTime, subject } = classInfo;
+      const { startTime, endTime, subject, divide } = classInfo;
 
       if (startTime && endTime && subject) {
         // 创建新的<div>元素
         const classElement = document.createElement('div');
+        classElement.classList = 'classElement';
         classElement.innerHTML = `<span style="font-size:0.8em;border-radius:min(0.25em, 12px);background:#0001;padding:0 4px;margin-right:0.25em;color:grey;">${startTime}<span style="margin:0 0.2em;">-</span>${endTime}</span><span>${subject}</span>`;
 
         classElement.style.backgroundColor = '#fff8';
@@ -398,6 +419,12 @@ async function start() {
 
         // 将新元素添加到容器
         contentContainer.appendChild(classElement);
+
+        if (divide) {
+          const foo = document.createElement('div');
+          foo.innerHTML = `<mdui-divider style="margin: 0.5em calc(min(0.25em, 6px) * 1.5);;background-color: #DBDBDB;height: 1px;"></mdui-divider>`;
+          contentContainer.appendChild(foo.firstElementChild);
+        }
       }
     }
     if (temp_scroll_item)

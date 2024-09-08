@@ -11,6 +11,7 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import FormatColorTextOutlinedIcon from '@mui/icons-material/FormatColorTextOutlined';
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 export default function Template({ children }) {
@@ -22,7 +23,7 @@ export default function Template({ children }) {
           <OverlayScrollbarsComponent
             defer
             className='overflow-auto scrollbar-hide border-r-2 min-w-44'
-            options={{ scrollbars: { autoHide: 'scroll' } }}
+            options={{ scrollbars: { autoHide: 'move' } }}
           >
             <span className='block text-center font-bold text-xl p-2 [color:#F6821F]'>Dashboard</span>
             <Divider></Divider>
@@ -61,11 +62,14 @@ export default function Template({ children }) {
                   <ScienceOutlinedIcon className='pr-1'></ScienceOutlinedIcon>Labs
                 </NavigationItem>
               </NavigationSub>
+              <NavigationItem link={'/settings/about'}>
+                <InfoOutlinedIcon className='pr-1'></InfoOutlinedIcon>关于
+              </NavigationItem>
             </Navigation>
           </OverlayScrollbarsComponent>
         </div>
 
-        <OverlayScrollbarsComponent defer className='h-full w-full p-2 scrollbar-hide' options={{ scrollbars: { autoHide: 'scroll' } }}>
+        <OverlayScrollbarsComponent defer className='h-full w-full p-2 scrollbar-hide' options={{ scrollbars: { autoHide: 'move' } }}>
           {children}
         </OverlayScrollbarsComponent>
       </div>

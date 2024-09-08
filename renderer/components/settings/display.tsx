@@ -171,7 +171,7 @@ export function Display() {
           }}
         >
           隐藏关闭按钮
-        </Switch>{' '}
+        </Switch>
         <Switch
           isSelected={hiddenRefreshWindow}
           onChange={() => {
@@ -180,7 +180,7 @@ export function Display() {
           }}
         >
           隐藏刷新按钮
-        </Switch>{' '}
+        </Switch>
         <Switch
           isSelected={hiddenPutaway}
           onChange={() => {

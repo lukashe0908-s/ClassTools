@@ -17,7 +17,6 @@
   font-display: swap;
 }
 
-
 html,
 body {
   width: 100%;
@@ -84,11 +83,13 @@ body {
 #app-main .content .class-list {
   /* font-size: 1.2em; */
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-#app-main .content .class-list > * {
+#app-main .content .class-list > div.classElement {
   border-radius: min(0.5em, 12px);
   padding: min(0.25em, 6px);
-  margin-bottom: 4px;
   word-break: break-all;
 }
 

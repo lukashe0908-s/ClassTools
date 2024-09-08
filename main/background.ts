@@ -7,6 +7,7 @@ import { BrowserWindow, Menu } from 'electron';
 import Store from 'electron-store';
 import AutoLaunch from 'auto-launch';
 import systeminformation from 'systeminformation';
+import contextMenu from 'electron-context-menu';
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -31,6 +32,20 @@ if (!gotTheLock) {
 }
 const store = new Store();
 Menu.setApplicationMenu(null);
+contextMenu({
+  showSearchWithGoogle: false,
+  showCopyLink: false,
+  showLearnSpelling: false,
+  showLookUpSelection: false,
+  labels: {
+    cut: '剪切',
+    copy: '复制',
+    paste: '粘贴',
+    selectAll: '全选',
+    copyImage: '复制图像',
+    inspect: '检查',
+  },
+});
 // setupTitlebar();
 
 function getProviderPath(params: string) {
@@ -140,6 +155,27 @@ ipcMain.on('mainWindow_ignoreMouseEvent', async (event, value: boolean) => {
   } else {
     mainWindow_g.setIgnoreMouseEvents(false);
   }
+});
+
+ipcMain.on('showContextMenu_listTime', (event, splitChecked: boolean = false) => {
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: `在下方插入分隔符`,
+      type: 'checkbox',
+      checked: splitChecked,
+      click: menuItem => {
+        event.sender.send('showContextMenu_listTime', 'divide', menuItem.checked);
+      },
+    },
+    { type: 'separator' },
+    {
+      label: '清空',
+      click: () => {
+        event.sender.send('showContextMenu_listTime', 'clear');
+      },
+    },
+  ]);
+  contextMenu.popup({ window: BrowserWindow.fromWebContents(event.sender) });
 });
 
 ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolean) => {
