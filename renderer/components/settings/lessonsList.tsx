@@ -17,11 +17,10 @@ import {
   Accordion,
   AccordionItem,
 } from '@nextui-org/react';
-import { DataGridPremium, GridApiPro, useGridApiRef } from '@mui/x-data-grid-premium';
+import { DataGridPremium, useGridApiRef } from '@mui/x-data-grid-premium';
 import dayjs from 'dayjs';
-import { Popper } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
-import { LocalizationProvider, TimePicker, renderTimeViewClock, StaticTimePicker } from '@mui/x-date-pickers-pro';
+import { LocalizationProvider, TimePicker, renderTimeViewClock } from '@mui/x-date-pickers-pro';
 import { OverlayScrollbars } from 'overlayscrollbars';
 import { getConfigSync } from '../p_function';
 
@@ -199,13 +198,17 @@ export function LessonsListTime() {
   const [weekStart, setWeekStart] = useState('') as any;
   useEffect(() => {
     (async () => {
-      const data: any = await getConfigSync('lessonsList.time');
-      if (data.length > 0) data && setRows(data);
+      try {
+        const data: any = await getConfigSync('lessonsList.time');
+        if (data.length > 0) data && setRows(data);
+      } catch (error) {}
       setIsLoading(false);
     })();
     (async () => {
-      const data = await getConfigSync('lessonsList.weekStart');
-      data && setWeekStart(data);
+      try {
+        const data = await getConfigSync('lessonsList.weekStart');
+        data && setWeekStart(data);
+      } catch (error) {}
       setIsLoading2(false);
     })();
   }, []);
@@ -250,8 +253,8 @@ export function LessonsListTime() {
                   className='flex flex-col gap-1'
                   onContextMenu={event => {
                     event.preventDefault();
-                    window.ipc.send('showContextMenu_listTime', addDivide);
-                    window.ipc.once('showContextMenu_listTime', (action, ...args) => {
+                    window.ipc?.send('showContextMenu_listTime', addDivide);
+                    window.ipc?.once('showContextMenu_listTime', (action, ...args) => {
                       switch (action) {
                         case 'divide':
                           let checked = args[0];
