@@ -425,6 +425,7 @@ export function LessonsListTime() {
                       />
                     </LocalizationProvider>
                   )}
+                  {addDivide ? <Divider></Divider> : <></>}
                 </div>
               );
             }}
@@ -541,7 +542,7 @@ export function LessonsListTime_TimeDisplayer({
     <div className='inline-flex items-start justify-center box-border select-none whitespace-nowrap overflow-hidden text-small rounded-medium bg-default h-auto min-h-10 flex-col gap-0 py-1 px-3'>
       <div className='text-sm text-default-foreground'>{children}</div>
       <input
-        className='text-lg bg-transparent focus-visible:!outline-0 w-[6ch]'
+        className='text-lg bg-transparent focus-visible:![outline:0] min-w-[6ch] !w-full'
         defaultValue={time ? time : ''}
         onChange={onChange}
       ></input>
