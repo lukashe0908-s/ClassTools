@@ -214,9 +214,9 @@ export async function generateConfig() {
       }
       _.mapValues(rowDate, function (value, key) {
         if (key != 'all') {
-          let timeStart = rowDate['all']['start'];
-          let timeEnd = rowDate['all']['end'];
-          let timeDivide = rowDate['all']['divide'];
+          let timeStart = rowDate[key]['start'];
+          let timeEnd = rowDate[key]['end'];
+          let timeDivide = rowDate[key]['divide'];
           !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
           !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
           if (timeStart) {

@@ -169,7 +169,7 @@ async function generateConfig() {
     });
   data_time &&
     data_time.forEach((rowDate, rowIndex) => {
-      if (rowDate && rowDate['all']) {
+      if (rowDate && rowDate['all'] && rowDate['all']['start'] && rowDate['all']['end']) {
         let timeStart = rowDate['all']['start'];
         let timeEnd = rowDate['all']['end'];
         let timeDivide = rowDate['all']['divide'];
@@ -206,9 +206,9 @@ async function generateConfig() {
       }
       _.mapValues(rowDate, function (value, key) {
         if (key != 'all') {
-          let timeStart = rowDate['all']['start'];
-          let timeEnd = rowDate['all']['end'];
-          let timeDivide = rowDate['all']['divide'];
+          let timeStart = rowDate[key]['start'];
+          let timeEnd = rowDate[key]['end'];
+          let timeDivide = rowDate[key]['divide'];
           !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
           !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
           if (timeStart) {
