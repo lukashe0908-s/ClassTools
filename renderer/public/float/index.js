@@ -211,11 +211,9 @@ async function generateConfig() {
           let timeDivide = rowDate[key]['divide'];
           !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
           !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
-          if (timeStart) {
+          if (timeStart||timeEnd) {
             new_classSchedule.single[key][rowIndex].startTime = timeStart;
             new_classSchedule.double[key][rowIndex].startTime = timeStart;
-          }
-          if (timeEnd) {
             new_classSchedule.single[key][rowIndex].endTime = timeEnd;
             new_classSchedule.double[key][rowIndex].endTime = timeEnd;
           }
