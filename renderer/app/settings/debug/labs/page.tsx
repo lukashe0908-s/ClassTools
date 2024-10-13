@@ -30,7 +30,7 @@ export default function App() {
         </div>
         <div className='font-bold *:text-4xl flex items-center [color:#F6821F]'>
           <ScienceOutlinedIcon className='pr-1'></ScienceOutlinedIcon>
-          <span>Labs </span>
+          <span>Labs</span>
         </div>
         <div className='flex gap-2 flex-col'>
           <div className='flex flex-col flex-wrap'>

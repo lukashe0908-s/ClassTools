@@ -7,7 +7,7 @@ import TimelineDot from '@mui/lab/TimelineDot';
 export default function App() {
   return (
     <>
-      <span className='pl-4 text-2xl font-bold'>渲染序列</span>
+      <span className='ml-4 text-2xl font-bold [box-shadow:inset_0_-8px_#f73246] border-b-2 border-[#f73246]'>渲染序列</span>
       <Timeline
         sx={{
           [`& .${timelineItemClasses.root}:before`]: {
