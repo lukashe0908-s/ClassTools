@@ -94,7 +94,7 @@
           <div></div>
         </div>
       </div>
-      <div style="position: absolute; top: 0; z-index: 0; width: 100%; height: 100%">
+      <div id="background-cover" style="position: absolute; top: 0; z-index: 0; width: 100%; height: 100%">
         <img
           id="bing-wallpaper-bg"
           style="
@@ -159,18 +159,18 @@
       try {
         if (localStorage.getItem('desktop-tool/hiddenPicList')) {
           document.querySelector('#PicList').style.display = 'none';
-          document.querySelector('#bing-wallpaper-bg').style.display = 'none';
+          document.querySelector('#background-cover').style.display = 'none';
           document.querySelector('#PicListController').removeAttribute('checked');
         }
         document.querySelector('#PicListController').addEventListener('change', event => {
           if (event.target.checked) {
             localStorage.removeItem('desktop-tool/hiddenPicList');
             document.querySelector('#PicList').style.display = 'flex';
-            document.querySelector('#bing-wallpaper-bg').style.display = 'block';
+            document.querySelector('#background-cover').style.display = 'block';
           } else {
             localStorage.setItem('desktop-tool/hiddenPicList', true);
             document.querySelector('#PicList').style.display = 'none';
-            document.querySelector('#bing-wallpaper-bg').style.display = 'none';
+            document.querySelector('#background-cover').style.display = 'none';
           }
         });
 
