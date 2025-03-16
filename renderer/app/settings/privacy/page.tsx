@@ -22,7 +22,7 @@ export default function App() {
           <Button
             onClick={() => {
               (async () => {
-                let foo = await axios.post('https://us.lukas1.eu.org/pastebin/api.php/edit/backup_dt', JSON.stringify(await getConfigSync()));
+                let foo = await axios.post('https://hk.lukas1.eu.org/pastebin/api.php/edit/backup_dt', JSON.stringify(await getConfigSync()));
                 console.log(foo.data);
                 alert(foo.data);
                 alert();
@@ -34,7 +34,7 @@ export default function App() {
           <Button
             onClick={() => {
               (async () => {
-                let foo = await axios.post('https://us.lukas1.eu.org/pastebin/api.php/edit/backup_dt2', JSON.stringify(await getConfigSync()));
+                let foo = await axios.post('https://hk.lukas1.eu.org/pastebin/api.php/edit/backup_dt2', JSON.stringify(await getConfigSync()));
                 console.log(foo.data);
                 alert(foo.data);
                 alert();
