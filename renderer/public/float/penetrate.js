@@ -18,5 +18,6 @@
   };
   window.addEventListener('mousemove', moveEvent);
   window.addEventListener('pointermove', moveEvent);
+  window.addEventListener('touchstart', moveEvent);
   window.addEventListener('touchmove', moveEvent);
 })();
