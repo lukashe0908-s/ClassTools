@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardBody, Switch, Button, CardHeader } from '@nextui-org/react';
+import { Card, CardBody, Switch, Button, CardHeader } from "@heroui/react";
 import axios from 'axios';
 import { getConfigSync } from '../../../components/p_function';
 export default function App() {

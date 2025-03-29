@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import '../styles/globals.css';
-import { NextUIProvider } from '@nextui-org/react';
+import { HeroUIProvider } from "@heroui/react";
 import { LicenseInfo } from '@mui/x-license-pro';
 import { Snackbar, Fade } from '@mui/material';
 import { createRoot } from 'react-dom/client';
@@ -64,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <meta name='viewport' content='width=device-width, initial-scale=1.0' />
         </head>
         <body>
-          <NextUIProvider className='h-full'>{children}</NextUIProvider>
+          <HeroUIProvider className='h-full'>{children}</HeroUIProvider>
         </body>
       </html>
     </>

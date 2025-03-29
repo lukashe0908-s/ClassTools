@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Divider } from '@nextui-org/react';
+import { Divider } from "@heroui/react";
 import { Navigation, NavigationSub, NavigationItem } from '../../components/navigation';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import BugReportOutlinedIcon from '@mui/icons-material/BugReportOutlined';

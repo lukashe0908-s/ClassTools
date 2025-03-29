@@ -16,7 +16,7 @@ import {
   Checkbox,
   Accordion,
   AccordionItem,
-} from '@nextui-org/react';
+} from "@heroui/react";
 import { DataGridPremium, useGridApiRef } from '@mui/x-data-grid-premium';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';

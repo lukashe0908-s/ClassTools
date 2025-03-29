@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardBody } from '@nextui-org/react';
+import { Card, CardBody } from "@heroui/react";
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 const MonacoEditor = dynamic(() => import('react-monaco-editor'), {

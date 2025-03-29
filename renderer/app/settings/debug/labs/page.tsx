@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardBody, Switch, Button, Calendar, Divider, Checkbox, Input } from '@nextui-org/react';
+import { Card, CardBody, Switch, Button, Calendar, Divider, Checkbox, Input } from "@heroui/react";
 import { useEffect, useState } from 'react';
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
 import { getAutoLaunchSync } from '../../../../components/p_function';

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Switch, Slider, Autocomplete, AutocompleteItem } from '@nextui-org/react';
+import { Switch, Slider, Autocomplete, AutocompleteItem } from "@heroui/react";
 import { getConfigSync } from '../p_function';
 
 export function Display() {

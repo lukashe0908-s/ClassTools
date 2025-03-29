@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import { Card, CardBody, Tabs, Tab, Button, Code, Image, Chip } from '@nextui-org/react';
+import { Card, CardBody, Tabs, Tab, Button, Code, Image, Chip } from "@heroui/react";
 
 export default function App() {
   return (

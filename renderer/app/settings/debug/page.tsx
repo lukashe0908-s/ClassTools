@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardBody, Switch, Button, Calendar, Divider } from '@nextui-org/react';
+import { Card, CardBody, Switch, Button, Calendar, Divider } from "@heroui/react";
 import { useEffect, useState } from 'react';
 import { getVersionSync, formatSize } from '../../../components/p_function';
 import dayjs from 'dayjs';

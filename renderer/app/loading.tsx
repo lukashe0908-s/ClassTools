@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner } from '@nextui-org/react';
+import { Spinner } from "@heroui/react";
 
 export default function App() {
   return <Loading></Loading>;
