@@ -75,7 +75,7 @@ const formattedColumns = columns.map(column => ({
 }));
 
 function List({ rows, setRows, children }) {
-  const refTable = useRef();
+  const refTable = useRef(null);
   useEffect(() => {
     const Table = refTable.current as HTMLElement;
     const osInstance = OverlayScrollbars(Table.parentElement, { scrollbars: { autoHide: 'move' } });
@@ -120,7 +120,7 @@ function List({ rows, setRows, children }) {
 }
 
 function CustomTextarea(props) {
-  const component = useRef();
+  const component = useRef(null);
   useEffect(() => {
     const ele = component.current as HTMLTextAreaElement;
     ele.style.height = `auto`;
