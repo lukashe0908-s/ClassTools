@@ -38,9 +38,13 @@ const execaOptions = {
     await Promise.all([fs.remove(appDir), fs.remove(distDir)]);
 
     logger.info('Building renderer process');
-    //await execa('next', ['build', path.join(cwd, rendererSrcDir)], execaOptions);
-    //await Promise.all([fs.moveSync(path.join(rendererSrcDir, '../build/out'), appDir)]);
-    await Promise.all([fs.copySync(path.join(rendererSrcDir, 'public/static'), path.join(appDir, 'static'))]);
+    const useLocal = process.env.LOCAL_COMPILE == 'true' || true;
+    if (useLocal) {
+      await execa('next', ['build', path.join(cwd, rendererSrcDir)], execaOptions);
+      await Promise.all([fs.moveSync(path.join(rendererSrcDir, '../build/out'), appDir)]);
+    } else {
+      await Promise.all([fs.copySync(path.join(rendererSrcDir, 'public/static'), path.join(appDir, 'static'))]);
+    }
 
     logger.info('Building main process');
     await execa('node', [path.join(__dirname, './configs/webpack.config.production.js')], execaOptions);

@@ -158,7 +158,7 @@ export function Display() {
             window.ipc?.send('set-config', 'online', !online);
           }}
         >
-          使用在线模式(Force Enabled)
+          使用在线模式
         </Switch>
         <Switch isDisabled>自动更新主程序</Switch>
       </div>
