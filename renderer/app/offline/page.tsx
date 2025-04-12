@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useEffect } from 'react';
 export default function App() {
-  const svg = useRef();
+  const svg = useRef(null);
   useEffect(() => {
     const ele = svg.current as HTMLElement;
     if (ele)

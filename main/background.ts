@@ -78,7 +78,8 @@ function getProviderPath(params: string) {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false,
     },
-    // backgroundMaterial: 'acrylic',
+    backgroundMaterial: 'acrylic',
+    roundedCorners: true,
     transparent: true,
     frame: false,
     width: winWidth,
@@ -86,7 +87,7 @@ function getProviderPath(params: string) {
     x: screen.getPrimaryDisplay().workArea.width - winWidth,
     y: 0,
     skipTaskbar: true,
-    resizable: false,
+    resizable: !isProd,
   });
   mainWindow.webContents.setUserAgent(
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
@@ -148,6 +149,7 @@ ipcMain.on('get-version', async event => {
   event.reply('get-version', app.getVersion());
 });
 
+// 不可在触屏上正常使用
 ipcMain.on('mainWindow_ignoreMouseEvent', async (event, value: boolean) => {
   // console.log(arg[0]);
   if (value === true) {
@@ -232,6 +234,7 @@ ipcMain.on('settings-window', async (event, arg) => {
 });
 ipcMain.on('ai-window', async (event, arg) => {
   const window = createWindow('aiWindow', {
+    backgroundMaterial: 'acrylic',
     width: 1000,
     height: 600,
     webPreferences: {
