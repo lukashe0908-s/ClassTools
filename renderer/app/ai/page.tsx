@@ -32,7 +32,7 @@ export default function App() {
                   height={300}
                   width={300}
                   shadow='lg'
-                  src='https://gravatar.com/userimage/222933225/c43e8f9d51b5b0d2313d26d01c4eac26.jpeg?size=300'
+                  src='https://wsrv.nl/?url=https://gravatar.com/avatar/16f2b466ed821bfb1175c7a4bd9fa06f%3Fs=256&output=webp'
                   referrerPolicy='no-referrer'
                 />
               </CardBody>

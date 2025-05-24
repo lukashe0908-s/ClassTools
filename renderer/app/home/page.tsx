@@ -65,7 +65,7 @@ export default function HomePage() {
             Go Legacy
           </Button>
         </Link>
-        <OpenAiWindow>Ai Ability</OpenAiWindow>
+        <OpenAiWindow>AI Ability</OpenAiWindow>
         <Button color='primary' className='font-bold' onClick={onOpen}>
           关机
         </Button>
