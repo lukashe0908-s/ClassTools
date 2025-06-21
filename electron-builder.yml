@@ -1,6 +1,6 @@
-appId: org.eu.lukass.desktop-tool
-productName: desktop-tool
-copyright: Copyright © 2024 Lukas
+appId: org.eu.lukass.class-tools
+productName: Class Tools
+copyright: Copyright © 2025 Lukas
 directories:
   output: build/dist
   buildResources: resources

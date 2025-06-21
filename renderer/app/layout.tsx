@@ -59,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <>
       <html lang='en' className='h-full overflow-hidden'>
         <head>
-          <title>Desktop Tool</title>
+          <title>Class Tools</title>
           <meta charSet='UTF-8' />
           <meta name='viewport' content='width=device-width, initial-scale=1.0' />
         </head>

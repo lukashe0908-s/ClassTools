@@ -149,18 +149,18 @@
     mdui.setColorScheme('#4f8ac4');
     (async () => {
       try {
-        if (localStorage.getItem('desktop-tool/hiddenPicList')) {
+        if (localStorage.getItem('class-tools/hiddenPicList')) {
           document.querySelector('#PicList').style.display = 'none';
           document.querySelector('#background-cover').style.display = 'none';
           document.querySelector('#PicListController').removeAttribute('checked');
         }
         document.querySelector('#PicListController').addEventListener('change', event => {
           if (event.target.checked) {
-            localStorage.removeItem('desktop-tool/hiddenPicList');
+            localStorage.removeItem('class-tools/hiddenPicList');
             document.querySelector('#PicList').style.display = 'flex';
             document.querySelector('#background-cover').style.display = 'block';
           } else {
-            localStorage.setItem('desktop-tool/hiddenPicList', true);
+            localStorage.setItem('class-tools/hiddenPicList', true);
             document.querySelector('#PicList').style.display = 'none';
             document.querySelector('#background-cover').style.display = 'none';
           }

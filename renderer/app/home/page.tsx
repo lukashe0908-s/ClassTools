@@ -57,7 +57,7 @@ export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
-      <title>Home - Desktop Tool</title>
+      <title>Home - Class Tools</title>
       <div className='flex justify-center gap-3 py-2 flex-shrink-0 flex-wrap'>
         <OpenSettingsWindow>Go Settings</OpenSettingsWindow>
         <Link href='/float/index.html'>

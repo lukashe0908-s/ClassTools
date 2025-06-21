@@ -19,7 +19,7 @@ const buildSW = () => {
         urlPattern: new RegExp(String.raw`/(static|float/lib)/.*`),
         handler: 'CacheFirst',
         options: {
-          cacheName: 'desktop-tool',
+          cacheName: 'class-tools',
           expiration: {
             maxEntries: 500,
             maxAgeSeconds: 30 * 24 * 60 * 60,
@@ -30,7 +30,7 @@ const buildSW = () => {
         urlPattern: urlPattern,
         handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: 'desktop-tool',
+          cacheName: 'class-tools',
           expiration: {
             maxEntries: 500,
             maxAgeSeconds: 7 * 24 * 60 * 60,

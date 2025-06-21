@@ -35,16 +35,16 @@ document.getElementById('change-content-state').addEventListener('click', _ => {
     document.getElementById('app-main').classList.add('visible');
   }
 });
-!localStorage.getItem('desktop-tool/putAway') && document.getElementById('change-content-state').click();
+!localStorage.getItem('class-tools/putAway') && document.getElementById('change-content-state').click();
 function changeContentState(pack_up) {
   if (pack_up) {
     document.querySelector('#change-content-state > .text').innerHTML = `<mdui-icon name="arrow_upward"></mdui-icon>
   收起`;
-    localStorage.removeItem('desktop-tool/putAway');
+    localStorage.removeItem('class-tools/putAway');
   } else {
     document.querySelector('#change-content-state > .text').innerHTML = `<mdui-icon name="arrow_downward"></mdui-icon>
     展开`;
-    localStorage.setItem('desktop-tool/putAway', true);
+    localStorage.setItem('class-tools/putAway', true);
   }
 }
 

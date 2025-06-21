@@ -98,7 +98,7 @@ export default function App() {
             color='primary'
             variant='bordered'
             onClick={async () => {
-              caches.delete('desktop-tool').then(function (e) {
+              caches.delete('class-tools').then(function (e) {
                 console.log('cache storage', e);
               });
               var request = indexedDB.deleteDatabase('workbox-expiration');
