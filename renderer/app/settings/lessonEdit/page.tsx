@@ -14,11 +14,10 @@ export default function App() {
             flex: 0,
             padding: 0,
           },
-        }}
-      >
+        }}>
         <TimelineItem>
           <TimelineSeparator>
-            <TimelineDot className='!bg-blue-600' />
+            <TimelineDot color='primary' />
             <TimelineConnector />
           </TimelineSeparator>
           <TimelineContent>初始值</TimelineContent>
@@ -53,7 +52,7 @@ export default function App() {
         </TimelineItem>
         <TimelineItem>
           <TimelineSeparator>
-            <TimelineDot className='!bg-green-600' />
+            <TimelineDot color='success' />
           </TimelineSeparator>
           <TimelineContent>完成</TimelineContent>
         </TimelineItem>

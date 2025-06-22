@@ -8,6 +8,7 @@ import Store from 'electron-store';
 import AutoLaunch from 'auto-launch';
 import systeminformation from 'systeminformation';
 import contextMenu from 'electron-context-menu';
+import os from 'os';
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -57,6 +58,34 @@ function getProviderPath(params: string) {
     const port = process.argv[2];
     return `http://localhost:${port}${params}`;
   }
+}
+
+function isWindows11() {
+  const platform = os.platform();
+  const release = os.release();
+
+  // Windows 11 的版本号通常是 10.0.22000 或更高
+  if (platform === 'win32' && parseInt(release.split('.')[2], 10) >= 22000) {
+    return true;
+  }
+  return false;
+}
+function createRoundedRectShape(width, height, radius) {
+  const shape = [];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const inTopLeft = x < radius && y < radius && (x - radius) ** 2 + (y - radius) ** 2 > radius ** 2;
+      const inTopRight = x >= width - radius && y < radius && (x - (width - radius)) ** 2 + (y - radius) ** 2 > radius ** 2;
+      const inBottomLeft = x < radius && y >= height - radius && (x - radius) ** 2 + (y - (height - radius)) ** 2 > radius ** 2;
+      const inBottomRight =
+        x >= width - radius && y >= height - radius && (x - (width - radius)) ** 2 + (y - (height - radius)) ** 2 > radius ** 2;
+
+      if (!(inTopLeft || inTopRight || inBottomLeft || inBottomRight)) {
+        shape.push({ x, y, width: 1, height: 1 });
+      }
+    }
+  }
+  return shape;
 }
 
 (async () => {
@@ -116,9 +145,18 @@ function getProviderPath(params: string) {
         return base;
       })();
       mainWindow.setResizable(true);
+      autoSetWindowCorner();
       mainWindow.setSize(winWidth, winHeight);
       mainWindow.setResizable(false);
       mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - winWidth, 0);
+    }
+  }
+
+  // Add Window Corner on Windows 10
+  function autoSetWindowCorner() {
+    if (os.platform() == 'win32' && Number(os.release().split('.')[0]) >= 10 && !os.version().includes('Windows 11')) {
+      const shape = createRoundedRectShape(winWidth, winHeight, 12);
+      mainWindow.setShape(shape);
     }
   }
 
