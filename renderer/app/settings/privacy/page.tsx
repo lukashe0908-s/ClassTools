@@ -9,7 +9,7 @@ export default function App() {
         <Card>
           <CardBody className='block'>
             <p>你正在发送必需诊断数据</p>
-            <span className='text-gray-600 text-sm'>帮助改进软件并使其保特安全、最新并按预期工作</span>
+            <span className='text-gray-600 text-sm'>您的数据将会被发送至Sentry及Cloudflare Web Analytics，以帮助改进软件并使其保特安全、最新并按预期工作</span>
           </CardBody>
         </Card>
         <div className='flex gap-4 flex-wrap'>
