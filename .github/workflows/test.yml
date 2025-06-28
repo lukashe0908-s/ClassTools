@@ -1,0 +1,17 @@
+name: Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - run: echo "TOKEN=${PUSH_TOKEN}"
+        env:
+          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
