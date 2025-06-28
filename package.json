@@ -13,6 +13,7 @@
     "build:web": "yarn build:prepare && next build ./renderer",
     "build:prepare": "next telemetry disable && node main/build/workbox",
     "build_": "yarn build:prepare && nextron build",
+    "publish": "node main/build/create-tag",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
