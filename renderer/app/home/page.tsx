@@ -20,12 +20,13 @@ import {
   DropdownItem,
   ScrollShadow,
 } from '@heroui/react';
-
+import { Cog6ToothIcon, ArrowPathIcon, ArrowTopRightOnSquareIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import UpdateModal from './updateModal';
 import ClassList from './classListNew';
+import { Weather } from './weather';
 import { generateConfig, getConfigSync } from '../../components/p_function';
 
 export default function HomePage() {
@@ -128,28 +129,44 @@ function FloatWindow() {
   return (
     <div className='flex flex-col gap-0 p-0 bg-blue-100 h-screen rounded-lg shadow-lg'>
       {/* Toolbar */}
-      <div className='flex gap-4 items-center bg-white p-2 rounded-lg'>
+      <div className='flex gap-2 items-center bg-white p-2 rounded-lg'>
         <Button
+          isIconOnly
           onPress={() => {
             window.ipc?.send('settings-window');
           }}
-          className='cursor-pointer'>
-          Settings
+          title='设置'
+          aria-label='Settings'>
+          <Cog6ToothIcon className='w-5 h-5' />
         </Button>
         <Button
+          isIconOnly
+          onPress={() => {
+            window.location.reload();
+          }}
+          title='刷新'
+          aria-label='Refresh'>
+          <ArrowPathIcon className='w-5 h-5' />
+        </Button>
+        <Button
+          isIconOnly
           onPress={() => {
             window.location.href = '/float/index.html';
-            // window.location.reload();
           }}
-          className='cursor-pointer'>
-          Refresh
+          title='跳转'
+          aria-label='JumpTo'>
+          <ArrowTopRightOnSquareIcon className='w-5 h-5' />
         </Button>
         <Button
+          isIconOnly
+          variant='faded'
           onPress={() => {
             window.ipc?.send('close-window');
           }}
-          className='ml-auto cursor-pointer'>
-          Close
+          title='关闭'
+          aria-label='Close'
+          className='ml-auto'>
+          <XMarkIcon className='w-5 h-5' />
         </Button>
       </div>
 
@@ -172,42 +189,10 @@ function FloatWindow() {
       </ScrollShadow>
 
       {/* Footer */}
-      <div className='flex gap-4 items-center bg-white p-1 rounded-lg'>
-        <div
-          className='flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer'
-          onClick={() => console.log('Weather clicked')}>
-          Weather
-        </div>
+      <div className='flex gap-1 items-center bg-white p-1 rounded-lg'>
+        <Button fullWidth></Button>
+        <Weather />
       </div>
     </div>
-  );
-}
-
-function OpenSettingsWindow({ children }) {
-  return (
-    <>
-      <Button
-        color='primary'
-        className='font-bold'
-        onClick={() => {
-          window?.ipc?.send('settings-window', 'true');
-        }}>
-        {children}
-      </Button>
-    </>
-  );
-}
-function OpenAiWindow({ children }) {
-  return (
-    <>
-      <Button
-        color='primary'
-        className='font-bold'
-        onClick={() => {
-          window?.ipc?.send('ai-window', 'true');
-        }}>
-        {children}
-      </Button>
-    </>
   );
 }
