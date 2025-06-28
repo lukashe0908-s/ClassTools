@@ -12,6 +12,6 @@ jobs:
         node-version: [22.x]
 
     steps:
-      - run: echo "TOKEN=${PUSH_TOKEN}"
+      - run: echo "TOKEN=${AUTH_TOKEN}"
         env:
-          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+          AUTH_TOKEN: ${{ secrets.PUSH_TOKEN }}
