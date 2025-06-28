@@ -52,7 +52,6 @@ contextMenu({
 function getProviderPath(params: string) {
   if (isProd) {
     if (store.get('online')) return `https://dt.mise.run.place${params}`;
-    // return `https://dt.misee.dns.army${params}`;
     return `app://-${params}`;
   } else {
     const port = process.argv[2];
