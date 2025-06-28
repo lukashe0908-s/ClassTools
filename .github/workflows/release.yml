@@ -55,12 +55,9 @@ jobs:
           tag: ${{ github.ref_name }}
           overwrite: true
 
-      - name: Push latest.yml to Cloudflare Worker
-        run: |
-          curl -X POST https://update-class-tools.lukass.workers.dev/push_version \
-            -H "Authorization: Bearer ${{ secrets.PUSH_TOKEN }}" \
-            -H "x_tag: ${{ github.ref_name }}" \
-            -H "x_replace: true" \
-            --data-binary "@build/dist/latest.yml"
+      - name: Upload latest.yml
         env:
           PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: node main/build/upload-yml.js
+
