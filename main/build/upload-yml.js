@@ -7,6 +7,9 @@ async function uploadLatestYml() {
 
   const tagName = process.env.TAG_NAME;
   const bearerToken = process.env.PUSH_TOKEN;
+  if (!bearerToken) {
+    throw new Error('Missing PUSH_TOKEN env variable');
+  }
 
   const response = await fetch('https://update-class-tools.lukass.workers.dev/push_version', {
     method: 'POST',
