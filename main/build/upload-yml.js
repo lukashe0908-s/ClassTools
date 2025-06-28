@@ -19,6 +19,7 @@ const path = require('path');
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
+      x_replace: true,
       x_tag: tag,
       'Content-Type': 'application/octet-stream',
     },
