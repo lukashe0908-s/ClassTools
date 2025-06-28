@@ -11,6 +11,7 @@ import contextMenu from 'electron-context-menu';
 import os from 'os';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { getConfigSync } from '../renderer/components/p_function';
 
 const isProd = process.env.NODE_ENV === 'production';
 if (isProd) {
@@ -152,7 +153,7 @@ function createRoundedRectShape(width, height, radius) {
       mainWindow.setResizable(true);
       autoSetWindowCorner();
       mainWindow.setSize(winWidth, winHeight);
-      mainWindow.setResizable(false);
+      isProd && mainWindow.setResizable(false);
       mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - winWidth, 0);
     }
   }
@@ -166,7 +167,12 @@ function createRoundedRectShape(width, height, radius) {
   }
 
   if (isProd) {
-    await mainWindow.loadURL(getProviderPath('/home'));
+    const legacy = await getConfigSync('display.useLegacyHome');
+    if (legacy) {
+      await mainWindow.loadURL(getProviderPath('/float'));
+    } else {
+      await mainWindow.loadURL(getProviderPath('/home'));
+    }
     autoUpdater.checkForUpdates();
   } else {
     await mainWindow.loadURL(getProviderPath('/home'));

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Switch, Slider, Autocomplete, AutocompleteItem } from "@heroui/react";
+import { Switch, Slider, Autocomplete, AutocompleteItem } from '@heroui/react';
 import { getConfigSync } from '../p_function';
 
 export function Display() {
@@ -13,6 +13,7 @@ export function Display() {
   const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
   const [hiddenPutaway, setHiddenPutaway] = useState(false);
+  const [useLegacyHome, setUseLegacyHome] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -50,6 +51,10 @@ export function Display() {
     (async () => {
       const data = await getConfigSync('display.hidden.putaway');
       data && setHiddenPutaway(Boolean(data));
+    })();
+    (async () => {
+      const data = await getConfigSync('display.useLegacyHome');
+      data && setUseLegacyHome(Boolean(data));
     })();
   }, []);
   return (
@@ -129,8 +134,7 @@ export function Display() {
             { value: 'center', label: 'Center' },
             { value: 'end', label: 'End' },
             { value: 'nearest', label: 'Nearest' },
-          ]}
-        >
+          ]}>
           {item => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
         </Autocomplete>
         <Autocomplete
@@ -145,8 +149,7 @@ export function Display() {
             { value: 'always', label: 'Always' },
             { value: 'active', label: 'When Active' },
             { value: 'never', label: 'Never' },
-          ]}
-        >
+          ]}>
           {item => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
         </Autocomplete>
       </div>
@@ -156,8 +159,7 @@ export function Display() {
           onChange={() => {
             setOnline(!online);
             window.ipc?.send('set-config', 'online', !online);
-          }}
-        >
+          }}>
           使用在线模式
         </Switch>
         <Switch isDisabled>自动更新主程序</Switch>
@@ -168,8 +170,7 @@ export function Display() {
           onChange={() => {
             setHiddenCloseWindow(!hiddenCloseWindow);
             window.ipc?.send('set-config', 'display.hidden.closeWindow', !hiddenCloseWindow);
-          }}
-        >
+          }}>
           隐藏关闭按钮
         </Switch>
         <Switch
@@ -177,8 +178,7 @@ export function Display() {
           onChange={() => {
             setHiddenRefreshWindow(!hiddenRefreshWindow);
             window.ipc?.send('set-config', 'display.hidden.refreshWindow', !hiddenRefreshWindow);
-          }}
-        >
+          }}>
           隐藏刷新按钮
         </Switch>
         <Switch
@@ -186,9 +186,16 @@ export function Display() {
           onChange={() => {
             setHiddenPutaway(!hiddenPutaway);
             window.ipc?.send('set-config', 'display.hidden.putaway', !hiddenPutaway);
-          }}
-        >
+          }}>
           隐藏收起按钮
+        </Switch>
+        <Switch
+          isSelected={useLegacyHome}
+          onChange={() => {
+            setUseLegacyHome(!useLegacyHome);
+            window.ipc?.send('set-config', 'display.useLegacyHome', !useLegacyHome);
+          }}>
+          使用旧首页
         </Switch>
       </div>
     </>

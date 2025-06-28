@@ -30,8 +30,8 @@ export function getWeekDate(Time?: string | Dayjs | Date) {
 );
 */
 export function listClassesForDay(classSchedule, day: string, isSingleWeek: boolean = true) {
-  if (classSchedule.single && classSchedule.single[day]) {
-    let classes = classSchedule.single[day];
+  if (classSchedule?.single && classSchedule?.single[day]) {
+    let classes = classSchedule?.single[day];
     if (!isSingleWeek) {
       if (classSchedule.double && classSchedule.double[day]) {
         for (const key in classSchedule.double[day]) {
@@ -45,7 +45,14 @@ export function listClassesForDay(classSchedule, day: string, isSingleWeek: bool
         }
       }
     }
-    return classes;
+    let classes_array = [];
+    for (const key in classes) {
+      if (Object.prototype.hasOwnProperty.call(classes, key)) {
+        const element = classes[key];
+        classes_array.push(element);
+      }
+    }
+    return classes_array;
   } else {
     return null;
   }
@@ -219,11 +226,9 @@ export async function generateConfig() {
           let timeDivide = rowDate[key]['divide'];
           !new_classSchedule.single[key][rowIndex] && (new_classSchedule.single[key][rowIndex] = {});
           !new_classSchedule.double[key][rowIndex] && (new_classSchedule.double[key][rowIndex] = {});
-          if (timeStart) {
+          if (timeStart || timeEnd) {
             new_classSchedule.single[key][rowIndex].startTime = timeStart;
             new_classSchedule.double[key][rowIndex].startTime = timeStart;
-          }
-          if (timeEnd) {
             new_classSchedule.single[key][rowIndex].endTime = timeEnd;
             new_classSchedule.double[key][rowIndex].endTime = timeEnd;
           }
