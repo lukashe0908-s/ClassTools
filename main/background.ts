@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { app, ipcMain, screen } from 'electron';
+import { app, dialog, ipcMain, ipcRenderer, screen } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 import { BrowserWindow, Menu } from 'electron';
@@ -9,7 +9,8 @@ import AutoLaunch from 'auto-launch';
 import systeminformation from 'systeminformation';
 import contextMenu from 'electron-context-menu';
 import os from 'os';
-import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
+import { autoUpdater } from 'electron-updater';
+import log from 'electron-log';
 
 const isProd = process.env.NODE_ENV === 'production';
 if (isProd) {
@@ -48,6 +49,11 @@ contextMenu({
   },
 });
 // setupTitlebar();
+
+// autoUpdater Debug
+log.transports.file.level = 'info';
+autoUpdater.logger = log;
+autoUpdater.autoDownload = false;
 
 function getProviderPath(params: string) {
   if (isProd) {
@@ -160,7 +166,8 @@ function createRoundedRectShape(width, height, radius) {
   }
 
   if (isProd) {
-    await mainWindow.loadURL(getProviderPath('/float'));
+    await mainWindow.loadURL(getProviderPath('/home'));
+    autoUpdater.checkForUpdates();
   } else {
     await mainWindow.loadURL(getProviderPath('/home'));
     // mainWindow.webContents.openDevTools()
@@ -175,6 +182,27 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
+// IPC Updater
+ipcMain.on('autoUpdater/checkForUpdates', () => {
+  autoUpdater.checkForUpdates();
+});
+autoUpdater.on('update-available', info => {
+  mainWindow_g.webContents.send('autoUpdater/update-available', info);
+});
+ipcMain.on('autoUpdater/downloadUpdate', () => {
+  autoUpdater.downloadUpdate();
+});
+autoUpdater.on('download-progress', progress => {
+  mainWindow_g.webContents.send('autoUpdater/download-progress', progress);
+});
+autoUpdater.on('update-downloaded', () => {
+  mainWindow_g.webContents.send('autoUpdater/update-downloaded');
+});
+ipcMain.on('autoUpdater/quitAndInstall', () => {
+  autoUpdater.quitAndInstall(true, true);
+});
+
+// IPC Config
 ipcMain.on('get-config', async (event, signal, name: string) => {
   event.reply('get-config/' + signal, store.get(name));
 });
@@ -184,16 +212,6 @@ ipcMain.on('set-config', async (event, name: string, value: any) => {
 });
 ipcMain.on('get-version', async event => {
   event.reply('get-version', app.getVersion());
-});
-
-// 不可在触屏上正常使用
-ipcMain.on('mainWindow_ignoreMouseEvent', async (event, value: boolean) => {
-  // console.log(arg[0]);
-  if (value === true) {
-    mainWindow_g.setIgnoreMouseEvents(true, { forward: true });
-  } else {
-    mainWindow_g.setIgnoreMouseEvents(false);
-  }
 });
 
 ipcMain.on('showContextMenu_listTime', (event, splitChecked: boolean = false) => {
@@ -217,6 +235,7 @@ ipcMain.on('showContextMenu_listTime', (event, splitChecked: boolean = false) =>
   contextMenu.popup({ window: BrowserWindow.fromWebContents(event.sender) });
 });
 
+// IPC Auto Launch
 ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolean) => {
   var AutoLauncher = new AutoLaunch({
     name: app.getName(),

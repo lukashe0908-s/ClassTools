@@ -19,6 +19,12 @@ const handler = {
     };
     ipcRenderer.once(channel, subscription);
   },
+  removeAllListeners(channel: string) {
+    ipcRenderer.removeAllListeners(channel);
+  },
+  removeListener(channel: string, listener: any) {
+    ipcRenderer.removeListener(channel, listener);
+  },
 };
 
 contextBridge.exposeInMainWorld('ipc', handler);

