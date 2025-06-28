@@ -11,7 +11,6 @@ import contextMenu from 'electron-context-menu';
 import os from 'os';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { getConfigSync } from '../renderer/components/p_function';
 
 const isProd = process.env.NODE_ENV === 'production';
 if (isProd) {
@@ -167,7 +166,7 @@ function createRoundedRectShape(width, height, radius) {
   }
 
   if (isProd) {
-    const legacy = await getConfigSync('display.useLegacyHome');
+    const legacy = store.get('display.useLegacyHome');
     if (legacy) {
       await mainWindow.loadURL(getProviderPath('/float'));
     } else {
