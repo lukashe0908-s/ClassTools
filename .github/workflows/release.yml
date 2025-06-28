@@ -51,8 +51,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
-          file: |
-            build/dist/*.exe
-            build/dist/*.blockmap
+          file: build/dist/*.exe*
           tag: ${{ github.ref_name }}
           overwrite: true
