@@ -25,6 +25,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import UpdateModal from './updateModal';
+import ClassList from './classListNew';
+import { generateConfig, getConfigSync } from '../../components/p_function';
 
 export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -69,7 +71,6 @@ export default function HomePage() {
   );
 }
 function FloatWindow() {
-  const [picListVisible, setPicListVisible] = useState(true);
   const [wallpapers, setWallpapers] = useState([]);
   const [currentWallpaper, setCurrentWallpaper] = useState('');
   const [weekNumber, setWeekNumber] = useState('1');
@@ -97,10 +98,32 @@ function FloatWindow() {
     const week = Math.ceil(dayOfYear / 7);
     setWeekNumber(`${week}`);
   }
+  const [classSchedule, setClassSchedule] = useState(null);
+  const [slidingPosition, setSlidingPosition] = useState('center');
+  const [progressDisplay, setProgressDisplay] = useState('always');
+  useEffect(() => {
+    const loadConfig = async () => {
+      const config = await generateConfig();
+      const pos = ((await getConfigSync('display.slidingPosition')) as any) || 'center';
+      const prog = ((await getConfigSync('display.progressDisplay')) as any) || 'always';
 
-  function togglePicList() {
-    setPicListVisible(!picListVisible);
-  }
+      setClassSchedule(config);
+      setSlidingPosition(pos);
+      setProgressDisplay(prog);
+    };
+
+    loadConfig();
+
+    const handler = () => {
+      loadConfig();
+    };
+
+    window.ipc?.on('sync-config', handler);
+
+    return () => {
+      window.ipc?.removeListener?.('sync-config', handler);
+    };
+  }, []);
 
   return (
     <div className='flex flex-col gap-0 p-0 bg-blue-100 h-screen rounded-lg shadow-lg'>
@@ -131,29 +154,21 @@ function FloatWindow() {
       </div>
 
       {/* Main Content */}
-      <ScrollShadow className='flex flex-col gap-4  p-4 flex-grow scrollbar-hide'>
-        <div className='flex gap-4'>
-          <Button onPress={togglePicList} className='w-full'>
-            {picListVisible ? '收起' : '展开'}
-          </Button>
-        </div>
-
-        <div>正文</div>
-
-        {picListVisible && (
-          <div className='flex flex-col gap-4'>
-            <div className='flex justify-between items-center'>
-              <Checkbox defaultSelected>Show Pictures</Checkbox>
-              <span className='bg-gray-200 px-2 py-1 rounded'>{`#${weekNumber}`}</span>
-            </div>
-
-            <div className='flex flex-col gap-4 overflow-auto max-h-64 scrollbar-hide'>
-              {wallpapers.map((wallpaper, index) => (
-                <img key={index} src={`https://www.bing.com${wallpaper.url}`} alt={`Wallpaper ${index}`} className='rounded-lg shadow-md' />
-              ))}
-            </div>
-          </div>
-        )}
+      <ScrollShadow className='flex flex-col gap-4  py-2 flex-grow scrollbar-hide'>
+        <ClassList schedule={classSchedule} slidingPosition={slidingPosition} progressDisplay={progressDisplay}></ClassList>
+        {
+          // <div className='flex flex-col gap-4'>
+          //   <div className='flex justify-between items-center'>
+          //     <Checkbox defaultSelected>Show Pictures</Checkbox>
+          //     <span className='bg-gray-200 px-2 py-1 rounded'>{`#${weekNumber}`}</span>
+          //   </div>
+          //   <div className='flex flex-col gap-4 overflow-auto max-h-64 scrollbar-hide'>
+          //     {wallpapers.map((wallpaper, index) => (
+          //       <img key={index} src={`https://www.bing.com${wallpaper.url}`} alt={`Wallpaper ${index}`} className='rounded-lg shadow-md' />
+          //     ))}
+          //   </div>
+          // </div>
+        }
       </ScrollShadow>
 
       {/* Footer */}

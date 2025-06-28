@@ -6,6 +6,7 @@ async function uploadLatestYml() {
   const fileContent = fs.readFileSync(filePath, 'utf-8');
 
   const tagName = process.env.TAG_NAME;
+  console.log('tagName:', tagName);
   const bearerToken = process.env.PUSH_TOKEN;
   if (!bearerToken) {
     throw new Error('Missing PUSH_TOKEN env variable');
@@ -15,6 +16,7 @@ async function uploadLatestYml() {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${bearerToken}`,
+      x_replace: true,
       x_tag: tagName,
       'Content-Type': 'application/octet-stream', // or text/yaml
     },
