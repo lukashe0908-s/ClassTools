@@ -49,8 +49,8 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
   }, [tick, currentDate]);
 
   useEffect(() => {
-    // 自动滚动到第一个非 after 的课程
-    for (let i = 0; i < refList.current.length; i++) {
+    // 自动滚动到最后一个非 after 的课程
+    for (let i = refList.current.length - 1; i >= 0; i--) {
       const el = refList.current[i];
       if (el && el.dataset.state !== 'after') {
         el.scrollIntoView({ behavior: 'smooth', block: slidingPosition });
@@ -88,6 +88,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                 const start = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), sh, sm);
                 const end = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), eh, em);
 
+                // state timeline: default | before > active > after
                 let state = 'default';
                 if (currentTime >= start && currentTime <= end) state = 'active';
                 else if (currentTime > end) state = 'before';
