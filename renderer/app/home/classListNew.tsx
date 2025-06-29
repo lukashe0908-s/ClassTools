@@ -132,7 +132,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
           </div>
         ))}
       <div className='py-4 px-2'>
-        <span id='weekNumber' className='text-md text-gray-800 bg-gray-100 p-2 rounded-md'>
+        <span id='weekNumber' className='text-md text-gray-800 bg-gray-100 p-2 rounded-md shadow-md'>
           #{weekInfo.now}/{weekInfo.total}
         </span>
       </div>

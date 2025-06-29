@@ -57,8 +57,7 @@
             gap: 100%;
             aspect-ratio: 16/9;
             overflow: auto;
-            scroll-snap-type: y mandatory;
-            scroll-snap-stop: always;
+            scroll-snap-type: y proximity;
             border-radius: 0.25em;
           "
           id="PicList"
@@ -66,19 +65,24 @@
           <div></div>
           <img
             id="bing-wallpaper"
-            style="max-width: 100%; scroll-snap-align: center"
+            style="max-width: 100%; scroll-snap-align: center; border-radius: 0.25em"
             loading="lazy"
             referrerpolicy="no-referrer"
-            draggable="false"
-            src="https://pic4.58cdn.com.cn/nowater/c06b291b-19e4-4325-b750-0ab40e9579c3/n_v2092b967bc62547a58a3909a6160ec19e.png" />
+            draggable="false" />
           <img
             id="bing-wallpaper2"
-            style="max-width: 100%; scroll-snap-align: center"
+            style="max-width: 100%; scroll-snap-align: center; border-radius: 0.25em"
             loading="lazy"
             referrerpolicy="no-referrer"
             draggable="false" />
           <img
             id="bing-wallpaper3"
+            style="max-width: 100%; scroll-snap-align: center; border-radius: 0.25em"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            draggable="false" />
+          <img
+            id="bing-wallpaper-default"
             style="max-width: 100%; scroll-snap-align: center"
             loading="lazy"
             referrerpolicy="no-referrer"
@@ -105,8 +109,7 @@
           "
           loading="lazy"
           referrerpolicy="no-referrer"
-          draggable="false"
-          src="https://pic4.58cdn.com.cn/nowater/c06b291b-19e4-4325-b750-0ab40e9579c3/n_v2092b967bc62547a58a3909a6160ec19e.png" />
+          draggable="false" />
         <div style="width: 100%; height: 100%; position: absolute" class="Acrylic"></div>
       </div>
     </div>
@@ -165,6 +168,10 @@
             document.querySelector('#background-cover').style.display = 'none';
           }
         });
+        let default_bg = 'https://s1.imagehub.cc/images/2025/06/29/a085471b696c1d4e867b90034a01f350.png';
+        document.querySelector('#bing-wallpaper').src = default_bg;
+        document.querySelector('#bing-wallpaper-bg').src = default_bg;
+        document.querySelector('#bing-wallpaper-default').src = default_bg;
 
         async function getWallpaper(force = false) {
           if (!window.ipc) return '';

@@ -84,7 +84,7 @@ export async function getChangeDay(parse_out: boolean = true, currentTime?: stri
   }
 }
 
-export async function getConfigSync(name?: string, timeout: number = 0) {
+export async function getConfigSync(name?: string, timeout: number = 0, notReject: boolean = true): Promise<any> {
   return new Promise((resolve, reject) => {
     try {
       let signal = crypto.randomUUID();
@@ -100,11 +100,15 @@ export async function getConfigSync(name?: string, timeout: number = 0) {
         resolve(data);
       });
     } catch (error) {
-      reject(error);
+      if (notReject) {
+        resolve(undefined);
+      } else {
+        reject(error);
+      }
     }
   });
 }
-export async function getVersionSync(timeout: number = 0) {
+export async function getVersionSync(timeout: number = 0, notReject: boolean = true): Promise<string | undefined> {
   return new Promise((resolve, reject) => {
     try {
       window.ipc.send('get-version');
@@ -119,7 +123,11 @@ export async function getVersionSync(timeout: number = 0) {
         resolve(data);
       });
     } catch (error) {
-      reject(error);
+      if (notReject) {
+        resolve(undefined);
+      } else {
+        reject(error);
+      }
     }
   });
 }
