@@ -111,18 +111,18 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                         refList.current[groupIdx * 100 + idx] = el;
                       }}
                       data-state={state}
-                      className={`px-4 py-3 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
-                      <div className='text-sm text-gray-600 mb-1'>
+                      className={`px-4 py-2 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
+                      <div className='text-sm text-gray-600 mb-0'>
                         {cls.startTime} - {cls.endTime}
                       </div>
-                      <div className='text-lg font-semibold mb-2'>{cls.subject}</div>
+                      <div className='text-xl font-semibold mb-0'>{cls.subject}</div>
                       {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
                         <Progress
                           aria-label='progress'
                           size='sm'
                           value={Math.min(Math.max(percent, 0), 100)}
                           color='primary'
-                          className='w-full'
+                          className='mt-1 w-full'
                         />
                       )}
                     </div>
