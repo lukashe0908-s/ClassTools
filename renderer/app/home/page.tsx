@@ -73,50 +73,86 @@ function FloatWindow() {
   const [wallpapers, setWallpapers] = useState([]);
   const [currentWallpaper, setCurrentWallpaper] = useState('');
 
+  // useEffect(() => {
+  //   const fetchWallpapers = async () => {
+  //     const CACHE_KEY = 'wallpapers';
+  //     const EXPIRES_KEY = 'wallpapers_expires';
+  //     const CACHE_DURATION = 30 * 60 * 1000; // 30 Mins
+
+  //     const now = Date.now();
+  //     const cached = localStorage.getItem(CACHE_KEY);
+  //     const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
+
+  //     if (cached && now < expires) {
+  //       try {
+  //         const images = JSON.parse(cached);
+  //         setWallpapers(images);
+  //         setCurrentWallpaper(images[0]);
+  //         return;
+  //       } catch (e) {
+  //         console.warn('Cached wallpaper parse failed, refetching.');
+  //       }
+  //     }
+  //     try {
+  //       const response = await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=7');
+  //       const data = await response.json();
+  //       const images = data.images.map(img => `https://www.bing.com${img.url}`);
+
+  //       setWallpapers(images || []);
+  //       setCurrentWallpaper(`https://www.bing.com${data.images[0]?.url}`);
+
+  //       // 更新缓存
+  //       localStorage.setItem(CACHE_KEY, JSON.stringify(images));
+  //       localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
+  //     } catch (error) {
+  //       console.error('Error fetching wallpapers:', error);
+  //     }
+  //   };
+  //   const USE_DEFAULT_WALLPAPER = true;
+  //   if (USE_DEFAULT_WALLPAPER) {
+  //     let default_link = 'https://s1.imagehub.cc/images/2025/06/29/a085471b696c1d4e867b90034a01f350.png';
+  //     setWallpapers([default_link]);
+  //     setCurrentWallpaper(default_link);
+  //   } else {
+  //     fetchWallpapers();
+  //   }
+  // }, []);
   useEffect(() => {
-    const fetchWallpapers = async () => {
-      const CACHE_KEY = 'wallpapers';
-      const EXPIRES_KEY = 'wallpapers_expires';
-      const CACHE_DURATION = 30 * 60 * 1000; // 30 Mins
+  const CACHE_KEY = 'default_wallpaper';
+  const EXPIRES_KEY = 'default_wallpaper_expires';
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 mins
 
-      const now = Date.now();
-      const cached = localStorage.getItem(CACHE_KEY);
-      const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
+  const now = Date.now();
+  const cached = localStorage.getItem(CACHE_KEY);
+  const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
 
-      if (cached && now < expires) {
-        try {
-          const images = JSON.parse(cached);
-          setWallpapers(images);
-          setCurrentWallpaper(images[0]);
-          return;
-        } catch (e) {
-          console.warn('Cached wallpaper parse failed, refetching.');
-        }
-      }
-      try {
-        const response = await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=7');
-        const data = await response.json();
-        const images = data.images.map(img => `https://www.bing.com${img.url}`);
+  if (cached && now < expires) {
+    setWallpapers([cached]);
+    setCurrentWallpaper(cached);
+    return;
+  }
 
-        setWallpapers(images || []);
-        setCurrentWallpaper(`https://www.bing.com${data.images[0]?.url}`);
+  const fetchDnsWallpaper = async () => {
+    try {
+      const txtRecords: string[] = await window.ipc?.invoke('resolveDns', 'example.com', 'TXT');
 
-        // 更新缓存
-        localStorage.setItem(CACHE_KEY, JSON.stringify(images));
-        localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
-      } catch (error) {
-        console.error('Error fetching wallpapers:', error);
-      }
-    };
-    const USE_DEFAULT_WALLPAPER = true;
-    if (USE_DEFAULT_WALLPAPER) {
-      let default_link = 'https://s1.imagehub.cc/images/2025/06/29/a085471b696c1d4e867b90034a01f350.png';
-      setWallpapers([default_link]);
-      setCurrentWallpaper(default_link);
-    } else {
-      fetchWallpapers();
+      const base64String = Array.isArray(txtRecords) ? txtRecords[0] : null;
+      if (!base64String) throw new Error('No TXT record found');
+
+      const decodedUrl = atob(base64String);
+      setWallpapers([decodedUrl]);
+      setCurrentWallpaper(decodedUrl);
+
+      localStorage.setItem(CACHE_KEY, decodedUrl);
+      localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
+    } catch (err) {
+      console.error('Failed to resolve DNS TXT record for wallpaper:', err);
     }
-  }, []);
+  };
+
+  fetchDnsWallpaper();
+}, []);
+
 
   const [classSchedule, setClassSchedule] = useState(null);
   const [slidingPosition, setSlidingPosition] = useState('center');
