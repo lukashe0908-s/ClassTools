@@ -150,7 +150,7 @@ function createRoundedRectShape(width, height, radius) {
         return base;
       })();
       mainWindow.setResizable(true);
-      autoSetWindowCorner();
+      // autoSetWindowCorner();
       mainWindow.setSize(winWidth, winHeight);
       isProd && mainWindow.setResizable(false);
       mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - winWidth, 0);
