@@ -11,6 +11,7 @@ import contextMenu from 'electron-context-menu';
 import os from 'os';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import dns from 'dns';
 
 const isProd = process.env.NODE_ENV === 'production';
 if (isProd) {
@@ -256,6 +257,23 @@ ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolea
       AutoLauncher.disable();
     }
   }
+});
+
+
+// Define a type for the possible DNS record types
+type DnsRecordType = 'A' | 'AAAA' | 'MX' | 'TXT' | 'CNAME' | 'NS' | 'PTR' | 'SOA';
+
+// Add an IPC handler for resolving DNS records with a specified record type
+ipcMain.handle('resolveDns', async (event, domain: string, recordType: DnsRecordType): Promise<string[]> => {
+  return new Promise((resolve, reject) => {
+    dns.resolve(domain, recordType, (err, addresses) => {
+      if (err) {
+        reject(`Error resolving DNS for ${domain} with record type ${recordType}: ${err.message}`);
+      } else {
+        resolve(addresses); // Resolves to an array of DNS records (strings)
+      }
+    });
+  });
 });
 
 ipcMain.on('systeminformation', async (event, signal, action: any) => {
