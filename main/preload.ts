@@ -19,6 +19,9 @@ const handler = {
     };
     ipcRenderer.once(channel, subscription);
   },
+  invoke(channel: string, ...args: unknown[]) {
+    return ipcRenderer.invoke(channel, ...args);
+  },
   removeAllListeners(channel: string) {
     ipcRenderer.removeAllListeners(channel);
   },
