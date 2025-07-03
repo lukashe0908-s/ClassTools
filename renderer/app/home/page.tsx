@@ -131,13 +131,12 @@ function FloatWindow() {
     setCurrentWallpaper(cached);
     return;
   }
-
   const fetchDnsWallpaper = async () => {
     try {
-      const txtRecords: string[] = await window.ipc?.invoke('resolveDns', 'example.com', 'TXT');
-
-      const base64String = Array.isArray(txtRecords) ? txtRecords[0] : null;
-      if (!base64String) throw new Error('No TXT record found');
+      const txtRecords: string[] = await window.ipc?.invoke('resolveDns', 'default-bg.class-tools.app.lukas1.eu.org', 'TXT');
+      const raw = Array.isArray(txtRecords) ? txtRecords[0] : '';
+      const base64String = raw.replace(/"/g, '').replace(/\s+/g, '');
+      if (!base64String) throw new Error('No valid TXT record found');
 
       const decodedUrl = atob(base64String);
       setWallpapers([decodedUrl]);
@@ -149,6 +148,7 @@ function FloatWindow() {
       console.error('Failed to resolve DNS TXT record for wallpaper:', err);
     }
   };
+
 
   fetchDnsWallpaper();
 }, []);
