@@ -1,8 +1,8 @@
 'use client';
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-const MonacoEditor = dynamic(() => import('react-monaco-editor'), {
+const MonacoEditor = dynamic(() => import('react-monaco-editor').then(mod => mod.default), {
   ssr: false,
 });
 import * as lodash from 'lodash';
