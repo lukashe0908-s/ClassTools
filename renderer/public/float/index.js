@@ -313,7 +313,9 @@ async function start() {
     async function getChangeDay(parse_out = true, currentTime) {
       const days_origin = await getConfigSync('lessonsList.changeDay');
       if (!days_origin) return;
-      const days = [...days_origin.matchAll(/(?<!\/\/[ ]*?)(\d{4}\/\d{1,2}\/\d{1,2})[ ]*?-[ ]*?(\d{4}\/\d{1,2}\/\d{1,2})/g)];
+      const days = [
+        ...days_origin.matchAll(/(?<!\/\/[ ]*?)(\d{4}\/\d{1,2}\/\d{1,2})[ ]*?-[ ]*?(\d{4}\/\d{1,2}\/\d{1,2})/g),
+      ];
       const now = dayjs(currentTime);
       for (const key in days) {
         if (Object.prototype.hasOwnProperty.call(days, key)) {
@@ -329,7 +331,8 @@ async function start() {
     let classSchedule = await generateConfig();
     let inputTime = dayjs();
     let changed = await getChangeDay(true, inputTime);
-    if (changed) changed = changed.set('h', inputTime.get('h')).set('m', inputTime.get('m')).set('s', inputTime.get('s'));
+    if (changed)
+      changed = changed.set('h', inputTime.get('h')).set('m', inputTime.get('m')).set('s', inputTime.get('s'));
 
     let weekChanged = getWeekNumber(classSchedule.weekStartDate, changed);
     let weekNow = getWeekNumber(classSchedule.weekStartDate, inputTime);
@@ -407,7 +410,9 @@ async function start() {
         }
 
         function addProgress() {
-          let percent = ((currentTime.getTime() - classStartTime.getTime()) / (classEndTime.getTime() - classStartTime.getTime())) * 100;
+          let percent =
+            ((currentTime.getTime() - classStartTime.getTime()) / (classEndTime.getTime() - classStartTime.getTime())) *
+            100;
           let subjectElement = document.createElement('div');
           subjectElement.innerHTML = `<mdui-linear-progress style="margin-top:4px;display: flex" value="${
             percent > 0 ? percent : 0

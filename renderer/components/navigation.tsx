@@ -20,7 +20,9 @@ export function NavigationItem(props) {
 
   return (
     <Link href={props.link} draggable={false}>
-      <NavigationItemInner active={pathname === props.link || pathname === props.link + '/'}>{props.children}</NavigationItemInner>
+      <NavigationItemInner active={pathname === props.link || pathname === props.link + '/'}>
+        {props.children}
+      </NavigationItemInner>
     </Link>
   );
 }
@@ -34,8 +36,7 @@ export function NavigationItemInner(props) {
         props?.active
           ? '[color:#003681] font-bold [background-color:#ecf4ff] [border-top:1px_solid_#b9d6ff] [border-bottom:1px_solid_#b9d6ff] [border-left:1px_solid_#b9d6ff]'
           : '[border-top:1px_solid_#0000] [border-bottom:1px_solid_#0000] [border-left:1px_solid_#0000]'
-      }`}
-    >
+      }`}>
       {props.children}
     </li>
   );

@@ -53,7 +53,13 @@ export default function HomePage() {
                 <p className='text-gray-500 text-sm'>关闭所有应用，然后关闭电脑。</p>
               </ModalBody>
               <ModalFooter>
-                <Button color='default' variant='light' onPress={onClose} className='min-w-1' radius='full' fullWidth={true}>
+                <Button
+                  color='default'
+                  variant='light'
+                  onPress={onClose}
+                  className='min-w-1'
+                  radius='full'
+                  fullWidth={true}>
                   <CloseIcon></CloseIcon>Cancel
                 </Button>
                 <Button color='danger' onPress={onClose} className='min-w-1' radius='full' fullWidth={true}>
@@ -134,7 +140,11 @@ function FloatWindow() {
     }
     const fetchDnsWallpaper = async () => {
       try {
-        const txtRecords: string[][] = await window.ipc?.invoke('resolveDns', 'default-bg.class-tools.app.lukas1.eu.org', 'TXT');
+        const txtRecords: string[][] = await window.ipc?.invoke(
+          'resolveDns',
+          'default-bg.class-tools.app.lukas1.eu.org',
+          'TXT'
+        );
         const base64String = Array.isArray(txtRecords) ? txtRecords[0].join('') : '';
 
         if (!base64String) throw new Error('No valid TXT record found');
@@ -230,12 +240,20 @@ function FloatWindow() {
 
       {/* Main Content */}
       <ScrollShadow className='flex flex-col gap-4 py-2 flex-grow scrollbar-hide'>
-        <ClassList schedule={classSchedule} slidingPosition={slidingPosition} progressDisplay={progressDisplay}></ClassList>
+        <ClassList
+          schedule={classSchedule}
+          slidingPosition={slidingPosition}
+          progressDisplay={progressDisplay}></ClassList>
         {/* Background Picture List */}
         <div className='flex flex-col gap-4 px-2'>
           <div className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
             {wallpapers.map((wallpaper, index) => (
-              <img key={index} src={wallpaper} alt={`Wallpaper ${index}`} className='max-w-full rounded-lg snap-center' />
+              <img
+                key={index}
+                src={wallpaper}
+                alt={`Wallpaper ${index}`}
+                className='max-w-full rounded-lg snap-center'
+              />
             ))}
           </div>
         </div>

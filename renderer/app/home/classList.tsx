@@ -64,7 +64,11 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
           const percent = ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * 100;
 
           const baseClass = `transition-all duration-300 ease-in-out ${
-            state === 'active' ? 'border border-blue-500 bg-blue-50 shadow-lg' : state === 'before' ? 'opacity-60 bg-gray-100' : 'bg-white'
+            state === 'active'
+              ? 'border border-blue-500 bg-blue-50 shadow-lg'
+              : state === 'before'
+              ? 'opacity-60 bg-gray-100'
+              : 'bg-white'
           }`;
 
           return (

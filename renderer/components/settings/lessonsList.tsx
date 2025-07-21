@@ -16,7 +16,7 @@ import {
   Checkbox,
   Accordion,
   AccordionItem,
-} from "@heroui/react";
+} from '@heroui/react';
 import { DataGridPremium, useGridApiRef } from '@mui/x-data-grid-premium';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
@@ -93,8 +93,7 @@ function List({ rows, setRows, children }) {
             base: 'max-h-[80vh] overflow-auto',
             wrapper: 'rounded-none !p-0 scrollbar-hide',
             thead: 'z-[11]',
-          }}
-        >
+          }}>
           <TableHeader>
             {columns.map(column => (
               <TableColumn key={column.id}>{column.label}</TableColumn>
@@ -130,15 +129,15 @@ function CustomTextarea(props) {
     <textarea
       {...props}
       className={
-        'resize-none focus-visible:!outline-none bg-[transparent] w-full h-full rounded-sm' + (props.className ? ' ' + props.className : '')
+        'resize-none focus-visible:!outline-none bg-[transparent] w-full h-full rounded-sm' +
+        (props.className ? ' ' + props.className : '')
       }
       onInput={e => {
         const ele = e.target as HTMLTextAreaElement;
         ele.style.height = `auto`;
         ele.style.height = `${ele.scrollHeight}px`;
       }}
-      ref={component}
-    ></textarea>
+      ref={component}></textarea>
   );
 }
 
@@ -231,15 +230,13 @@ export function LessonsListTime() {
           onChange={e => {
             window.ipc?.send('set-config', 'lessonsList.weekStart', e.target.value);
             setWeekStart(e.target.value);
-          }}
-        ></Input>
+          }}></Input>
         <div>
           <Checkbox
             isSelected={isEditMode}
             onValueChange={value => {
               setEditMode(value);
-            }}
-          >
+            }}>
             使用时间选择器
           </Checkbox>
           <List rows={rows} setRows={setRows}>
@@ -284,8 +281,7 @@ export function LessonsListTime() {
                           break;
                       }
                     });
-                  }}
-                >
+                  }}>
                   {!isEditMode ? (
                     <>
                       <LessonsListTime_TimeDisplayer
@@ -315,8 +311,7 @@ export function LessonsListTime() {
                           new_rows.push({});
                           window.ipc?.send('set-config', 'lessonsList.time', new_rows);
                           setRows(new_rows);
-                        }}
-                      >
+                        }}>
                         Start Time
                       </LessonsListTime_TimeDisplayer>
                       <LessonsListTime_TimeDisplayer
@@ -346,8 +341,7 @@ export function LessonsListTime() {
                           new_rows.push({});
                           window.ipc?.send('set-config', 'lessonsList.time', new_rows);
                           setRows(new_rows);
-                        }}
-                      >
+                        }}>
                         End Time
                       </LessonsListTime_TimeDisplayer>
                     </>
@@ -460,8 +454,7 @@ export function LessonsListTime() {
                     }
                     window.ipc?.send('set-config', 'lessonsList.time', rows_);
                     setRows(rows_);
-                  }}
-                >
+                  }}>
                   从旧版数据格式迁移
                 </Button>
                 <Button
@@ -490,8 +483,7 @@ export function LessonsListTime() {
                     }
                     window.ipc?.send('set-config', 'lessonsList.time', rows_);
                     setRows(rows_);
-                  }}
-                >
+                  }}>
                   迁移到旧版数据格式(会丢失分隔符)
                 </Button>
               </div>
@@ -521,8 +513,7 @@ export function LessonsListTime() {
                 }
               }
               return rows_;
-            })()}
-          ></CellSelectionGrid>
+            })()}></CellSelectionGrid>
         </div>
       </div>
     </>
@@ -544,8 +535,7 @@ export function LessonsListTime_TimeDisplayer({
       <input
         className='text-lg bg-transparent focus-visible:![outline:0] min-w-[6ch] !w-full'
         defaultValue={time ? time : ''}
-        onChange={onChange}
-      ></input>
+        onChange={onChange}></input>
     </div>
   );
 }

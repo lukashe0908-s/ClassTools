@@ -20,6 +20,6 @@
       }
     ]
   },
-  "exclude": ["node_modules", "renderer/next.config.js", "build"],
+  "exclude": ["node_modules", "build"],
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"]
 }

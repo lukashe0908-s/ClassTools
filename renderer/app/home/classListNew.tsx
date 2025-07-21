@@ -85,7 +85,13 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                 const currentTime = new Date();
                 const [sh, sm] = cls.startTime.split(':').map(Number);
                 const [eh, em] = cls.endTime.split(':').map(Number);
-                const start = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), sh, sm);
+                const start = new Date(
+                  currentTime.getFullYear(),
+                  currentTime.getMonth(),
+                  currentTime.getDate(),
+                  sh,
+                  sm
+                );
                 const end = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), eh, em);
 
                 // state timeline: default | before > active > after

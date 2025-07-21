@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner } from "@heroui/react";
+import { Spinner } from '@heroui/react';
 
 export default function App() {
   return <Loading></Loading>;

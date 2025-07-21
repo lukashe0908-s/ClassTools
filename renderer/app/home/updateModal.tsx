@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Progress, useDisclosure } from '@heroui/react';
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Progress,
+  useDisclosure,
+} from '@heroui/react';
 
 export default function UpdateModal() {
   const [updateInfo, setUpdateInfo] = useState<{ version: string; files: [{ url; size; sha512 }] } | null>(null);
@@ -25,7 +34,12 @@ export default function UpdateModal() {
       openUpdateModal();
     };
 
-    const handleDownloadProgress = (data: { percent: number; bytesPerSecond: number; total: number; transferred: number }) => {
+    const handleDownloadProgress = (data: {
+      percent: number;
+      bytesPerSecond: number;
+      total: number;
+      transferred: number;
+    }) => {
       setProgress(data.percent);
       setDownloadTotalSize(data.total);
       setDownloadSize(data.transferred);
@@ -65,11 +79,17 @@ export default function UpdateModal() {
 
                 {isDownloading && (
                   <div className='mt-4'>
-                    <Progress aria-label='下载进度' value={progress} color='primary' showValueLabel className='w-full' />
+                    <Progress
+                      aria-label='下载进度'
+                      value={progress}
+                      color='primary'
+                      showValueLabel
+                      className='w-full'
+                    />
                     <p className='text-sm text-gray-500 mt-1'>
-                      {`${progress.toFixed(1)}% ${formatSpeed(downloadSpeed)} \n已下载 ${formatSize(downloadSize)} / ${formatSize(
-                        downloadTotalSize
-                      )}`}
+                      {`${progress.toFixed(1)}% ${formatSpeed(downloadSpeed)} \n已下载 ${formatSize(
+                        downloadSize
+                      )} / ${formatSize(downloadTotalSize)}`}
                     </p>
                   </div>
                 )}

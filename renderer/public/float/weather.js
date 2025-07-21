@@ -19,9 +19,9 @@
         if (icon == 154) {
           icon = 104;
         }
-        weatherComponent.innerHTML = `${icon ? `<i class="qi-${icon}"></i>` : ''}  ${json.now.text ? json.now.text + ' ' : ''}${
-          json.now.temp ?? '--'
-        }°`;
+        weatherComponent.innerHTML = `${icon ? `<i class="qi-${icon}"></i>` : ''}  ${
+          json.now.text ? json.now.text + ' ' : ''
+        }${json.now.temp ?? '--'}°`;
       } catch (error) {}
       useTimeout &&
         setTimeout(() => {

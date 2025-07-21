@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Divider } from "@heroui/react";
+import { Divider } from '@heroui/react';
 import { Navigation, NavigationSub, NavigationItem } from '../../components/navigation';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import BugReportOutlinedIcon from '@mui/icons-material/BugReportOutlined';
@@ -22,9 +22,8 @@ export default function Template({ children }) {
         <div className='h-full flex select-none'>
           <OverlayScrollbarsComponent
             defer
-            className='overflow-auto scrollbar-hide border-r-2 min-w-44'
-            options={{ scrollbars: { autoHide: 'move' } }}
-          >
+            className='overflow-auto scrollbar-hide border-r-1 border-[#dcdcdc] min-w-44'
+            options={{ scrollbars: { autoHide: 'move' } }}>
             <span className='block text-center font-bold text-xl p-2 [color:#F6821F]'>Dashboard</span>
             <Divider></Divider>
             <Navigation>
@@ -69,7 +68,10 @@ export default function Template({ children }) {
           </OverlayScrollbarsComponent>
         </div>
 
-        <OverlayScrollbarsComponent defer className='h-full w-full p-2 scrollbar-hide' options={{ scrollbars: { autoHide: 'move' } }}>
+        <OverlayScrollbarsComponent
+          defer
+          className='h-full w-full p-2 scrollbar-hide'
+          options={{ scrollbars: { autoHide: 'move' } }}>
           {children}
         </OverlayScrollbarsComponent>
       </div>

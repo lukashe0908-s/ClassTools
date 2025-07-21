@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody } from '@heroui/react';
 export default function App() {
   return (
     <>
