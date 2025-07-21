@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardBody, Switch, Button, Calendar, Divider } from "@heroui/react";
+import { Card, CardBody, Switch, Button, Calendar, Divider } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { getVersionSync, formatSize } from '../../../components/p_function';
 import dayjs from 'dayjs';
@@ -16,10 +16,8 @@ export default function App() {
       try {
         let foo = await getSysInfoSync({
           uuid: '*',
-          mem: 'total,free,used,active,available',
           memLayout: '*',
           osInfo: '*',
-          graphics: '*',
         });
         setsysInfo(JSON.stringify(foo, null, '\t'));
       } catch (error) {
@@ -90,8 +88,7 @@ export default function App() {
                     sw && sw.unregister();
                     console.log('sw unregister 2', sw);
                   });
-            }}
-          >
+            }}>
             Remove Service Worker
           </Button>
           <Button
@@ -103,8 +100,7 @@ export default function App() {
               });
               var request = indexedDB.deleteDatabase('workbox-expiration');
               console.log(request);
-            }}
-          >
+            }}>
             Delete Cache
           </Button>
           <Button
@@ -113,8 +109,7 @@ export default function App() {
             onClick={async () => {
               let allow = await navigator.storage.persist();
               alert(`Persiste Storage: Apply ${allow ? 'Success' : 'Failed'}`);
-            }}
-          >
+            }}>
             Apply Persiste Storage
           </Button>
         </div>

@@ -118,41 +118,40 @@ function FloatWindow() {
   //   }
   // }, []);
   useEffect(() => {
-  const CACHE_KEY = 'default_wallpaper';
-  const EXPIRES_KEY = 'default_wallpaper_expires';
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 mins
+    const CACHE_KEY = 'default_wallpaper';
+    const EXPIRES_KEY = 'default_wallpaper_expires';
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 mins
+    const DISABLE_CACHE = false;
 
-  const now = Date.now();
-  const cached = localStorage.getItem(CACHE_KEY);
-  const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
+    const now = Date.now();
+    const cached = localStorage.getItem(CACHE_KEY);
+    const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
 
-  if (cached && now < expires) {
-    setWallpapers([cached]);
-    setCurrentWallpaper(cached);
-    return;
-  }
-  const fetchDnsWallpaper = async () => {
-    try {
-      const txtRecords: string[] = await window.ipc?.invoke('resolveDns', 'default-bg.class-tools.app.lukas1.eu.org', 'TXT');
-      const raw = Array.isArray(txtRecords) ? txtRecords[0] : '';
-      const base64String = raw.replace(/"/g, '').replace(/\s+/g, '');
-      if (!base64String) throw new Error('No valid TXT record found');
-
-      const decodedUrl = atob(base64String);
-      setWallpapers([decodedUrl]);
-      setCurrentWallpaper(decodedUrl);
-
-      localStorage.setItem(CACHE_KEY, decodedUrl);
-      localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
-    } catch (err) {
-      console.error('Failed to resolve DNS TXT record for wallpaper:', err);
+    if (!DISABLE_CACHE && cached && now < expires) {
+      setWallpapers([cached]);
+      setCurrentWallpaper(cached);
+      return;
     }
-  };
+    const fetchDnsWallpaper = async () => {
+      try {
+        const txtRecords: string[][] = await window.ipc?.invoke('resolveDns', 'default-bg.class-tools.app.lukas1.eu.org', 'TXT');
+        const base64String = Array.isArray(txtRecords) ? txtRecords[0].join('') : '';
 
+        if (!base64String) throw new Error('No valid TXT record found');
 
-  fetchDnsWallpaper();
-}, []);
+        const decodedUrl = atob(base64String);
+        setWallpapers([decodedUrl]);
+        setCurrentWallpaper(decodedUrl);
 
+        localStorage.setItem(CACHE_KEY, decodedUrl);
+        localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
+      } catch (err) {
+        console.error('Failed to resolve DNS TXT record for wallpaper:', err);
+      }
+    };
+
+    fetchDnsWallpaper();
+  }, []);
 
   const [classSchedule, setClassSchedule] = useState(null);
   const [slidingPosition, setSlidingPosition] = useState('center');
@@ -232,15 +231,14 @@ function FloatWindow() {
       {/* Main Content */}
       <ScrollShadow className='flex flex-col gap-4 py-2 flex-grow scrollbar-hide'>
         <ClassList schedule={classSchedule} slidingPosition={slidingPosition} progressDisplay={progressDisplay}></ClassList>
-        {
-          <div className='flex flex-col gap-4 px-2'>
-            <div className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
-              {wallpapers.map((wallpaper, index) => (
-                <img key={index} src={wallpaper} alt={`Wallpaper ${index}`} className='max-w-full rounded-lg snap-center' />
-              ))}
-            </div>
+        {/* Background Picture List */}
+        <div className='flex flex-col gap-4 px-2'>
+          <div className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
+            {wallpapers.map((wallpaper, index) => (
+              <img key={index} src={wallpaper} alt={`Wallpaper ${index}`} className='max-w-full rounded-lg snap-center' />
+            ))}
           </div>
-        }
+        </div>
       </ScrollShadow>
 
       {/* Footer */}
@@ -248,6 +246,7 @@ function FloatWindow() {
         <Button fullWidth></Button>
         <Weather />
       </div>
+      {/* Background */}
       <div style={{ position: 'absolute', top: 0, zIndex: -1, width: '100%', height: '100%' }}>
         <img
           id='bing-wallpaper-bg'
@@ -261,8 +260,8 @@ function FloatWindow() {
             width: 'auto',
             height: '100%',
             transform: 'translate(-50%, 0)',
-            opacity: 0.4,
-            filter: 'blur(40px) brightness(0.8)',
+            opacity: 0.8,
+            filter: 'blur(40px) brightness(0.9)',
           }}
           loading='lazy'
           referrerPolicy='no-referrer'

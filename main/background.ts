@@ -76,34 +76,19 @@ function isWindows11() {
   }
   return false;
 }
-function createRoundedRectShape(width, height, radius) {
-  const shape = [];
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const inTopLeft = x < radius && y < radius && (x - radius) ** 2 + (y - radius) ** 2 > radius ** 2;
-      const inTopRight = x >= width - radius && y < radius && (x - (width - radius)) ** 2 + (y - radius) ** 2 > radius ** 2;
-      const inBottomLeft = x < radius && y >= height - radius && (x - radius) ** 2 + (y - (height - radius)) ** 2 > radius ** 2;
-      const inBottomRight =
-        x >= width - radius && y >= height - radius && (x - (width - radius)) ** 2 + (y - (height - radius)) ** 2 > radius ** 2;
-
-      if (!(inTopLeft || inTopRight || inBottomLeft || inBottomRight)) {
-        shape.push({ x, y, width: 1, height: 1 });
-      }
-    }
-  }
-  return shape;
-}
 
 (async () => {
   await app.whenReady();
-  let winWidth = (() => {
-    let base = screen.getPrimaryDisplay().size.width * 0.13;
+  const mainWindowDefaultWidthPercent = 0.13;
+  const mainWindowDefaultHeightPercent = 1;
+  let mainWindowWidth = (() => {
+    let base = screen.getPrimaryDisplay().size.width * mainWindowDefaultWidthPercent;
     if (base < 200) base = 200;
     base = Math.floor(base);
     return base;
   })();
-  let winHeight = (() => {
-    let base = screen.getPrimaryDisplay().workArea.height * 1;
+  let mainWindowHeight = (() => {
+    let base = screen.getPrimaryDisplay().workArea.height * mainWindowDefaultHeightPercent;
     base = Math.floor(base);
     return base;
   })();
@@ -117,9 +102,9 @@ function createRoundedRectShape(width, height, radius) {
     roundedCorners: true,
     // transparent: true,
     frame: false,
-    width: winWidth,
-    height: winHeight,
-    x: screen.getPrimaryDisplay().workArea.width - winWidth,
+    width: mainWindowWidth,
+    height: mainWindowHeight,
+    x: screen.getPrimaryDisplay().workArea.width - mainWindowWidth,
     y: 0,
     skipTaskbar: true,
     resizable: !isProd,
@@ -139,30 +124,25 @@ function createRoundedRectShape(width, height, radius) {
     const widthP = store.get('display.windowWidth');
     const heightP = store.get('display.windowHeight');
     if (widthP || heightP) {
-      winWidth = (() => {
-        let base = screen.getPrimaryDisplay().size.width * Number(widthP);
-        if (base < 200) base = 200;
-        base = Math.floor(base);
-        return base;
-      })();
-      winHeight = (() => {
-        let base = screen.getPrimaryDisplay().workArea.height * Number(heightP);
-        base = Math.floor(base);
-        return base;
-      })();
-      mainWindow.setResizable(true);
-      // autoSetWindowCorner();
-      mainWindow.setSize(winWidth, winHeight);
-      isProd && mainWindow.setResizable(false);
-      mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - winWidth, 0);
-    }
-  }
-
-  // Add Window Corner on Windows 10
-  function autoSetWindowCorner() {
-    if (os.platform() == 'win32' && Number(os.release().split('.')[0]) >= 10 && !os.version().includes('Windows 11')) {
-      const shape = createRoundedRectShape(winWidth, winHeight, 12);
-      mainWindow.setShape(shape);
+      try {
+        mainWindowWidth = (() => {
+          let base = screen.getPrimaryDisplay().size.width * Number(widthP || mainWindowDefaultWidthPercent);
+          if (base < 200) base = 200;
+          base = Math.floor(base);
+          return base;
+        })();
+        mainWindowHeight = (() => {
+          let base = screen.getPrimaryDisplay().workArea.height * Number(heightP || mainWindowDefaultHeightPercent);
+          base = Math.floor(base);
+          return base;
+        })();
+        mainWindow.setResizable(true);
+        mainWindow.setSize(mainWindowWidth, mainWindowHeight);
+        isProd && mainWindow.setResizable(false);
+        mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - mainWindowWidth, 0);
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
@@ -259,13 +239,14 @@ ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolea
   }
 });
 
-
 // Define a type for the possible DNS record types
 type DnsRecordType = 'A' | 'AAAA' | 'MX' | 'TXT' | 'CNAME' | 'NS' | 'PTR' | 'SOA';
 
 // Add an IPC handler for resolving DNS records with a specified record type
-ipcMain.handle('resolveDns', async (event, domain: string, recordType: DnsRecordType): Promise<string[]> => {
+ipcMain.handle('resolveDns', async (event, domain: string, recordType: DnsRecordType): Promise<any> => {
   return new Promise((resolve, reject) => {
+    console.log('resolveDns', domain, recordType);
+
     dns.resolve(domain, recordType, (err, addresses) => {
       if (err) {
         reject(`Error resolving DNS for ${domain} with record type ${recordType}: ${err.message}`);
