@@ -61,5 +61,5 @@ jobs:
       - name: Upload latest.yml
         env:
           TAG_NAME: ${{ github.ref_name }}
-        run: node main/build/upload-yml.js ${{ secrets.PUSH_TOKEN }}
+        run: node main/builders/upload-yml.js ${{ secrets.PUSH_TOKEN }}
 
