@@ -1,9 +1,11 @@
-const arg = require('arg');
-const webpack = require('webpack');
-const logger = require('./logger');
-const getNextronConfig = require('./configs/getNextronConfig');
-const config = require('./configs/webpack.config.dev');
-const execa = require('execa');
+import arg from 'arg';
+import execa from 'execa';
+import webpack from 'webpack';
+import * as logger from './logger';
+import { getNextronConfig } from './configs/getNextronConfig';
+import { config } from './configs/webpack.config.development';
+import { waitForPort } from 'get-port-please';
+import type { ChildProcess } from 'child_process';
 
 const args = arg({
   '--renderer-port': Number,
@@ -30,14 +32,16 @@ if (args['--remote-debugging-port']) {
 }
 
 if (args['--inspect']) {
-  logger.error(`The option \`--inspect\` has been removed. Please use \`--electron-options="--inspect=${args['--inspect']}"\` instead.`);
+  logger.error(
+    `The option \`--inspect\` has been removed. Please use \`--electron-options="--inspect=${args['--inspect']}"\` instead.`
+  );
   process.exit(1);
 }
 
 const nextronConfig = getNextronConfig();
 
 const rendererPort = args['--renderer-port'] || 8888;
-const startupDelay = nextronConfig.startupDelay || args['--startup-delay'] || 0;
+const startupDelay = nextronConfig.startupDelay || args['--startup-delay'] || 10_000;
 
 let electronOptions = args['--electron-options'] || '';
 if (!electronOptions.includes('--remote-debugging-port')) {
@@ -48,27 +52,27 @@ if (!electronOptions.includes('--inspect')) {
 }
 electronOptions = electronOptions.trim();
 
-const execaOptions = {
+const execaOptions: execa.Options = {
   cwd: process.cwd(),
   stdio: 'inherit',
 };
 
 (async () => {
   let firstCompile = true;
-  let watching;
-  let mainProcess;
-  let rendererProcess;
+  let watching: webpack.Watching;
+  let mainProcess: ChildProcess;
+  let rendererProcess: ChildProcess;
 
-  const startMainProcess = async () => {
+  const startMainProcess = () => {
     logger.info(`Run main process: electron . ${rendererPort} ${electronOptions}`);
-    mainProcess = execa('electron', ['.', `${rendererPort}`, `${electronOptions}`], {
+    mainProcess = execa('electron', ['.', `${rendererPort}`, ...electronOptions.split(' ')], {
       // detached: true,
       ...execaOptions,
     });
     mainProcess.unref();
   };
 
-  const startRendererProcess = async () => {
+  const startRendererProcess = () => {
     logger.info(`Run renderer process: next -p ${rendererPort} ${nextronConfig.rendererSrcDir || 'renderer'}`);
     const child = execa('next', ['-p', rendererPort, nextronConfig.rendererSrcDir || 'renderer'], execaOptions);
     child.on('close', () => {
@@ -78,17 +82,15 @@ const execaOptions = {
   };
 
   const killWholeProcess = () => {
-    try {
-      if (watching) {
-        watching.close(() => {});
-      }
-      if (mainProcess) {
-        mainProcess.kill();
-      }
-      if (rendererProcess) {
-        rendererProcess.kill();
-      }
-    } catch (error) {}
+    if (watching) {
+      watching.close(() => {});
+    }
+    if (mainProcess) {
+      mainProcess.kill();
+    }
+    if (rendererProcess) {
+      rendererProcess.kill();
+    }
   };
 
   process.on('SIGINT', killWholeProcess);
@@ -98,10 +100,17 @@ const execaOptions = {
   rendererProcess = startRendererProcess();
 
   // wait until renderer process is ready
-  await new Promise(resolve => setTimeout(() => resolve(), startupDelay));
+  await waitForPort(rendererPort, {
+    delay: 500,
+    retries: startupDelay / 500,
+  }).catch(() => {
+    logger.error(`Failed to start renderer process with port ${rendererPort} in ${startupDelay}ms`);
+    killWholeProcess();
+    process.exit(1);
+  });
 
   // wait until main process is ready
-  await new Promise(resolve => {
+  await new Promise<void>(resolve => {
     const compiler = webpack(config);
     watching = compiler.watch({}, error => {
       if (error) {
@@ -112,7 +121,7 @@ const execaOptions = {
         if (!firstCompile && mainProcess) {
           mainProcess.kill();
         }
-        mainProcess = startMainProcess();
+        startMainProcess();
 
         if (firstCompile) {
           firstCompile = false;

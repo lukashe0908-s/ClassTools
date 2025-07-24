@@ -1,8 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const TsconfigPathsPlugins = require('tsconfig-paths-webpack-plugin');
-const getNextronConfig = require('./getNextronConfig');
-const getBabelConfig = require('./getBabelConfig');
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+import fs from 'fs';
+import path from 'path';
+import webpack from 'webpack';
+import TsconfigPathsPlugins from 'tsconfig-paths-webpack-plugin';
+import { getNextronConfig } from './getNextronConfig';
+import { getBabelConfig } from './getBabelConfig';
 
 const cwd = process.cwd();
 const isTs = fs.existsSync(path.join(cwd, 'tsconfig.json'));
@@ -14,7 +17,7 @@ const backgroundPath = path.join(cwd, mainSrcDir || 'main', `background${ext}`);
 const preloadPath = path.join(cwd, mainSrcDir || 'main', `preload${ext}`);
 const preloadPathTitlebar = path.join(cwd, mainSrcDir || 'main', `preloadTitlebar${ext}`);
 
-const entry = {
+const entry: webpack.Configuration['entry'] = {
   background: backgroundPath,
 };
 if (fs.existsSync(preloadPath)) {
@@ -24,7 +27,7 @@ if (fs.existsSync(preloadPathTitlebar)) {
   entry.preloadTitlebar = preloadPathTitlebar;
 }
 
-const baseConfig = {
+export const baseConfig: webpack.Configuration = {
   target: 'electron-main',
   entry,
   output: {
@@ -61,4 +64,3 @@ const baseConfig = {
     __filename: false,
   },
 };
-module.exports = baseConfig;

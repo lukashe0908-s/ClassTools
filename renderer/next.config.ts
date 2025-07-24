@@ -4,7 +4,7 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 module.exports = {
   output: 'export',
   trailingSlash: true,
-  distDir: '../build/out',
+  distDir: process.env.NODE_ENV === 'production' ? '../build/app' : '.next',
   // outputFileTracing: false,
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     if (!isServer) {
