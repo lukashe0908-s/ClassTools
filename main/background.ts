@@ -24,7 +24,7 @@ let mainWindow_g: BrowserWindow;
 let settingsWindow_g: BrowserWindow;
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
-  app.quit();
+  app.exit();
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     if (mainWindow_g) {
@@ -159,13 +159,13 @@ function isWindows11() {
     // mainWindow.webContents.openDevTools()
   }
   ipcMain.on('close-window', async (event, arg) => {
-    mainWindow.close();
-    app.quit();
+    // mainWindow.close();
+    app.exit();
   });
 })();
 
 app.on('window-all-closed', () => {
-  app.quit();
+  app.exit();
 });
 
 // IPC Updater
