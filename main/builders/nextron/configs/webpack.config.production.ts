@@ -1,10 +1,10 @@
-import webpack from 'webpack'
-import { merge } from 'webpack-merge'
-import TerserPlugin from 'terser-webpack-plugin'
-import { baseConfig } from './webpack.config.base'
-import { getNextronConfig } from './getNextronConfig'
+import webpack from 'webpack';
+import { merge } from 'webpack-merge';
+import TerserPlugin from 'terser-webpack-plugin';
+import { baseConfig } from './webpack.config.base';
+import { getNextronConfig } from './getNextronConfig';
 
-const { webpack: userWebpack } = getNextronConfig()
+const { webpack: userWebpack } = getNextronConfig();
 
 let config: webpack.Configuration = merge(baseConfig, {
   mode: 'production',
@@ -26,20 +26,20 @@ let config: webpack.Configuration = merge(baseConfig, {
     }),
   ],
   devtool: 'source-map',
-})
+});
 
 if (typeof userWebpack === 'function') {
-  config = userWebpack(config, 'development')
+  config = userWebpack(config, 'development');
 }
 
-const compiler = webpack(config)
+const compiler = webpack(config);
 
 compiler.run((error, stats) => {
   if (error) {
-    console.error(error.stack || error)
+    console.error(error.stack || error);
   }
 
   if (stats) {
-    console.log(stats.toString())
+    console.log(stats.toString());
   }
-})
+});
