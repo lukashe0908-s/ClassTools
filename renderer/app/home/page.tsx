@@ -66,12 +66,15 @@ export default function HomePage() {
 function FloatWindow({ onShutdownModalOpen }) {
   const [wallpapers, setWallpapers] = useState([]);
   const [currentWallpaper, setCurrentWallpaper] = useState<string | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState(() => {
-    const savedIndex = localStorage.getItem('default_wallpaper_select');
-    return savedIndex ? parseInt(savedIndex, 10) : 0;
-  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const wallpaperListRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const savedIndex = localStorage.getItem('default_wallpaper_select');
+    if (savedIndex) {
+      setSelectedIndex(parseInt(savedIndex, 10));
+    }
+  }, []);
   const updateWallpaper = (newWallpaper: string, index: number) => {
     localStorage.setItem('default_wallpaper_select', index.toString());
     setSelectedIndex(index);
