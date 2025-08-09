@@ -12,7 +12,7 @@ export function Display() {
   const [progressDisplay, setProgressDisplay] = useState('always');
   const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
-  const [hiddenPutaway, setHiddenPutaway] = useState(false);
+  const [hiddenJumpto, setHiddenJumpto] = useState(false);
   const [useLegacyHome, setUseLegacyHome] = useState(false);
 
   useEffect(() => {
@@ -49,8 +49,8 @@ export function Display() {
       data && setHiddenRefreshWindow(Boolean(data));
     })();
     (async () => {
-      const data = await getConfigSync('display.hidden.putaway');
-      data && setHiddenPutaway(Boolean(data));
+      const data = await getConfigSync('display.hidden.jumpto');
+      data && setHiddenJumpto(Boolean(data));
     })();
     (async () => {
       const data = await getConfigSync('display.useLegacyHome');
@@ -162,7 +162,7 @@ export function Display() {
           }}>
           使用在线模式
         </Switch>
-        <Switch isDisabled>自动更新主程序</Switch>
+        <Switch isDisabled isSelected={true}>检查主程序更新</Switch>
       </div>
       <div className='flex gap-4 flex-wrap'>
         <Switch
@@ -171,7 +171,7 @@ export function Display() {
             setHiddenCloseWindow(!hiddenCloseWindow);
             window.ipc?.send('set-config', 'display.hidden.closeWindow', !hiddenCloseWindow);
           }}>
-          隐藏关闭按钮
+          隐藏关闭
         </Switch>
         <Switch
           isSelected={hiddenRefreshWindow}
@@ -179,15 +179,15 @@ export function Display() {
             setHiddenRefreshWindow(!hiddenRefreshWindow);
             window.ipc?.send('set-config', 'display.hidden.refreshWindow', !hiddenRefreshWindow);
           }}>
-          隐藏刷新按钮
+          隐藏刷新
         </Switch>
         <Switch
-          isSelected={hiddenPutaway}
+          isSelected={hiddenJumpto}
           onChange={() => {
-            setHiddenPutaway(!hiddenPutaway);
-            window.ipc?.send('set-config', 'display.hidden.putaway', !hiddenPutaway);
+            setHiddenJumpto(!hiddenJumpto);
+            window.ipc?.send('set-config', 'display.hidden.jumpto', !hiddenJumpto);
           }}>
-          隐藏收起按钮
+          隐藏跳转
         </Switch>
         <Switch
           isSelected={useLegacyHome}
@@ -195,7 +195,7 @@ export function Display() {
             setUseLegacyHome(!useLegacyHome);
             window.ipc?.send('set-config', 'display.useLegacyHome', !useLegacyHome);
           }}>
-          使用旧首页
+          使用旧版本页面
         </Switch>
       </div>
     </>

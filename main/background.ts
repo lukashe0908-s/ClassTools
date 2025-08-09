@@ -189,15 +189,15 @@ ipcMain.on('autoUpdater/quitAndInstall', () => {
 });
 
 // IPC Config
-ipcMain.on('get-config', async (event, signal, name: string) => {
-  event.reply('get-config/' + signal, store.get(name));
+ipcMain.handle('get-config', async (event, name: string) => {
+  return store.get(name);
 });
 ipcMain.on('set-config', async (event, name: string, value: any) => {
   store.set(name, value);
   mainWindow_g.webContents.send('sync-config');
 });
-ipcMain.on('get-version', async event => {
-  event.reply('get-version', app.getVersion());
+ipcMain.handle('get-version', async event => {
+  return app.getVersion();
 });
 
 ipcMain.on('showContextMenu_listTime', (event, splitChecked: boolean = false) => {
@@ -222,21 +222,24 @@ ipcMain.on('showContextMenu_listTime', (event, splitChecked: boolean = false) =>
 });
 
 // IPC Auto Launch
-ipcMain.on('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolean) => {
-  var AutoLauncher = new AutoLaunch({
-    name: app.getName(),
-  });
-  if (actionName === 'get') {
-    AutoLauncher.isEnabled().then(isEnabled => {
-      event.reply('autoLaunch', isEnabled);
+ipcMain.handle('autoLaunch', async (event, actionName: 'get' | 'set', value?: boolean) => {
+  return new Promise(resolve => {
+    var AutoLauncher = new AutoLaunch({
+      name: app.getName(),
     });
-  } else if (actionName === 'set') {
-    if (value) {
-      AutoLauncher.enable();
-    } else {
-      AutoLauncher.disable();
+    if (actionName === 'get') {
+      AutoLauncher.isEnabled().then(isEnabled => {
+        resolve(isEnabled);
+      });
+    } else if (actionName === 'set') {
+      if (value) {
+        AutoLauncher.enable();
+      } else {
+        AutoLauncher.disable();
+      }
+      resolve(undefined);
     }
-  }
+  });
 });
 
 // Define a type for the possible DNS record types
@@ -257,13 +260,16 @@ ipcMain.handle('resolveDns', async (event, domain: string, recordType: DnsRecord
   });
 });
 
-ipcMain.on('systeminformation', async (event, signal, action: any) => {
-  systeminformation.get(action).then(data => {
-    event.reply('systeminformation/' + signal, data);
+ipcMain.handle('systeminformation', async (event, action: any) => {
+  return new Promise(resolve => {
+    systeminformation.get(action).then(data => {
+      resolve(data);
+    });
   });
 });
 
 ipcMain.on('sys-shutdown', async (event, arg) => {
+  if (isProd) return;
   const cp = require('child_process');
   cp.execSync('shutdown -s -t 0');
 });

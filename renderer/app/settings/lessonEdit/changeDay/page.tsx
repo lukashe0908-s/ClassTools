@@ -37,7 +37,7 @@ export default function App() {
           value={value}
           onChange={e => {
             setValue(e);
-            window.ipc && window.ipc.send('set-config', 'lessonsList.changeDay', e);
+           window.ipc?.send('set-config', 'lessonsList.changeDay', e);
           }}
           editorDidMount={(editor, monaco) => {
             editor.setPosition({ lineNumber: 4, column: 0 });

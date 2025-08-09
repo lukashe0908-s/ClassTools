@@ -2,7 +2,13 @@ import { useEffect, useRef, useState, Fragment } from 'react';
 import { Card, CardBody, CardHeader, Divider, Progress } from '@heroui/react';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { getChangeDay, getWeekNumber, getWeekDate, listClassesForDay } from '../../components/p_function';
+import {
+  getChangeDay,
+  getWeekNumber,
+  getWeekDate,
+  listClassesForDay,
+  getConfigSync,
+} from '../../components/p_function';
 
 export default function ClassList({ schedule, progressDisplay = 'active', slidingPosition = 'nearest' }) {
   const containerRef = useRef(null);
@@ -11,6 +17,28 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
   const [tick, setTick] = useState(0);
   const [currentDate, setCurrentDate] = useState(dayjs().format('YYYY-MM-DD')); // 当前日期字符串
   const refList = useRef([]);
+  const [fontSize, setFontSize] = useState(1);
+
+  useEffect(() => {
+    const loadFontSize = async () => {
+      const size = await getConfigSync('display.fontSize');
+      setFontSize(Number(size) || 1);
+    };
+    loadFontSize();
+  }, []);
+
+  useEffect(() => {
+    const handler = async () => {
+      const size = await getConfigSync('display.fontSize');
+      setFontSize(Number(size) || 1);
+    };
+
+    window.ipc?.on('sync-config', handler);
+
+    return () => {
+      window.ipc?.removeListener?.('sync-config', handler);
+    };
+  }, []);
 
   useEffect(() => {
     dayjs.extend(weekOfYear);
@@ -121,7 +149,13 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                       <div className='text-sm text-gray-600 mb-0'>
                         {cls.startTime} - {cls.endTime}
                       </div>
-                      <div className='text-xl font-semibold mb-0'>{cls.subject}</div>
+                      <div
+                        className={`font-semibold mb-0`}
+                        style={{
+                          fontSize: fontSize + 'rem',
+                        }}>
+                        {cls.subject}
+                      </div>
                       {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
                         <Progress
                           aria-label='progress'
@@ -139,7 +173,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
           </div>
         ))}
       <div className='py-4 px-2'>
-        <span id='weekNumber' className='text-md text-gray-800 bg-gray-100 p-2 rounded-md shadow-md'>
+        <span id='weekNumber' className={`text-gray-800 bg-gray-100 p-2 rounded-md shadow-md`}>
           #{weekInfo.now}/{weekInfo.total}
         </span>
       </div>

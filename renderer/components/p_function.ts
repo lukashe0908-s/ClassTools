@@ -88,20 +88,17 @@ export async function getChangeDay(
 }
 
 export async function getConfigSync(name?: string, timeout: number = 0, notReject: boolean = true): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-      let signal = crypto.randomUUID();
-      window.ipc.send('get-config', signal, name);
       let timer =
         timeout <= 0
           ? null
           : setTimeout(() => {
               reject(`timeout (${timeout} ms)`);
             }, timeout);
-      window.ipc.once('get-config/' + signal, data => {
-        clearTimeout(timer);
-        resolve(data);
-      });
+      const data = await window.ipc.invoke('get-config', name);
+      clearTimeout(timer);
+      resolve(data);
     } catch (error) {
       if (notReject) {
         resolve(undefined);
@@ -112,19 +109,17 @@ export async function getConfigSync(name?: string, timeout: number = 0, notRejec
   });
 }
 export async function getVersionSync(timeout: number = 0, notReject: boolean = true): Promise<string | undefined> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-      window.ipc.send('get-version');
       let timer =
         timeout <= 0
           ? null
           : setTimeout(() => {
               reject(`timeout (${timeout} ms)`);
             }, timeout);
-      window.ipc.once('get-version', (data: string) => {
-        clearTimeout(timer);
-        resolve(data);
-      });
+      const data = await window.ipc.invoke('get-version', name);
+      clearTimeout(timer);
+      resolve(data);
     } catch (error) {
       if (notReject) {
         resolve(undefined);
@@ -281,19 +276,17 @@ export function formatSize(bytes: number) {
 }
 
 export async function getAutoLaunchSync(timeout: number = 0): Promise<boolean> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-      window.ipc.send('autoLaunch', 'get');
       let timer =
         timeout <= 0
           ? null
           : setTimeout(() => {
               reject(`timeout (${timeout} ms)`);
             }, timeout);
-      window.ipc.once('autoLaunch', (data: boolean) => {
-        clearTimeout(timer);
-        resolve(data);
-      });
+      const data = await window.ipc.invoke('autoLaunch', 'get');
+      clearTimeout(timer);
+      resolve(data);
     } catch (error) {
       reject(error);
     }
@@ -301,20 +294,18 @@ export async function getAutoLaunchSync(timeout: number = 0): Promise<boolean> {
 }
 
 export async function getSysInfoSync(action: any, timeout: number = 30 * 1000): Promise<boolean> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-      let signal = crypto.randomUUID();
-      window.ipc.send('systeminformation', signal, action);
       let timer =
         timeout <= 0
           ? null
           : setTimeout(() => {
               reject(`timeout (${timeout} ms)`);
             }, timeout);
-      window.ipc.once('systeminformation/' + signal, (data: boolean) => {
-        clearTimeout(timer);
-        resolve(data);
-      });
+
+      const data = await window.ipc.invoke('systeminformation', action);
+      clearTimeout(timer);
+      resolve(data);
     } catch (error) {
       reject(error);
     }

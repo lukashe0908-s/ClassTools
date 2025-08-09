@@ -54,7 +54,7 @@ export default function App() {
                 color='primary'
                 variant='bordered'
                 onClick={async () => {
-                  window.ipc.send('autoLaunch', 'set', true);
+                  window.ipc?.send('autoLaunch', 'set', true);
                   setAutoLaunch(await getAutoLaunchSync());
                 }}
               >
@@ -64,7 +64,7 @@ export default function App() {
                 color='primary'
                 variant='bordered'
                 onClick={async () => {
-                  window.ipc.send('autoLaunch', 'set', false);
+                  window.ipc?.send('autoLaunch', 'set', false);
                   setAutoLaunch(await getAutoLaunchSync());
                 }}
               >

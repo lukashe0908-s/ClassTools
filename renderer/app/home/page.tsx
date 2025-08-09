@@ -50,7 +50,14 @@ export default function HomePage() {
                   fullWidth={true}>
                   <CloseIcon></CloseIcon>取消
                 </Button>
-                <Button color='danger' onPress={onClose} className='min-w-1' radius='full' fullWidth={true}>
+                <Button
+                  color='danger'
+                  className='min-w-1'
+                  radius='full'
+                  fullWidth={true}
+                  onPress={() => {
+                    window.ipc?.send('sys-shutdown');
+                  }}>
                   <CheckIcon></CheckIcon>确认
                 </Button>
               </ModalFooter>
@@ -150,6 +157,9 @@ function FloatWindow({ onShutdownModalOpen }) {
   const [classSchedule, setClassSchedule] = useState(null);
   const [slidingPosition, setSlidingPosition] = useState('center');
   const [progressDisplay, setProgressDisplay] = useState('always');
+  const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
+  const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
+  const [hiddenJumpto, setHiddenJumpto] = useState(false);
   // 处理初始滚动到选中的壁纸
   useEffect(() => {
     if (wallpapers.length > 0) {
@@ -168,10 +178,16 @@ function FloatWindow({ onShutdownModalOpen }) {
       const config = await generateConfig();
       const pos = ((await getConfigSync('display.slidingPosition')) as any) || 'center';
       const prog = ((await getConfigSync('display.progressDisplay')) as any) || 'always';
+      const hiddenClose = ((await getConfigSync('display.hidden.closeWindow')) as any) || false;
+      const hiddenRefresh = ((await getConfigSync('display.hidden.refreshWindow')) as any) || false;
+      const hiddenJump = ((await getConfigSync('display.hidden.jumpto')) as any) || false;
 
       setClassSchedule(config);
       setSlidingPosition(pos);
       setProgressDisplay(prog);
+      setHiddenCloseWindow(hiddenClose);
+      setHiddenRefreshWindow(hiddenRefresh);
+      setHiddenJumpto(hiddenJump);
     };
 
     loadConfig();
@@ -195,7 +211,7 @@ function FloatWindow({ onShutdownModalOpen }) {
           isIconOnly
           onPress={() => {
             try {
-              window.ipc.send('settings-window');
+              window.ipc?.send('settings-window');
             } catch {
               window.location.href = '/settings';
             }
@@ -204,35 +220,41 @@ function FloatWindow({ onShutdownModalOpen }) {
           aria-label='Settings'>
           <Cog6ToothIcon className='w-5 h-5' />
         </Button>
-        <Button
-          isIconOnly
-          onPress={() => {
-            window.location.reload();
-          }}
-          title='刷新'
-          aria-label='Refresh'>
-          <ArrowPathIcon className='w-5 h-5' />
-        </Button>
-        <Button
-          isIconOnly
-          onPress={() => {
-            window.location.href = '/float/index.html';
-          }}
-          title='跳转'
-          aria-label='JumpTo'>
-          <ArrowTopRightOnSquareIcon className='w-5 h-5' />
-        </Button>
-        <Button
-          isIconOnly
-          variant='faded'
-          onPress={() => {
-            window.ipc?.send('close-window');
-          }}
-          title='关闭'
-          aria-label='Close'
-          className='ml-auto'>
-          <XMarkIcon className='w-5 h-5' />
-        </Button>
+        {!hiddenRefreshWindow && (
+          <Button
+            isIconOnly
+            onPress={() => {
+              window.location.reload();
+            }}
+            title='刷新'
+            aria-label='Refresh'>
+            <ArrowPathIcon className='w-5 h-5' />
+          </Button>
+        )}
+        {!hiddenJumpto && (
+          <Button
+            isIconOnly
+            onPress={() => {
+              window.location.href = '/float/index.html';
+            }}
+            title='跳转'
+            aria-label='JumpTo'>
+            <ArrowTopRightOnSquareIcon className='w-5 h-5' />
+          </Button>
+        )}
+        {!hiddenCloseWindow && (
+          <Button
+            isIconOnly
+            variant='faded'
+            onPress={() => {
+              window.ipc?.send('close-window');
+            }}
+            title='关闭'
+            aria-label='Close'
+            className='ml-auto'>
+            <XMarkIcon className='w-5 h-5' />
+          </Button>
+        )}
       </div>
 
       {/* Main Content */}

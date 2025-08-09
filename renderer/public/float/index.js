@@ -94,20 +94,17 @@ function listClassesForDay(classSchedule, day, isSingleWeek = true) {
 }
 start();
 async function getConfigSync(name, timeout = 0) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-      let signal = crypto.randomUUID();
-      window.ipc.send('get-config', signal, name);
       let timer =
         timeout <= 0
           ? null
           : setTimeout(() => {
               reject(`timeout (${timeout} ms)`);
             }, timeout);
-      window.ipc.once('get-config/' + signal, data => {
-        clearTimeout(timer);
-        resolve(data);
-      });
+      const data = await window.ipc.invoke('get-config', name);
+      clearTimeout(timer);
+      resolve(data);
     } catch {
       resolve('');
     }
@@ -255,8 +252,8 @@ async function start() {
   })();
   (async () => {
     try {
-      const hiddenPutaway = await getConfigSync('display.hidden.putaway');
-      if (hiddenPutaway) {
+      const hiddenJumpto = await getConfigSync('display.hidden.jumpto');
+      if (hiddenJumpto) {
         document.querySelector('.put_away').style.display = 'none';
       } else {
         document.querySelector('.put_away').style.display = 'flex';
