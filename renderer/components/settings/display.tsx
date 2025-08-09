@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Switch, Slider, Autocomplete, AutocompleteItem } from '@heroui/react';
+import { Switch, Slider, Autocomplete, AutocompleteItem, Tooltip, Chip } from '@heroui/react';
 import { getConfigSync } from '../p_function';
+import InfoIcon from '@mui/icons-material/Info';
 
 export function Display() {
   const [windowWidth, setWindowWidth] = useState(0.13);
@@ -154,15 +155,22 @@ export function Display() {
         </Autocomplete>
       </div>
       <div className='flex gap-4 flex-wrap'>
-        <Switch
-          isSelected={online}
-          onChange={() => {
-            setOnline(!online);
-            window.ipc?.send('set-config', 'online', !online);
-          }}>
-          使用在线模式
+        <div className='flex flex-row gap-1 items-center'>
+          <Switch
+            isSelected={online}
+            onChange={() => {
+              setOnline(!online);
+              window.ipc?.send('set-config', 'online', !online);
+            }}>
+            使用在线模式
+          </Switch>
+          <Tooltip content='开启此选项后会使用最新的Web版本，过旧的Main版本使用时可能会出现问题'>
+            <InfoIcon className='text-gray-600 !w-4 !h-4'></InfoIcon>
+          </Tooltip>
+        </div>
+        <Switch isDisabled isSelected={true}>
+          检查主程序更新
         </Switch>
-        <Switch isDisabled isSelected={true}>检查主程序更新</Switch>
       </div>
       <div className='flex gap-4 flex-wrap'>
         <Switch
