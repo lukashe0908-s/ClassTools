@@ -98,7 +98,7 @@ function isWindows11() {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false,
     },
-    backgroundMaterial: isProd ? 'acrylic' : 'none',
+    backgroundMaterial: isProd ? 'acrylic' : 'acrylic',
     roundedCorners: true,
     // transparent: true,
     frame: false,
