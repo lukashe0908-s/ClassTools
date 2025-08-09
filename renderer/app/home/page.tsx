@@ -1,7 +1,5 @@
 'use client';
-import { cache, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { useEffect, useState, useRef } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -34,16 +32,6 @@ export default function HomePage() {
   return (
     <>
       <title>Home - Class Tools</title>
-      {/* <div className='flex justify-center gap-3 py-2 flex-shrink-0 flex-wrap'>
-        <Link href='/float/index.html'>
-          <Button color='primary' className='font-bold'>
-            Go Legacy
-          </Button>
-        </Link>
-        <Button color='primary' className='font-bold' onClick={onOpen}>
-          关机
-        </Button>
-      </div> */}
       <Modal isOpen={isOpen} placement={'bottom'} onOpenChange={onOpenChange}>
         <ModalContent>
           {onClose => (
@@ -60,69 +48,52 @@ export default function HomePage() {
                   className='min-w-1'
                   radius='full'
                   fullWidth={true}>
-                  <CloseIcon></CloseIcon>Cancel
+                  <CloseIcon></CloseIcon>取消
                 </Button>
                 <Button color='danger' onPress={onClose} className='min-w-1' radius='full' fullWidth={true}>
-                  <CheckIcon></CheckIcon>Confirm
+                  <CheckIcon></CheckIcon>确认
                 </Button>
               </ModalFooter>
             </>
           )}
         </ModalContent>
       </Modal>
-      <FloatWindow></FloatWindow>
+      <FloatWindow onShutdownModalOpen={onOpen}></FloatWindow>
       <UpdateModal></UpdateModal>
     </>
   );
 }
-function FloatWindow() {
+function FloatWindow({ onShutdownModalOpen }) {
   const [wallpapers, setWallpapers] = useState([]);
-  const [currentWallpaper, setCurrentWallpaper] = useState('');
+  const [currentWallpaper, setCurrentWallpaper] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const savedIndex = localStorage.getItem('default_wallpaper_select');
+    return savedIndex ? parseInt(savedIndex, 10) : 0;
+  });
+  const wallpaperListRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   const fetchWallpapers = async () => {
-  //     const CACHE_KEY = 'wallpapers';
-  //     const EXPIRES_KEY = 'wallpapers_expires';
-  //     const CACHE_DURATION = 30 * 60 * 1000; // 30 Mins
+  const updateWallpaper = (newWallpaper: string, index: number) => {
+    localStorage.setItem('default_wallpaper_select', index.toString());
+    setSelectedIndex(index);
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        setCurrentWallpaper(newWallpaper);
+      });
+    } else {
+      setCurrentWallpaper(newWallpaper);
+    }
+    // 使用 requestAnimationFrame 确保在 DOM 更新后再滚动
+    requestAnimationFrame(() => {
+      const container = wallpaperListRef.current;
+      if (container) {
+        const imageElement = container.children[index] as HTMLElement;
+        if (imageElement) {
+          imageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    });
+  };
 
-  //     const now = Date.now();
-  //     const cached = localStorage.getItem(CACHE_KEY);
-  //     const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
-
-  //     if (cached && now < expires) {
-  //       try {
-  //         const images = JSON.parse(cached);
-  //         setWallpapers(images);
-  //         setCurrentWallpaper(images[0]);
-  //         return;
-  //       } catch (e) {
-  //         console.warn('Cached wallpaper parse failed, refetching.');
-  //       }
-  //     }
-  //     try {
-  //       const response = await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=7');
-  //       const data = await response.json();
-  //       const images = data.images.map(img => `https://www.bing.com${img.url}`);
-
-  //       setWallpapers(images || []);
-  //       setCurrentWallpaper(`https://www.bing.com${data.images[0]?.url}`);
-
-  //       // 更新缓存
-  //       localStorage.setItem(CACHE_KEY, JSON.stringify(images));
-  //       localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
-  //     } catch (error) {
-  //       console.error('Error fetching wallpapers:', error);
-  //     }
-  //   };
-  //   const USE_DEFAULT_WALLPAPER = true;
-  //   if (USE_DEFAULT_WALLPAPER) {
-  //     let default_link = 'https://s1.imagehub.cc/images/2025/06/29/a085471b696c1d4e867b90034a01f350.png';
-  //     setWallpapers([default_link]);
-  //     setCurrentWallpaper(default_link);
-  //   } else {
-  //     fetchWallpapers();
-  //   }
-  // }, []);
   useEffect(() => {
     const CACHE_KEY = 'default_wallpaper';
     const EXPIRES_KEY = 'default_wallpaper_expires';
@@ -134,26 +105,36 @@ function FloatWindow() {
     const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
 
     if (!DISABLE_CACHE && cached && now < expires) {
-      setWallpapers([cached]);
-      setCurrentWallpaper(cached);
+      try {
+        const cachedUrls = JSON.parse(cached);
+        setWallpapers(cachedUrls);
+        const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
+        const validIndex = savedIndex < cachedUrls.length ? savedIndex : 0;
+        updateWallpaper(cachedUrls[validIndex], validIndex);
+      } catch (err) {
+        console.error('Failed to parse json for wallpaper:', err);
+      }
       return;
     }
     const fetchDnsWallpaper = async () => {
       try {
         const txtRecords: string[][] = await window.ipc?.invoke(
           'resolveDns',
-          'default-bg.class-tools.app.lukas1.eu.org',
+          'default-bgs.class-tools.app.lukas1.eu.org',
           'TXT'
         );
         const base64String = Array.isArray(txtRecords) ? txtRecords[0].join('') : '';
 
         if (!base64String) throw new Error('No valid TXT record found');
 
-        const decodedUrl = atob(base64String);
-        setWallpapers([decodedUrl]);
-        setCurrentWallpaper(decodedUrl);
+        const decodedUrls_json = atob(base64String);
+        const decodedUrls = JSON.parse(decodedUrls_json);
+        setWallpapers(decodedUrls);
+        const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
+        const validIndex = savedIndex < decodedUrls.length ? savedIndex : 0;
+        updateWallpaper(decodedUrls[validIndex], validIndex);
 
-        localStorage.setItem(CACHE_KEY, decodedUrl);
+        localStorage.setItem(CACHE_KEY, JSON.stringify(decodedUrls));
         localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
       } catch (err) {
         console.error('Failed to resolve DNS TXT record for wallpaper:', err);
@@ -166,6 +147,19 @@ function FloatWindow() {
   const [classSchedule, setClassSchedule] = useState(null);
   const [slidingPosition, setSlidingPosition] = useState('center');
   const [progressDisplay, setProgressDisplay] = useState('always');
+  // 处理初始滚动到选中的壁纸
+  useEffect(() => {
+    if (wallpapers.length > 0) {
+      const container = wallpaperListRef.current;
+      if (container) {
+        const imageElement = container.children[selectedIndex] as HTMLElement;
+        if (imageElement) {
+          imageElement.scrollIntoView({ behavior: 'instant', block: 'center' });
+        }
+      }
+    }
+  }, [wallpapers]);
+
   useEffect(() => {
     const loadConfig = async () => {
       const config = await generateConfig();
@@ -191,7 +185,7 @@ function FloatWindow() {
   }, []);
 
   return (
-    <div className={`flex flex-col gap-0 p-0 h-full rounded-lg shadow-lg ${currentWallpaper ? '' : 'bg-blue-100'}`}>
+    <div className={`flex flex-col gap-0 p-0 h-full rounded-lg shadow-lg ${currentWallpaper ? '' : 'bg-[#dbeafe88]'}`}>
       {/* Toolbar */}
       <div className='flex gap-2 items-center bg-white p-2 rounded-lg'>
         <Button
@@ -246,13 +240,17 @@ function FloatWindow() {
           progressDisplay={progressDisplay}></ClassList>
         {/* Background Picture List */}
         <div className='flex flex-col gap-4 px-2'>
-          <div className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
+          <div
+            ref={wallpaperListRef}
+            className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
             {wallpapers.map((wallpaper, index) => (
               <img
                 key={index}
                 src={wallpaper}
                 alt={`Wallpaper ${index}`}
                 className='max-w-full rounded-lg snap-center'
+                onClick={() => updateWallpaper(wallpaper, index)}
+                draggable='false'
               />
             ))}
           </div>
@@ -261,7 +259,9 @@ function FloatWindow() {
 
       {/* Footer */}
       <div className='flex gap-1 items-center bg-white p-1 rounded-lg'>
-        <Button fullWidth></Button>
+        <Button className='font-bold' fullWidth onPress={onShutdownModalOpen}>
+          关机
+        </Button>
         <Weather />
       </div>
       {/* Background */}
@@ -278,8 +278,8 @@ function FloatWindow() {
             width: 'auto',
             height: '100%',
             transform: 'translate(-50%, 0)',
-            opacity: 0.8,
-            filter: 'blur(40px) brightness(0.9)',
+            opacity: 0.5,
+            filter: 'blur(40px)',
           }}
           loading='lazy'
           referrerPolicy='no-referrer'
