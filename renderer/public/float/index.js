@@ -357,7 +357,7 @@ async function start() {
         // 创建新的<div>元素
         const classElement = document.createElement('div');
         classElement.classList = 'classElement';
-        classElement.innerHTML = `<span style="font-size:0.8em;border-radius:min(0.25em, 12px);background:#0001;padding:0 4px;margin-right:0.25em;color:grey;">${startTime}<span style="margin:0 0.2em;">-</span>${endTime}</span><span>${subject}</span>`;
+        classElement.innerHTML = `<span style="font-size:0.8em;border-radius:min(0.25em, 12px);background:#0001;padding:0 4px;margin-right:0.25em;color:grey;">${startTime}<span style="margin:0 0.2em;">-</span>${endTime}</span><span style="font-weight: 600;white-space: pre-wrap;">${subject.replace('\\n', '\n')}</span>`;
 
         classElement.style.backgroundColor = '#fff8';
         classElement.style.boxShadow = 'var(--mdui-elevation-level2)';

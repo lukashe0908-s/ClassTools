@@ -273,7 +273,7 @@ function FloatWindow({ onShutdownModalOpen }) {
                 key={index}
                 src={wallpaper}
                 alt={`Wallpaper ${index}`}
-                className='max-w-full rounded-lg snap-center'
+                className='max-w-full rounded-lg snap-center select-none'
                 onClick={() => updateWallpaper(wallpaper, index)}
                 draggable='false'
               />
@@ -305,6 +305,7 @@ function FloatWindow({ onShutdownModalOpen }) {
             transform: 'translate(-50%, 0)',
             opacity: 0.5,
             filter: 'blur(40px)',
+            userSelect: 'none',
           }}
           loading='lazy'
           referrerPolicy='no-referrer'

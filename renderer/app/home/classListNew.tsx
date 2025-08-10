@@ -146,15 +146,15 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                       }}
                       data-state={state}
                       className={`px-4 py-2 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
-                      <div className='text-sm text-gray-600 mb-0'>
-                        {cls.startTime} - {cls.endTime}
+                      <div className='text-sm text-gray-600 mb-0 whitespace-pre'>
+                        {`${cls.startTime} - ${cls.endTime}`}
                       </div>
                       <div
-                        className={`font-semibold mb-0`}
+                        className={`font-semibold mb-0 whitespace-pre-wrap`}
                         style={{
                           fontSize: fontSize + 'rem',
                         }}>
-                        {cls.subject}
+                        {`${cls.subject.replace('\\n', '\n')}`}
                       </div>
                       {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
                         <Progress

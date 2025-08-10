@@ -49,7 +49,7 @@ export function Weather() {
   return (
     <span
       id='weather'
-      className='flex flex-row whitespace-nowrap items-center justify-center bg-blue-500 text-white px-2 py-2 rounded-lg cursor-pointer'
+      className='flex flex-row whitespace-nowrap items-center justify-center bg-blue-500 text-white px-2 py-2 rounded-lg cursor-pointer select-none'
       onClick={handleClick}>
       {icon && <i className={`qi-${icon} pr-2`} />}
       {weather.now.text ? `${weather.now.text} ` : ''}
