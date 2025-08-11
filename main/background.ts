@@ -40,6 +40,7 @@ contextMenu({
   showCopyLink: false,
   showLearnSpelling: false,
   showLookUpSelection: false,
+  showInspectElement: true,
   labels: {
     cut: '剪切',
     copy: '复制',
