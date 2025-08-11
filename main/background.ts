@@ -253,7 +253,7 @@ ipcMain.handle('resolveDns', async (event, domain: string, recordType: DnsRecord
       if (err) {
         reject(`Error resolving DNS for ${domain} with record type ${recordType}: ${err.message}`);
       } else {
-        log('resolveDns', domain, recordType, addresses);
+        log.log('resolveDns', domain, recordType, addresses);
         resolve(addresses); // Resolves to an array of DNS records (strings)
       }
     });
