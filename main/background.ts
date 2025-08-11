@@ -249,12 +249,11 @@ type DnsRecordType = 'A' | 'AAAA' | 'MX' | 'TXT' | 'CNAME' | 'NS' | 'PTR' | 'SOA
 // Add an IPC handler for resolving DNS records with a specified record type
 ipcMain.handle('resolveDns', async (event, domain: string, recordType: DnsRecordType): Promise<any> => {
   return new Promise((resolve, reject) => {
-    console.log('resolveDns', domain, recordType);
-
     dns.resolve(domain, recordType, (err, addresses) => {
       if (err) {
         reject(`Error resolving DNS for ${domain} with record type ${recordType}: ${err.message}`);
       } else {
+        log('resolveDns', domain, recordType, addresses);
         resolve(addresses); // Resolves to an array of DNS records (strings)
       }
     });
