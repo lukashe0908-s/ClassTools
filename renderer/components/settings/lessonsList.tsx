@@ -16,6 +16,7 @@ import {
   Checkbox,
   Accordion,
   AccordionItem,
+  Switch,
 } from '@heroui/react';
 import { DataGridPremium, useGridApiRef } from '@mui/x-data-grid-premium';
 import dayjs from 'dayjs';
@@ -74,7 +75,7 @@ const formattedColumns = columns.map(column => ({
   editable: true,
 }));
 
-function List({ rows, setRows, children }) {
+function List({ rows, setRows, children, isEditMode = false }) {
   const refTable = useRef(null);
   useEffect(() => {
     const Table = refTable.current as HTMLElement;
@@ -93,7 +94,8 @@ function List({ rows, setRows, children }) {
             base: 'max-h-[80vh] overflow-auto',
             wrapper: 'rounded-none !p-0 scrollbar-hide',
             thead: 'z-[11]',
-          }}>
+          }}
+          isKeyboardNavigationDisabled={isEditMode}>
           <TableHeader>
             {columns.map(column => (
               <TableColumn key={column.id}>{column.label}</TableColumn>
@@ -152,7 +154,7 @@ export function LessonsListName() {
 
   return (
     <>
-      <List rows={rows} setRows={setRows}>
+      <List rows={rows} setRows={setRows} isEditMode={true}>
         {(row, rowIndex, columnKey) => {
           return (
             <CustomTextarea
@@ -232,14 +234,10 @@ export function LessonsListTime() {
             setWeekStart(e.target.value);
           }}></Input>
         <div>
-          <Checkbox
-            isSelected={isEditMode}
-            onValueChange={value => {
-              setEditMode(value);
-            }}>
+          <Switch isSelected={isEditMode} onValueChange={setEditMode} size='sm'>
             使用时间选择器
-          </Checkbox>
-          <List rows={rows} setRows={setRows}>
+          </Switch>
+          <List rows={rows} setRows={setRows} isEditMode={isEditMode}>
             {(row, rowIndex, columnKey) => {
               let context: { [key: string]: string } | undefined = getKeyValue(row, columnKey);
               const startTime = context?.start;
