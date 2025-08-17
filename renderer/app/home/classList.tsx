@@ -4,13 +4,46 @@ import { Fragment } from 'react';
 
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { getChangeDay, getWeekNumber, getWeekDate, listClassesForDay } from '../../components/p_function';
+import { getChangeDay, getWeekNumber, getWeekDate, listClassesForDay, getConfigSync, getSubjectAbbreviation } from '../../components/p_function';
+
+function SubjectDisplay({ subject, useAbbreviations }) {
+  const [displayText, setDisplayText] = useState(subject);
+
+  useEffect(() => {
+    const updateDisplayText = async () => {
+      if (useAbbreviations) {
+        try {
+          const abbreviation = await getSubjectAbbreviation(subject);
+          setDisplayText(abbreviation);
+        } catch (error) {
+          console.error('Failed to get abbreviation:', error);
+          setDisplayText(subject);
+        }
+      } else {
+        setDisplayText(subject);
+      }
+    };
+
+    updateDisplayText();
+  }, [subject, useAbbreviations]);
+
+  return <div className='text-lg font-semibold mb-2'>{displayText}</div>;
+}
 
 export default function ClassList({ schedule, progressDisplay = 'active', slidingPosition = 'nearest' }) {
   const containerRef = useRef(null);
   const [classes, setClasses] = useState([]);
   const [weekInfo, setWeekInfo] = useState({ now: 0, total: 0 });
   const [tick, setTick] = useState(0);
+  const [useAbbreviations, setUseAbbreviations] = useState(false);
+
+  useEffect(() => {
+    const loadAbbreviationSetting = async () => {
+      const useAbbr = await getConfigSync('display.useAbbreviations');
+      setUseAbbreviations(Boolean(useAbbr));
+    };
+    loadAbbreviationSetting();
+  }, []);
 
   useEffect(() => {
     dayjs.extend(weekOfYear);
@@ -78,7 +111,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                   {cls.startTime} - {cls.endTime}
                 </CardHeader>
                 <CardBody className='px-4 pt-0 pb-4'>
-                  <div className='text-lg font-semibold mb-2'>{cls.subject}</div>
+                  <SubjectDisplay subject={cls.subject} useAbbreviations={useAbbreviations} />
                   {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
                     <Progress
                       aria-label='progress'

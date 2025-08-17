@@ -1,8 +1,23 @@
-# Class Tools
-一款班级课表工具
+# ClassTools
 
-## 界面预览
+一个用于管理课程表的桌面应用程序。
 
-<img src="assets/image main.png" alt="Main" style="max-height:300px" />
-<img src="assets/image settings.webp" alt="Settings" />
-<img src="assets/image settings display.webp" alt="Display Settings" />
+## 新功能：课程缩写
+
+### 功能说明
+- 在基本配置页面可以设置课程缩写
+- 自动提取所有课程的名称
+- 只有在修改后的名称不为空且不为默认（课程名称的第一个字）时才会存储
+- 在显示设置中可以开启/关闭课程缩写显示
+
+### 使用方法
+1. 进入设置 -> 课表编辑 -> 基本配置
+2. 在课程缩写设置中为每个课程设置自定义缩写
+3. 进入设置 -> 显示设置
+4. 开启"使用课程缩写"选项
+5. 课程列表中将显示设置的缩写而不是完整课程名称
+
+### 技术实现
+- 使用 `lessonsList.abbreviations` 配置项存储缩写设置
+- 使用 `display.useAbbreviations` 配置项控制是否启用缩写显示
+- 支持在 `classList.tsx` 和 `classListNew.tsx` 中显示缩写

@@ -1,12 +1,14 @@
 'use client';
 import { Card, CardBody } from "@heroui/react";
+import { SubjectAbbreviations } from "../../../../components/settings/lessonsList";
+
 export default function App() {
   return (
     <>
-      <div className='px-[40%]'>
+      <div className='px-4 py-6'>
         <Card>
           <CardBody>
-            <p className='text-center text-lg font-bold'>Tab Not Found</p>
+            <SubjectAbbreviations />
           </CardBody>
         </Card>
       </div>

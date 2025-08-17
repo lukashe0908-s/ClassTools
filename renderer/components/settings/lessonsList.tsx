@@ -23,7 +23,7 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider, TimePicker, renderTimeViewClock } from '@mui/x-date-pickers-pro';
 import { OverlayScrollbars } from 'overlayscrollbars';
-import { getConfigSync } from '../p_function';
+import { getConfigSync, extractAllSubjectNames } from '../p_function';
 
 const columns = [
   {
@@ -226,7 +226,7 @@ export function LessonsListTime() {
       })()}
       <div className='*:mb-4'>
         <Input
-          label='Week Start Time'
+          label='学期开始时间'
           className='max-w-xs'
           value={weekStart}
           onChange={e => {
@@ -571,5 +571,86 @@ export function CellSelectionGrid(props) {
         </div>
       </div>
     </>
+  );
+}
+
+export function SubjectAbbreviations() {
+  const [subjectNames, setSubjectNames] = useState<string[]>([]);
+  const [abbreviations, setAbbreviations] = useState<{[key: string]: string}>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // 获取所有课程名称
+        const names = await extractAllSubjectNames();
+        setSubjectNames(names);
+        
+        // 获取已保存的缩写
+        const savedAbbreviations = await getConfigSync('lessonsList.abbreviations');
+        if (savedAbbreviations) {
+          setAbbreviations(savedAbbreviations);
+        }
+      } catch (error) {
+        console.error('Failed to load subject names:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, []);
+
+  const handleAbbreviationChange = (subjectName: string, abbreviation: string) => {
+    const newAbbreviations = { ...abbreviations };
+    
+    // 如果缩写为空或者是课程名称的第一个字，则删除该条目
+    if (!abbreviation.trim() || abbreviation.trim() === subjectName.charAt(0)) {
+      delete newAbbreviations[subjectName];
+    } else {
+      newAbbreviations[subjectName] = abbreviation.trim();
+    }
+    
+    setAbbreviations(newAbbreviations);
+    window.ipc?.send('set-config', 'lessonsList.abbreviations', newAbbreviations);
+  };
+
+  if (isLoading) {
+    return (
+      <div className='flex justify-center items-center p-8'>
+        <CircularProgress size='lg' label='Loading...' />
+      </div>
+    );
+  }
+
+  return (
+    <div className='space-y-4'>
+      <div className='text-lg font-bold'>课程缩写设置</div>
+      <div className='text-sm text-gray-600 mb-4'>
+        为课程设置缩写名称。只有修改后的名称不为空且不为默认（课程名称的第一个字）时才会存储。
+      </div>
+      
+      {subjectNames.length === 0 ? (
+        <div className='text-center text-gray-500 p-8'>
+          暂无课程数据，请先在"名称"页面添加课程
+        </div>
+      ) : (
+        <div className='space-y-3 max-h-[80vh] overflow-auto'>
+          {subjectNames.map((subjectName) => (
+            <div key={subjectName} className='flex items-center gap-4 p-3 border rounded-lg'>
+              <div className='flex-1'>
+                <div className='font-medium'>{subjectName}</div>
+                <div className='text-sm text-gray-500'>默认缩写: {subjectName.charAt(0)}</div>
+              </div>
+              <Input
+                placeholder={subjectName.charAt(0)}
+                value={abbreviations[subjectName] || ''}
+                onChange={(e) => handleAbbreviationChange(subjectName, e.target.value)}
+                className='max-w-32'
+                size='sm'
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
