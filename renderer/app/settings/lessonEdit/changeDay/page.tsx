@@ -67,10 +67,10 @@ export default function App() {
                 <div>
                   <label className='block text-sm font-medium mb-1'>原始日期</label>
                   <Calendar
-                    value={newFrom ? parseDate(newFrom) : undefined}
+                    value={newFrom ? parseDate(newFrom.replaceAll('/','-')) : undefined}
                     onChange={(date: CalendarDate) => {
                       setNewFrom(
-                        `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`
+                        `${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`
                       );
                     }}
                     className='rounded-md border scrollbar-hide'
@@ -79,10 +79,10 @@ export default function App() {
                 <div>
                   <label className='block text-sm font-medium mb-1'>替换为</label>
                   <Calendar
-                    value={newTo ? parseDate(newTo) : undefined}
+                    value={newTo ? parseDate(newTo.replaceAll('/','-')) : undefined}
                     onChange={(date: CalendarDate) => {
                       setNewTo(
-                        `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`
+                        `${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`
                       );
                     }}
                     className='rounded-md border scrollbar-hide'
