@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardBody, Switch, Button, Calendar, Divider, Checkbox, Input } from "@heroui/react";
+import { Card, CardBody, Switch, Button, Calendar, Divider, Checkbox, Input } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined';
 import { getAutoLaunchSync } from '../../../../components/p_function';
@@ -23,8 +23,7 @@ export default function App() {
         <div className='flex justify-center'>
           <Card className='md:w-fit'>
             <CardBody className='block whitespace-pre-wrap'>
-              <span className='text-red-400'>WARNING: EXPERIMENTAL FEATURES AHEAD!</span>
-              <span className='hidden md:inline'>{``}</span>
+              <span className='text-red-400'>警告: 这些功能可能不稳定!</span>
             </CardBody>
           </Card>
         </div>
@@ -34,18 +33,10 @@ export default function App() {
         </div>
         <div className='flex gap-2 flex-col'>
           <div className='flex flex-col flex-wrap'>
-            <Checkbox defaultSelected>Enable Telegram Bot File Downloader</Checkbox>
-            <div>
-              <Input label='Search Token' className='w-[50ch]'></Input>
-            </div>
-          </div>
-          <Divider></Divider>
-          <div className='flex flex-col flex-wrap'>
-            <span className='pr-2 font-bold'>Auto Launch</span>
+            <span className='pr-2 font-bold'>开机自启动</span>
             <span>
-              (Need 1.0.9 or higher)
               <span className={`ml-4 ${autoLaunch ? 'text-green-600' : 'text-gray-500'}`}>
-                {autoLaunchE ?? (autoLaunch ? 'Found' : 'Not Found')}
+                {autoLaunchE ?? (autoLaunch ? '已设置' : '未设置')}
               </span>
             </span>
 
@@ -53,22 +44,20 @@ export default function App() {
               <Button
                 color='primary'
                 variant='bordered'
-                onClick={async () => {
+                onPress={async () => {
                   window.ipc?.send('autoLaunch', 'set', true);
                   setAutoLaunch(await getAutoLaunchSync());
-                }}
-              >
-                Enable Auto Launch
+                }}>
+                {'开启 自启动'}
               </Button>
               <Button
                 color='primary'
                 variant='bordered'
-                onClick={async () => {
+                onPress={async () => {
                   window.ipc?.send('autoLaunch', 'set', false);
                   setAutoLaunch(await getAutoLaunchSync());
-                }}
-              >
-                Disable Auto Launch
+                }}>
+                {'关闭 自启动'}
               </Button>
             </div>
           </div>

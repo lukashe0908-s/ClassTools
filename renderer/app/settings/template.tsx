@@ -32,7 +32,7 @@ export default function Template({ children }) {
               </NavigationItem>
               <NavigationSub>
                 <NavigationItem link={'/settings/lessonEdit/default'}>
-                  <AssessmentOutlinedIcon className='pr-1'></AssessmentOutlinedIcon>初始值
+                  <AssessmentOutlinedIcon className='pr-1'></AssessmentOutlinedIcon>基本配置
                 </NavigationItem>
                 <NavigationItem link={'/settings/lessonEdit/name'}>
                   <FormatColorTextOutlinedIcon className='pr-1'></FormatColorTextOutlinedIcon>名称
