@@ -15,7 +15,6 @@ export function Display() {
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
   const [hiddenJumpto, setHiddenJumpto] = useState(false);
   const [useLegacyHome, setUseLegacyHome] = useState(false);
-  const [useAbbreviations, setUseAbbreviations] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -57,10 +56,6 @@ export function Display() {
     (async () => {
       const data = await getConfigSync('display.useLegacyHome');
       data && setUseLegacyHome(Boolean(data));
-    })();
-    (async () => {
-      const data = await getConfigSync('display.useAbbreviations');
-      data && setUseAbbreviations(Boolean(data));
     })();
   }, []);
   return (
@@ -209,14 +204,6 @@ export function Display() {
             window.ipc?.send('set-config', 'display.useLegacyHome', !useLegacyHome);
           }}>
           使用旧版本页面
-        </Switch>
-        <Switch
-          isSelected={useAbbreviations}
-          onChange={() => {
-            setUseAbbreviations(!useAbbreviations);
-            window.ipc?.send('set-config', 'display.useAbbreviations', !useAbbreviations);
-          }}>
-          使用课程缩写
         </Switch>
       </div>
     </>

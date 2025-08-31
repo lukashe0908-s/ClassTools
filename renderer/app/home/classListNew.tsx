@@ -8,40 +8,7 @@ import {
   getWeekDate,
   listClassesForDay,
   getConfigSync,
-  getSubjectAbbreviation,
 } from '../../components/p_function';
-
-function SubjectDisplay({ subject, useAbbreviations, fontSize }) {
-  const [displayText, setDisplayText] = useState(subject);
-
-  useEffect(() => {
-    const updateDisplayText = async () => {
-      if (useAbbreviations) {
-        try {
-          const abbreviation = await getSubjectAbbreviation(subject);
-          setDisplayText(abbreviation);
-        } catch (error) {
-          console.error('Failed to get abbreviation:', error);
-          setDisplayText(subject);
-        }
-      } else {
-        setDisplayText(subject);
-      }
-    };
-
-    updateDisplayText();
-  }, [subject, useAbbreviations]);
-
-  return (
-    <div
-      className={`font-semibold mb-0 whitespace-pre-wrap`}
-      style={{
-        fontSize: fontSize + 'rem',
-      }}>
-      {displayText.replace('\\n', '\n')}
-    </div>
-  );
-}
 
 export default function ClassList({ schedule, progressDisplay = 'active', slidingPosition = 'nearest' }) {
   const containerRef = useRef(null);
@@ -51,7 +18,6 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
   const [currentDate, setCurrentDate] = useState(dayjs().format('YYYY-MM-DD')); // 当前日期字符串
   const refList = useRef([]);
   const [fontSize, setFontSize] = useState(1);
-  const [useAbbreviations, setUseAbbreviations] = useState(false);
 
   useEffect(() => {
     const loadFontSize = async () => {
@@ -62,20 +28,9 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
   }, []);
 
   useEffect(() => {
-    const loadAbbreviationSetting = async () => {
-      const useAbbr = await getConfigSync('display.useAbbreviations');
-      setUseAbbreviations(Boolean(useAbbr));
-    };
-    loadAbbreviationSetting();
-  }, []);
-
-  useEffect(() => {
     const handler = async () => {
       const size = await getConfigSync('display.fontSize');
       setFontSize(Number(size) || 1);
-      
-      const useAbbr = await getConfigSync('display.useAbbreviations');
-      setUseAbbreviations(Boolean(useAbbr));
     };
 
     window.ipc?.on('sync-config', handler);
@@ -194,11 +149,13 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                       <div className='text-sm text-gray-600 mb-0 whitespace-pre'>
                         {`${cls.startTime} - ${cls.endTime}`}
                       </div>
-                      <SubjectDisplay 
-                        subject={cls.subject} 
-                        useAbbreviations={useAbbreviations}
-                        fontSize={fontSize}
-                      />
+                      <div
+                        className={`font-semibold mb-0 whitespace-pre-wrap`}
+                        style={{
+                          fontSize: fontSize + 'rem',
+                        }}>
+                        {`${cls.subject.replace('\\n', '\n')}`}
+                      </div>
                       {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
                         <Progress
                           aria-label='progress'
