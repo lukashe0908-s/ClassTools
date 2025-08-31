@@ -32,10 +32,10 @@ export function NavigationItemInner(props) {
     <li
       className={`transition-all hover:underline hover:decoration-dotted underline-offset-4 flex items-center ${
         isSub ? 'py-1' : 'py-2'
-      } pl-4 [color:#002b67] hover:[background-color:#E9F7FB] rounded-l-full cursor-pointer ${
+      } pl-4 [color:#002b67] hover:[background-color:#E9F7FB] rounded-xl cursor-pointer ${
         props?.active
-          ? '[color:#003681] font-bold [background-color:#ecf4ff] [border-top:1px_solid_#b9d6ff] [border-bottom:1px_solid_#b9d6ff] [border-left:1px_solid_#b9d6ff]'
-          : '[border-top:1px_solid_#0000] [border-bottom:1px_solid_#0000] [border-left:1px_solid_#0000]'
+          ? '[color:#003681] font-bold [background-color:#ecf4ff] [border:1px_solid_#b9d6ff]'
+          : '[border:1px_solid_#0000]'
       }`}>
       {props.children}
     </li>

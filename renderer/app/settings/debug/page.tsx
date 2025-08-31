@@ -1,9 +1,8 @@
 'use client';
 import { Card, CardBody, Switch, Button, Calendar, Divider } from '@heroui/react';
 import { useEffect, useState } from 'react';
-import { getVersionSync, formatSize } from '../../../components/p_function';
+import { getVersionSync, formatSize, getSysInfoSync } from '../../../components/p_function';
 import dayjs from 'dayjs';
-import { getSysInfoSync } from '../../../components/p_function';
 
 export default function App() {
   const [navigatorInfo, setNavigatorInfo] = useState('');
@@ -40,7 +39,11 @@ export default function App() {
         try {
           let storageEstimate = await navigator.storage.estimate();
           let storagePersisted = await navigator.storage.persisted();
-          setStorageInfo(`${formatSize(storageEstimate.usage)} / ${formatSize(storageEstimate.quota)}\nPersisted: ${storagePersisted}`);
+          setStorageInfo(
+            `${formatSize(storageEstimate.usage)} / ${formatSize(
+              storageEstimate.quota
+            )}\nPersisted: ${storagePersisted}`
+          );
         } catch (error) {
           setStorageInfo('Unknown');
         }

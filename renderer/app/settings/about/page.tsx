@@ -1,17 +1,20 @@
 'use client';
-import { Card, CardBody } from "@heroui/react";
+import { SettingsSection } from '../../../components/settings/SettingsGroup';
+import { AboutSettings } from '../../../components/settings/AboutSettings';
+
 export default function App() {
   return (
-    <>
-      <div className='flex gap-5 flex-col'>
-        <Card>
-          <CardBody className='block'>
-            <span className='font-bold text-2xl'>
-              作者：<span className='[box-shadow:inset_0_-8px_#60a5fa] border-b-2 border-blue-400'>Lukas</span>
-            </span>
-          </CardBody>
-        </Card>
+    <div className="min-h-screen">
+      <div className="max-w-4xl mx-auto py-6 px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">关于</h1>
+          <p className="text-gray-600">查看应用信息和开发者详情</p>
+        </div>
+        
+        <SettingsSection>
+          <AboutSettings />
+        </SettingsSection>
       </div>
-    </>
+    </div>
   );
 }
