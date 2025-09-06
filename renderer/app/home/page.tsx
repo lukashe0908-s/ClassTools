@@ -258,29 +258,34 @@ function FloatWindow({ onShutdownModalOpen }) {
       </div>
 
       {/* Main Content */}
-      <ScrollShadow className='flex flex-col gap-4 py-2 flex-grow scrollbar-hide'>
+      <div className='flex flex-col gap-4 py-2 flex-grow scrollbar-hide'>
         <ClassList
           schedule={classSchedule}
           slidingPosition={slidingPosition}
           progressDisplay={progressDisplay}></ClassList>
         {/* Background Picture List */}
-        <div className='flex flex-col gap-4 px-2'>
+        <div className="flex flex-col gap-4 px-2">
           <div
             ref={wallpaperListRef}
-            className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
-            {wallpapers.map((wallpaper, index) => (
-              <img
+            className="flex flex-col gap-4 overflow-auto max-h-[40vh] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity aspect-[16/9]"
+          >
+          {wallpapers.map((wallpaper, index) => (
+              <div
                 key={index}
-                src={wallpaper}
-                alt={`Wallpaper ${index}`}
-                className='max-w-full rounded-lg snap-center select-none'
-                onClick={() => updateWallpaper(wallpaper, index)}
-                draggable='false'
-              />
+                className="w-full h-40 aspect-[16/9] flex items-center justify-center rounded-lg snap-center"
+              >
+                <img
+                  src={wallpaper}
+                  alt={`Wallpaper ${index}`}
+                  className={`w-full h-full object-contain object-center select-none cursor-pointer rounded-lg`}
+                  onClick={() => updateWallpaper(wallpaper, index)}
+                  draggable="false"
+                />
+              </div>
             ))}
           </div>
         </div>
-      </ScrollShadow>
+      </div>
 
       {/* Footer */}
       <div className='flex gap-1 items-center bg-white p-1 rounded-lg'>
