@@ -54,7 +54,8 @@ electronOptions = electronOptions.trim();
 
 const execaOptions: execa.Options = {
   cwd: process.cwd(),
-  stdio: 'inherit',
+  stdio: 'pipe',
+  encoding: 'utf8',
 };
 
 (async () => {
@@ -65,16 +66,20 @@ const execaOptions: execa.Options = {
 
   const startMainProcess = () => {
     logger.info(`Run main process: electron . ${rendererPort} ${electronOptions}`);
-    mainProcess = execa('electron', ['.', `${rendererPort}`, ...electronOptions.split(' ')], {
+    mainProcess = execa.execa('electron', ['.', `${rendererPort}`, ...electronOptions.split(' ')], {
       // detached: true,
       ...execaOptions,
     });
+    mainProcess.stdout?.pipe(process.stdout);
+    mainProcess.stderr?.pipe(process.stderr);
     mainProcess.unref();
   };
 
   const startRendererProcess = () => {
     logger.info(`Run renderer process: next -p ${rendererPort} ${nextronConfig.rendererSrcDir || 'renderer'}`);
-    const child = execa('next', ['-p', rendererPort, nextronConfig.rendererSrcDir || 'renderer'], execaOptions);
+    const child = execa.execa('next', ['-p', rendererPort, nextronConfig.rendererSrcDir || 'renderer'], execaOptions);
+    child.stdout?.pipe(process.stdout);
+    child.stderr?.pipe(process.stderr);
     child.on('close', () => {
       process.exit(0);
     });
