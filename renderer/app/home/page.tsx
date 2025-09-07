@@ -264,24 +264,19 @@ function FloatWindow({ onShutdownModalOpen }) {
           slidingPosition={slidingPosition}
           progressDisplay={progressDisplay}></ClassList>
         {/* Background Picture List */}
-        <div className="flex flex-col gap-4 px-2">
+        <div className='flex flex-col gap-4 px-2'>
           <div
             ref={wallpaperListRef}
-            className="flex flex-col gap-4 overflow-auto max-h-[40vh] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity aspect-[16/9]"
-          >
-          {wallpapers.map((wallpaper, index) => (
-              <div
+            className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
+            {wallpapers.map((wallpaper, index) => (
+              <img
                 key={index}
-                className="w-full h-40 aspect-[16/9] flex items-center justify-center rounded-lg snap-center"
-              >
-                <img
-                  src={wallpaper}
-                  alt={`Wallpaper ${index}`}
-                  className={`w-full h-full object-contain object-center select-none cursor-pointer rounded-lg`}
-                  onClick={() => updateWallpaper(wallpaper, index)}
-                  draggable="false"
-                />
-              </div>
+                src={wallpaper}
+                alt={`Wallpaper ${index}`}
+                className='max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
+                onClick={() => updateWallpaper(wallpaper, index)}
+                draggable='true'
+              />
             ))}
           </div>
         </div>
