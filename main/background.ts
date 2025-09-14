@@ -212,9 +212,20 @@ Await ($tetheringManager.StartTetheringAsync()) ([Windows.Networking.NetworkOper
         const scriptPath = createHotspotScript();
 
         // 调用 PowerShell 执行
-        const ps = cp.spawn('powershell.exe', ['-ExecutionPolicy', 'Bypass', '-File', scriptPath], {
-          windowsHide: true,
-        });
+        const ps = cp.spawn(
+          'powershell.exe',
+          [
+            '-NoLogo',
+            '-NoProfile',
+            '-ExecutionPolicy',
+            'Bypass',
+            '-Command',
+            `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & '${scriptPath}'`,
+          ],
+          {
+            windowsHide: true,
+          }
+        );
         // 标准输出
         ps.stdout.on('data', data => {
           console.info(`[startAction] [Hotspot] ${data.toString().trim()}`);
