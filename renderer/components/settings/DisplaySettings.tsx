@@ -70,6 +70,7 @@ export function AppearanceSettings() {
   const [fontSize, setFontSize] = useState(1.2);
   const [slidingPosition, setSlidingPosition] = useState('center');
   const [progressDisplay, setProgressDisplay] = useState('always');
+  const [useWindowBackgroundMaterial, setUseWindowBackgroundMaterial] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -81,6 +82,9 @@ export function AppearanceSettings() {
 
       const progressData = await getConfigSync('display.progressDisplay');
       progressData && setProgressDisplay(String(progressData));
+
+      const useWindowBackgroundMaterialData = await getConfigSync('display.useWindowBackgroundMaterial');
+      useWindowBackgroundMaterialData && setUseWindowBackgroundMaterial(useWindowBackgroundMaterialData);
     })();
   }, []);
 
@@ -101,7 +105,6 @@ export function AppearanceSettings() {
           />
         </div>
       </SettingsItem>
-
       <SettingsItem title='滑动位置' description='设置滚动时的对齐方式'>
         <Autocomplete
           className='w-48'
@@ -119,7 +122,6 @@ export function AppearanceSettings() {
           {item => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
         </Autocomplete>
       </SettingsItem>
-
       <SettingsItem title='进度条显示' description='设置进度条的显示时机'>
         <Autocomplete
           className='w-48'
@@ -135,6 +137,19 @@ export function AppearanceSettings() {
           ]}>
           {item => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
         </Autocomplete>
+      </SettingsItem>
+      <SettingsItem
+        title='使用窗口级背景模糊'
+        description={
+          <div className='flex items-center gap-2'>{`在 Windows 11 22H2 及更高版本中，窗口可使用亚克力背景`}</div>
+        }>
+        <Switch
+          isSelected={useWindowBackgroundMaterial}
+          onChange={() => {
+            setUseWindowBackgroundMaterial(!useWindowBackgroundMaterial);
+            window.ipc?.send('set-config', 'display.useWindowBackgroundMaterial', !useWindowBackgroundMaterial);
+          }}
+        />
       </SettingsItem>
     </SettingsGroup>
   );

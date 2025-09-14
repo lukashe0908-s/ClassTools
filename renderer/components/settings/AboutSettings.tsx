@@ -64,7 +64,7 @@ export function AboutSettings() {
         </div>
       </SettingsItem>
 
-      <SettingsItem title='检查更新' description='检查是否有可用的更新'>
+      {/* <SettingsItem title='检查更新' description='检查是否有可用的更新'>
         <Button
           color='primary'
           variant='flat'
@@ -75,22 +75,14 @@ export function AboutSettings() {
           }}>
           检查更新
         </Button>
-      </SettingsItem>
+      </SettingsItem> */}
 
       <div className='bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4'>
         <h4 className='font-medium text-gray-900 mb-2'>技术信息</h4>
         <div className='grid grid-cols-2 gap-4 text-sm'>
           <div>
-            <span className='text-gray-600'>框架:</span>
-            <span className='ml-2 font-mono'>Next.js + Electron</span>
-          </div>
-          <div>
-            <span className='text-gray-600'>UI库:</span>
-            <span className='ml-2 font-mono'>HeroUI</span>
-          </div>
-          <div>
-            <span className='text-gray-600'>语言:</span>
-            <span className='ml-2 font-mono'>TypeScript</span>
+            <span className='text-gray-600'>开源:</span>
+            <span className='ml-2 font-mono'>https://github.com/lukashe0908-s/ClassTools</span>
           </div>
           <div>
             <span className='text-gray-600'>许可证:</span>

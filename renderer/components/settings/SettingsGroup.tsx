@@ -16,8 +16,8 @@ export function SettingsGroup({ title, description, children, icon }: SettingsGr
         <div className='flex items-center gap-3'>
           {icon && <div className='flex-shrink-0 text-gray-600'>{icon}</div>}
           <div className='flex flex-col'>
-            <h3 className='text-lg font-semibold text-gray-900'>{title}</h3>
-            {description && <p className='text-sm text-gray-600'>{description}</p>}
+            <h3 className='text-lg font-semibold text-gray-900 whitespace-pre-line'>{title}</h3>
+            {description && <p className='text-sm text-gray-600 whitespace-pre-wrap'>{description}</p>}
           </div>
         </div>
       </CardHeader>
@@ -40,8 +40,8 @@ export function SettingsItem({ title, description, children, disabled = false }:
   return (
     <div className={`flex items-center justify-between py-3 ${disabled ? 'opacity-50' : ''}`}>
       <div className='flex-1 pr-4'>
-        <div className='font-medium text-gray-900'>{title}</div>
-        {description && <div className='text-sm text-gray-600 mt-1'>{description}</div>}
+        <div className='font-medium text-gray-900 whitespace-pre-line'>{title}</div>
+        {description && <div className='text-sm text-gray-600 mt-1 whitespace-pre-wrap'>{description}</div>}
       </div>
       <div className='flex-shrink-0'>{children}</div>
     </div>

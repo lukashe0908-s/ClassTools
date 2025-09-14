@@ -21,9 +21,10 @@ export function DataPrivacySettings() {
         </p>
       </div>
 
-      <SettingsItem title='Remote Overlay' description='允许远程覆盖功能' disabled>
+      {/* TODO: Remote control */}
+      {/* <SettingsItem title='Remote Overlay' description='允许远程覆盖功能' disabled>
         <Switch isDisabled isSelected={remoteOverlay} />
-      </SettingsItem>
+      </SettingsItem> */}
 
       <SettingsItem title='配置云端备份' description='启用配置文件的云端备份功能'>
         <Switch isSelected={cloudBackup} onChange={() => setCloudBackup(!cloudBackup)} />

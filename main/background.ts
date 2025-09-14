@@ -95,14 +95,19 @@ function isWindows11() {
     return base;
   })();
 
+  const usebackgroundMaterial = (() => {
+    if (!isWindows11()) return false;
+    if (store.get('display.useWindowBackgroundMaterial') !== true) return false;
+    return true;
+  })();
+
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false,
     },
-    backgroundMaterial: isProd ? 'acrylic' : 'acrylic',
+    backgroundMaterial: usebackgroundMaterial ? 'acrylic' : 'auto',
     roundedCorners: true,
-    // transparent: true,
     frame: false,
     width: mainWindowWidth,
     height: mainWindowHeight,
