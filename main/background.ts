@@ -360,7 +360,7 @@ ipcMain.handle('systeminformation', async (event, action: any) => {
 });
 
 ipcMain.on('sys-shutdown', async (event, arg) => {
-  if (isProd) return;
+  if (!isProd) return;
   const cp = require('child_process');
   cp.execSync('shutdown -s -t 0');
 });
