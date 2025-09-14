@@ -43,20 +43,20 @@ const execaOptions: execa.Options = {
     await Promise.all([fs.remove(appDir), fs.remove(distDir)]);
 
     logger.info('Building renderer process');
-    await execa('next', ['build', path.join(cwd, rendererSrcDir)], execaOptions);
+    await execa.execa('next', ['build', path.join(cwd, rendererSrcDir)], execaOptions);
     if (await useExportCommand()) {
-      await execa('next', ['export', '-o', appDir, path.join(cwd, rendererSrcDir)], execaOptions);
+      await execa.execa('next', ['export', '-o', appDir, path.join(cwd, rendererSrcDir)], execaOptions);
     }
 
     logger.info('Building main process');
-    // await execa('node', [path.join(__dirname, 'webpack.config.js')], execaOptions);
-    await execa('ts-node', [path.join(__dirname, 'configs/webpack.config.production.ts')], execaOptions);
+    // await execa.execa('node', [path.join(__dirname, 'webpack.config.js')], execaOptions);
+    await execa.execa('ts-node', [path.join(__dirname, 'configs/webpack.config.production.ts')], execaOptions);
 
     if (args['--no-pack']) {
       logger.info('Skip packaging...');
     } else {
       logger.info('Packaging - please wait a moment');
-      await execa('electron-builder', createBuilderArgs(), execaOptions);
+      await execa.execa('electron-builder', createBuilderArgs(), execaOptions);
     }
 
     logger.info('See `build/dist` directory');
