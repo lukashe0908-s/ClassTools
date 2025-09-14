@@ -37,7 +37,7 @@ export default function App() {
               <Switch
                 isSelected={autoLaunch}
                 onChange={async () => {
-                  window.ipc?.send('autoLaunch', 'set', !autoLaunch);
+                  window.ipc?.invoke('autoLaunch', 'set', !autoLaunch);
                   setAutoLaunch(await getAutoLaunchSync());
                 }}
               />
