@@ -289,6 +289,8 @@ function FloatWindow({ onShutdownModalOpen }) {
                 className='max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
                 onClick={() => updateWallpaper(wallpaper, index)}
                 draggable='true'
+                // loading='lazy'
+                referrerPolicy='no-referrer'
               />
             ))}
           </div>
@@ -320,7 +322,6 @@ function FloatWindow({ onShutdownModalOpen }) {
             filter: 'blur(40px)',
             userSelect: 'none',
           }}
-          loading='lazy'
           referrerPolicy='no-referrer'
           draggable='false'
           src={currentWallpaper || null}
