@@ -258,7 +258,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       </div>
 
       {/* Main Content */}
-      <div className='flex flex-col gap-4 py-2 flex-grow scrollbar-hide'>
+      <div className='flex flex-col gap-4 py-2 flex-grow overflow-y-auto scrollbar-hide'>
         <ClassList
           schedule={classSchedule}
           slidingPosition={slidingPosition}
