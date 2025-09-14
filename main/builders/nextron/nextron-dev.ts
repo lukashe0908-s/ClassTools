@@ -54,8 +54,7 @@ electronOptions = electronOptions.trim();
 
 const execaOptions: execa.Options = {
   cwd: process.cwd(),
-  stdio: 'pipe',
-  encoding: 'utf8',
+  stdio: 'inherit',
 };
 
 (async () => {
@@ -69,6 +68,8 @@ const execaOptions: execa.Options = {
     mainProcess = execa.execa('electron', ['.', `${rendererPort}`, ...electronOptions.split(' ')], {
       // detached: true,
       ...execaOptions,
+      stdio: 'pipe',
+      encoding: 'utf8',
     });
     mainProcess.stdout?.pipe(process.stdout);
     mainProcess.stderr?.pipe(process.stderr);
