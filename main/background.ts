@@ -169,7 +169,10 @@ function isWindows11() {
   try {
     if (store.get('main.startAction.openHotspot')) {
       if (os.platform() === 'win32' && parseInt(os.release().split('.')[0]) >= 10) {
-        runHotspotScript();
+        const delaySec = Number(store.get('main.startAction.openHotspotDelay') || 0);
+        setTimeout(() => {
+          runHotspotScript();
+        }, delaySec * 1000);
       }
 
       function createHotspotScript() {

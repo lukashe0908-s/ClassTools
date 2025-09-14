@@ -8,6 +8,7 @@ export default function App() {
   const [autoLaunch, setAutoLaunch] = useState(false);
   const [autoLaunchE, setAutoLaunchE] = useState('Finding');
   const [startAction_openHotspot, setStartAction_openHotspot] = useState(false);
+  const [startAction_openHotspotDelay, setStartAction_openHotspotDelay] = useState('0');
 
   useEffect(() => {
     (async () => {
@@ -19,6 +20,8 @@ export default function App() {
       }
       const openHotspot = await getConfigSync('main.startAction.openHotspot');
       openHotspot && setStartAction_openHotspot(Boolean(openHotspot));
+      const openHotspotDelay = await getConfigSync('main.startAction.openHotspotDelay');
+      openHotspotDelay && setStartAction_openHotspotDelay(openHotspotDelay);
     })();
   }, []);
 
@@ -42,12 +45,29 @@ export default function App() {
                 }}
               />
             </SettingsItem>
+            <Divider></Divider>
             <SettingsItem title='自动开启热点' description={`在应用启动时开启 Windows 的移动热点`}>
               <Switch
                 isSelected={startAction_openHotspot}
                 onChange={() => {
                   setStartAction_openHotspot(!startAction_openHotspot);
                   window.ipc?.send('set-config', 'main.startAction.openHotspot', !startAction_openHotspot);
+                }}
+              />
+            </SettingsItem>
+            <SettingsItem title='开启热点延迟' description='应用启动后延迟开启热点（单位：秒）'>
+              <Input
+                type='number'
+                min={0}
+                max={600}
+                className='w-24'
+                value={startAction_openHotspotDelay}
+                onChange={e => {
+                  setStartAction_openHotspotDelay(e.target.value);
+                  const value = parseInt(e.target.value, 10) || 0;
+                  if (value >= Number(e.target.min) && value <= Number(e.target.max)) {
+                    window.ipc?.send('set-config', 'main.startAction.openHotspotDelay', value);
+                  }
                 }}
               />
             </SettingsItem>
