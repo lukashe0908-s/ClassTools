@@ -139,7 +139,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
 
                 return (
                   <Fragment key={refIndex}>
-                    {idx !== 0 && <Divider className='bg-gray-500' />}
+                    {idx !== 0 && <Divider className='bg-gray-400/60' />}
                     <div
                       ref={el => {
                         refList.current[groupIdx * 100 + idx] = el;

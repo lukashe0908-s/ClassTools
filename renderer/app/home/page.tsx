@@ -407,7 +407,7 @@ function FloatWindow({ onShutdownModalOpen }) {
             width: 'auto',
             height: '100%',
             transform: 'translate(-50%, 0)',
-            opacity: 0.3,
+            opacity: 0.5,
             filter: 'blur(40px)',
             userSelect: 'none',
           }}
