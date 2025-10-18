@@ -13,19 +13,6 @@ LicenseInfo.setLicenseKey(
 );
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // useEffect(() => {
-  //   const serviceWorkerScope = `/sw.js`;
-  //   navigator.serviceWorker &&
-  //     location.protocol === 'https:' &&
-  //     navigator.serviceWorker
-  //       .register(serviceWorkerScope)
-  //       .then(() => {
-  //         // console.info(`Service worker registered at ${serviceWorkerScope}`);
-  //       })
-  //       .catch(error => {
-  //         console.error('Error in serviceWorker registration: ', error);
-  //       });
-  // },[]);
   useEffect(() => {
     window.alert = function (...args: any[1]) {
       console.log('[Alert]', args[0]);

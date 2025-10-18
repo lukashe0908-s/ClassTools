@@ -15,16 +15,12 @@ const externals = require(path.join(cwd, 'package.json')).dependencies;
 const { mainSrcDir } = getNextronConfig();
 const backgroundPath = path.join(cwd, mainSrcDir || 'main', `background${ext}`);
 const preloadPath = path.join(cwd, mainSrcDir || 'main', `preload${ext}`);
-const preloadPathTitlebar = path.join(cwd, mainSrcDir || 'main', `preloadTitlebar${ext}`);
 
 const entry: webpack.Configuration['entry'] = {
   background: backgroundPath,
 };
 if (fs.existsSync(preloadPath)) {
   entry.preload = preloadPath;
-}
-if (fs.existsSync(preloadPathTitlebar)) {
-  entry.preloadTitlebar = preloadPathTitlebar;
 }
 
 export const baseConfig: webpack.Configuration = {
