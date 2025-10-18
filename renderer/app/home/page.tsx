@@ -23,7 +23,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import UpdateModal from './updateModal';
-import ClassList from './classListNew';
+import ClassList from './classList';
 import { Weather } from './weather';
 import { generateConfig, getConfigSync } from '../../components/p_function';
 
@@ -318,7 +318,7 @@ function FloatWindow({ onShutdownModalOpen }) {
             width: 'auto',
             height: '100%',
             transform: 'translate(-50%, 0)',
-            opacity: 0.5,
+            opacity: 0.3,
             filter: 'blur(40px)',
             userSelect: 'none',
           }}

@@ -1,16 +1,44 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Fragment } from 'react';
 import { Card, CardBody, CardHeader, Divider, Progress } from '@heroui/react';
-import { Fragment } from 'react';
-
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { getChangeDay, getWeekNumber, getWeekDate, listClassesForDay } from '../../components/p_function';
+import {
+  getChangeDay,
+  getWeekNumber,
+  getWeekDate,
+  listClassesForDay,
+  getConfigSync,
+} from '../../components/p_function';
 
 export default function ClassList({ schedule, progressDisplay = 'active', slidingPosition = 'nearest' }) {
   const containerRef = useRef(null);
   const [classes, setClasses] = useState([]);
   const [weekInfo, setWeekInfo] = useState({ now: 0, total: 0 });
   const [tick, setTick] = useState(0);
+  const [currentDate, setCurrentDate] = useState(dayjs().format('YYYY-MM-DD')); // 当前日期字符串
+  const refList = useRef([]);
+  const [fontSize, setFontSize] = useState(1);
+
+  useEffect(() => {
+    const loadFontSize = async () => {
+      const size = await getConfigSync('display.fontSize');
+      setFontSize(Number(size) || 1);
+    };
+    loadFontSize();
+  }, []);
+
+  useEffect(() => {
+    const handler = async () => {
+      const size = await getConfigSync('display.fontSize');
+      setFontSize(Number(size) || 1);
+    };
+
+    window.ipc?.on('sync-config', handler);
+
+    return () => {
+      window.ipc?.removeListener?.('sync-config', handler);
+    };
+  }, []);
 
   useEffect(() => {
     dayjs.extend(weekOfYear);
@@ -28,80 +56,129 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
       if (!dayClasses || Object.keys(dayClasses).length === 0) {
         dayClasses = [
           { startTime: '11:45', endTime: '14:19', subject: 'Example' },
-          { startTime: '11:45', endTime: '14:19', subject: 'Example' },
+          { startTime: '14:30', endTime: '16:00', subject: 'Example 2', divide: true },
+          { startTime: '16:10', endTime: '18:00', subject: 'Example 3' },
         ];
       }
       setClasses(dayClasses);
     })();
-  }, [schedule]);
-  // 每秒刷新 tick
+  }, [schedule, currentDate]);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTick(Date.now());
-    }, 1000);
+    const interval = setInterval(() => setTick(Date.now()), 1000);
     return () => clearInterval(interval);
   }, []);
+  // 当tick变化，判断是否跨天
+  useEffect(() => {
+    const todayStr = dayjs().format('YYYY-MM-DD');
+    if (todayStr !== currentDate) {
+      setCurrentDate(todayStr); // 触发重新获取课程数据
+    }
+  }, [tick, currentDate]);
+
+  useEffect(() => {
+    // 自动滚动到最后一个非 after 的课程
+    for (let i = refList.current.length - 1; i >= 0; i--) {
+      const el = refList.current[i];
+      if (el && el.dataset.state !== 'after') {
+        el.scrollIntoView({ behavior: 'smooth', block: slidingPosition });
+        break;
+      }
+    }
+  }, [tick, slidingPosition]);
+
+  const groupedClasses = [];
+  let currentGroup = [];
+
+  for (let i = 0; i < classes.length; i++) {
+    if (classes[i].startTime && classes[i].endTime && classes[i].subject) {
+      currentGroup.push(classes[i]);
+    }
+    if (classes[i].divide || i === classes.length - 1) {
+      groupedClasses.push(currentGroup);
+      currentGroup = [];
+    }
+  }
 
   return (
     <div className='class-list' ref={containerRef}>
-      {classes.map((cls, idx) => {
-        if (cls.startTime && cls.endTime && cls.subject) {
-          const currentTime = new Date();
-          const [sh, sm] = cls.startTime.split(':').map(Number);
-          const [eh, em] = cls.endTime.split(':').map(Number);
-          const start = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), sh, sm);
-          const end = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), eh, em);
+      {groupedClasses
+        .filter(group => group.length > 0)
+        .map((group, groupIdx) => (
+          <div key={groupIdx} className='mb-2'>
+            <Card className='mx-2 shadow-md bg-transparent'>
+              {group.map((cls, idx) => {
+                const refIndex = groupIdx * 100 + idx; // 避免冲突
 
-          let state = 'default';
-          if (currentTime >= start && currentTime <= end) {
-            state = 'active';
-          } else if (currentTime > end) {
-            state = 'before';
-          } else {
-            state = 'after';
-          }
+                const currentTime = new Date();
+                const [sh, sm] = cls.startTime.split(':').map(Number);
+                const [eh, em] = cls.endTime.split(':').map(Number);
+                const start = new Date(
+                  currentTime.getFullYear(),
+                  currentTime.getMonth(),
+                  currentTime.getDate(),
+                  sh,
+                  sm
+                );
+                const end = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), eh, em);
 
-          const percent = ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * 100;
+                // state timeline: default | before > active > after
+                let state = 'default';
+                if (currentTime >= start && currentTime <= end) state = 'active';
+                else if (currentTime > end) state = 'before';
+                else state = 'after';
 
-          const baseClass = `transition-all duration-300 ease-in-out ${
-            state === 'active'
-              ? 'border border-blue-500 bg-blue-50 shadow-lg'
-              : state === 'before'
-              ? 'opacity-60 bg-gray-100'
-              : 'bg-white'
-          }`;
+                const percent = ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * 100;
+                const baseClass = `transition-all duration-300 ease-in-out ${
+                  state === 'active'
+                    ? 'border border-blue-500 bg-blue-200/60 shadow-inner'
+                    : state === 'before'
+                    ? 'bg-gray-300/60'
+                    : 'bg-white/60'
+                }`;
 
-          return (
-            <Fragment key={idx}>
-              <Card className={`mx-2 mb-2 ${baseClass}`}>
-                <CardHeader className='text-sm text-gray-600 px-4 pt-3 pb-1'>
-                  {cls.startTime} - {cls.endTime}
-                </CardHeader>
-                <CardBody className='px-4 pt-0 pb-4'>
-                  <div className='text-lg font-semibold mb-2'>{cls.subject}</div>
-                  {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
-                    <Progress
-                      aria-label='progress'
-                      size='sm'
-                      value={Math.min(Math.max(percent, 0), 100)}
-                      color='primary'
-                      className='w-full'
-                    />
-                  )}
-                </CardBody>
-              </Card>
-              {cls.divide && (
-                <div className='my-4 px-1'>
-                  <Divider className='h-[2px]' />
-                </div>
-              )}
-            </Fragment>
-          );
-        }
-      })}
-
+                return (
+                  <Fragment key={refIndex}>
+                    {idx !== 0 && <Divider />}
+                    <div
+                      ref={el => {
+                        refList.current[groupIdx * 100 + idx] = el;
+                      }}
+                      data-state={state}
+                      className={`px-4 py-2 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
+                      <div
+                        className={`text-sm mb-0 whitespace-pre  ${
+                          state === 'before' ? 'text-gray-600' : 'text-gray-800'
+                        }`}>
+                        {`${cls.startTime} - ${cls.endTime}`}
+                      </div>
+                      <div
+                        className={`font-semibold mb-0 whitespace-pre-wrap ${
+                          state === 'before' ? 'text-gray-800' : 'text-black'
+                        }`}
+                        style={{
+                          fontSize: fontSize + 'rem',
+                        }}>
+                        {`${cls.subject.replace('\\n', '\n')}`}
+                      </div>
+                      {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
+                        <Progress
+                          aria-label='progress'
+                          size='sm'
+                          value={Math.min(Math.max(percent, 0), 100)}
+                          color='primary'
+                          className='mt-1 w-full'
+                        />
+                      )}
+                    </div>
+                  </Fragment>
+                );
+              })}
+            </Card>
+          </div>
+        ))}
       <div className='py-4 px-2'>
-        <span id='weekNumber' className='text-md text-gray-800 bg-gray-100 p-2 rounded-md'>
+        <span id='weekNumber' className={`text-gray-800 bg-gray-100/50 p-2 rounded-md shadow-md`}>
           #{weekInfo.now}/{weekInfo.total}
         </span>
       </div>
