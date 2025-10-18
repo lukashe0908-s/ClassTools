@@ -214,6 +214,9 @@ function FloatWindow({ onShutdownModalOpen }) {
         const imageElement = container.children[selectedIndex] as HTMLElement;
         if (imageElement) {
           imageElement.scrollIntoView({ behavior: 'instant', block: 'center' });
+          setTimeout(() => {
+            document.getElementById('mainContentHeadPosition').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
         }
       }
     }
@@ -305,6 +308,7 @@ function FloatWindow({ onShutdownModalOpen }) {
 
       {/* Main Content */}
       <div className='flex flex-col gap-4 py-2 flex-grow overflow-y-auto scrollbar-hide'>
+        <div id='mainContentHeadPosition'></div>
         <ClassList
           schedule={classSchedule}
           slidingPosition={slidingPosition}
