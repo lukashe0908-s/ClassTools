@@ -1,11 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Button, Chip } from '@heroui/react';
 import { SettingsGroup, SettingsItem } from './SettingsGroup';
 import InfoIcon from '@mui/icons-material/Info';
 import PersonIcon from '@mui/icons-material/Person';
 import CodeIcon from '@mui/icons-material/Code';
-import UpdateIcon from '@mui/icons-material/Update';
 import { getVersionSync } from '../../components/p_function';
 import dayjs from 'dayjs';
 

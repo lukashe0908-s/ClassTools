@@ -1,26 +1,11 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import {
-  Button,
-  ButtonGroup,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-  Chip,
-  Checkbox,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownSection,
-  DropdownItem,
-  ScrollShadow,
-} from '@heroui/react';
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
 import { Cog6ToothIcon, ArrowPathIcon, ArrowTopRightOnSquareIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import PlayIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseIcon from '@mui/icons-material/PauseRounded';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import UpdateModal from './updateModal';
 import ClassList from './classList';
@@ -100,10 +85,10 @@ function FloatWindow({ onShutdownModalOpen }) {
     setSelectedIndex(index);
     if (document.startViewTransition) {
       document.startViewTransition(() => {
-        setCurrentWallpaper(newWallpaper);
+        setCurrentWallpaper(newWallpaper ?? '');
       });
     } else {
-      setCurrentWallpaper(newWallpaper);
+      setCurrentWallpaper(newWallpaper ?? '');
     }
     // 使用 requestAnimationFrame 确保在 DOM 更新后再滚动
     requestAnimationFrame(() => {
@@ -127,19 +112,51 @@ function FloatWindow({ onShutdownModalOpen }) {
     const cached = localStorage.getItem(CACHE_KEY);
     const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
 
-    if (!DISABLE_CACHE && cached && now < expires) {
-      try {
-        const cachedUrls = JSON.parse(cached);
-        setWallpapers(cachedUrls);
-        const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
-        const validIndex = savedIndex < cachedUrls.length ? savedIndex : 0;
-        updateWallpaper(cachedUrls[validIndex], validIndex);
-      } catch (err) {
-        console.error('Failed to parse json for wallpaper:', err);
-      }
-      return;
+    interface WallpaperItem {
+      type: 'image' | 'video' | 'mixed';
+      video_url?: string;
+      image_url?: string;
     }
-    const fetchDnsWallpaper = async () => {
+
+    (async () => {
+      const useGameBgsConfig = await getConfigSync('display.background.useGameBgs');
+      const useGameConfig = await getConfigSync('display.background.useGame');
+      let gameBg_object: any = { type: 'image' };
+      if (useGameBgsConfig && useGameConfig) {
+        const res = await fetch(
+          `https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&game_id=${useGameConfig}`
+        );
+        const data = await res.json();
+        const info = data?.data?.game_info_list?.[0];
+        if (info && info.backgrounds?.length > 0) {
+          const bg = info.backgrounds[0];
+          if (bg.video?.url) {
+            gameBg_object.video_url = bg.video.url;
+            gameBg_object.type = 'mixed';
+          }
+          if (bg.background?.url) gameBg_object.image_url = bg.background.url;
+        }
+      }
+
+      // 缓存读取
+      if (!DISABLE_CACHE && cached && now < expires) {
+        try {
+          const cachedData: WallpaperItem[] = JSON.parse(cached);
+          let wallpaperList: WallpaperItem[] = useGameBgsConfig ? [gameBg_object, ...cachedData] : cachedData;
+          setWallpapers(wallpaperList);
+          const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
+          const validIndex = savedIndex < wallpaperList.length ? savedIndex : 0;
+          updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
+        } catch (err) {
+          console.error('Failed to parse json for wallpaper:', err);
+        }
+        return;
+      }
+
+      fetchDnsWallpaper(useGameBgsConfig ? [gameBg_object] : []);
+    })();
+
+    async function fetchDnsWallpaper(addBefore?: WallpaperItem[]) {
       try {
         const txtRecords: string[][] = await window.ipc?.invoke(
           'resolveDns',
@@ -151,20 +168,34 @@ function FloatWindow({ onShutdownModalOpen }) {
         if (!base64String) throw new Error('No valid TXT record found');
 
         const decodedUrls_json = atob(base64String);
-        const decodedUrls = JSON.parse(decodedUrls_json);
-        setWallpapers(decodedUrls);
-        const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
-        const validIndex = savedIndex < decodedUrls.length ? savedIndex : 0;
-        updateWallpaper(decodedUrls[validIndex], validIndex);
+        const rawList = JSON.parse(decodedUrls_json);
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify(decodedUrls));
+        // 清洗列表，兼容旧列表格式
+        const normalizedList = rawList.map((data: string | any) => {
+          if (typeof data === 'object') {
+            if (
+              (data.type === 'image' || data.type === 'video' || data.type === 'mixed') &&
+              (data.video_url || data.image_url)
+            ) {
+              return data;
+            }
+          }
+          return { type: 'image', image_url: data };
+        });
+
+        localStorage.setItem(CACHE_KEY, JSON.stringify(normalizedList));
         localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
+
+        let wallpaperList: WallpaperItem[] = [...(addBefore || []), ...normalizedList];
+
+        setWallpapers(wallpaperList);
+        const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
+        const validIndex = savedIndex < wallpaperList.length ? savedIndex : 0;
+        updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
       } catch (err) {
         console.error('Failed to resolve DNS TXT record for wallpaper:', err);
       }
-    };
-
-    fetchDnsWallpaper();
+    }
   }, []);
 
   const [classSchedule, setClassSchedule] = useState(null);
@@ -173,6 +204,8 @@ function FloatWindow({ onShutdownModalOpen }) {
   const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
   const [hiddenJumpto, setHiddenJumpto] = useState(false);
+  const [playingMixed, setPlayingMixed] = useState(true);
+
   // 处理初始滚动到选中的壁纸
   useEffect(() => {
     if (wallpapers.length > 0) {
@@ -219,7 +252,7 @@ function FloatWindow({ onShutdownModalOpen }) {
   return (
     <div className={`flex flex-col gap-0 p-0 h-full rounded-lg shadow-lg ${currentWallpaper ? '' : 'bg-[#dbeafe88]'}`}>
       {/* Toolbar */}
-      <div className='flex gap-2 items-center bg-white p-2 rounded-lg'>
+      <div className='flex gap-2 items-center bg-white/60 p-2 rounded-lg'>
         <Button
           isIconOnly
           onPress={() => {
@@ -277,37 +310,93 @@ function FloatWindow({ onShutdownModalOpen }) {
           slidingPosition={slidingPosition}
           progressDisplay={progressDisplay}></ClassList>
         {/* Background Picture List */}
-        <div className='flex flex-col gap-4 px-2'>
+        <div className='flex justify-center px-2'>
           <div
             ref={wallpaperListRef}
             className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
-            {wallpapers.map((wallpaper, index) => (
-              <img
-                key={index}
-                src={wallpaper}
-                alt={`Wallpaper ${index}`}
-                className='max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
-                onClick={() => updateWallpaper(wallpaper, index)}
-                draggable='true'
-                // loading='lazy'
-                referrerPolicy='no-referrer'
-              />
-            ))}
+            {wallpapers.map((wallpaper, index) => {
+              const { type, image_url, video_url } = wallpaper;
+              const key = `wallpaper-${index}`;
+              const handleClick = () => updateWallpaper(image_url, index);
+
+              // mixed 模式的特殊处理
+              if (type === 'mixed') {
+                return (
+                  <div
+                    key={key}
+                    className='relative max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
+                    onClick={handleClick}>
+                    {playingMixed ? (
+                      <video
+                        src={video_url}
+                        className='w-full h-full rounded-lg object-contain'
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                      />
+                    ) : (
+                      <img
+                        src={image_url}
+                        alt={`Wallpaper ${index}`}
+                        className='w-full h-full rounded-lg object-contain'
+                        draggable='false'
+                        referrerPolicy='no-referrer'
+                      />
+                    )}
+
+                    <button
+                      onClick={() => {
+                        setPlayingMixed(!playingMixed);
+                      }}
+                      className='absolute bottom-1 left-1 bg-black/30 text-white/60 text-sm p-1 rounded-full hover:bg-black/40 hover:text-white/80 transition-colors'>
+                      {playingMixed ? <PauseIcon></PauseIcon> : <PlayIcon></PlayIcon>}
+                    </button>
+                  </div>
+                );
+              }
+
+              if (type === 'video') {
+                return (
+                  <video
+                    key={key}
+                    src={video_url}
+                    className='max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
+                    onClick={handleClick}
+                    muted
+                    loop
+                    autoPlay
+                    playsInline
+                  />
+                );
+              }
+
+              return (
+                <img
+                  key={key}
+                  src={image_url ?? ''}
+                  alt={`Wallpaper ${index}`}
+                  className='max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
+                  onClick={handleClick}
+                  draggable='true'
+                  referrerPolicy='no-referrer'
+                />
+              );
+            })}
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <div className='flex gap-1 items-center bg-white p-1 rounded-lg'>
+      <div className='flex gap-1 items-center bg-white/40 p-1 rounded-lg'>
         <Button className='font-bold' fullWidth onPress={onShutdownModalOpen}>
           关机
         </Button>
         <Weather />
       </div>
       {/* Background */}
-      <div style={{ position: 'absolute', top: 0, zIndex: -1, width: '100%', height: '100%' }}>
+      <div className='absolute top-0 z-[-1] w-full h-full'>
         <img
-          id='bing-wallpaper-bg'
           style={{
             zIndex: -1,
             top: 0,
