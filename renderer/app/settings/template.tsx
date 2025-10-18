@@ -21,7 +21,7 @@ export default function Template({ children }) {
         <div className='h-full flex select-none'>
           <OverlayScrollbarsComponent
             defer
-            className='overflow-auto scrollbar-hide border-r border-gray-200/60 min-w-50 bg-white/50 backdrop-blur-sm'
+            className='overflow-auto scrollbar-hide border-r border-gray-200/60 min-w-50 bg-white/50'
             options={{ scrollbars: { autoHide: 'move' } }}>
             <div className='p-2'>
               <div className='flex items-center justify-center gap-2 mb-2'>

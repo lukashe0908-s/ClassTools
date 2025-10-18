@@ -132,7 +132,6 @@ export default function App() {
               />
             </SettingsItem>
           </SettingsGroup>
-          <Divider className='my-6' />
 
           <SettingsGroup title='背景' icon={<WallpaperIcon></WallpaperIcon>}>
             <SettingsItem title='使用 米哈游 游戏背景' description='从米哈游的游戏中获取动态背景'>

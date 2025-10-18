@@ -11,7 +11,7 @@ interface SettingsGroupProps {
 
 export function SettingsGroup({ title, description, children, icon }: SettingsGroupProps) {
   return (
-    <Card className='w-full shadow-sm border border-gray-200/50 bg-white/80 backdrop-blur-sm'>
+    <Card className='w-full shadow-sm border border-gray-200/50 bg-white/80'>
       {title ? (
         <>
           <CardHeader className='flex gap-3 px-6 py-4'>

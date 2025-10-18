@@ -1,20 +1,31 @@
 'use client';
-import { Button, Card, CardBody, Input } from '@heroui/react';
+import {
+  Button,
+  Divider,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from '@heroui/react';
 import { Calendar } from '@heroui/calendar';
 import { useEffect, useState } from 'react';
 import * as lodash from 'lodash';
 import { getConfigSync } from '../../../../components/p_function';
 import { CalendarDate, parseDate } from '@internationalized/date';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { SettingsGroup, SettingsItem, SettingsSection } from '../../../../components/settings/SettingsGroup';
 
 interface DayChange {
   from: string;
   to: string;
 }
 
-export default function App() {
+function useDayChangeRules() {
   const [rules, setRules] = useState<DayChange[]>([]);
-  const [newFrom, setNewFrom] = useState('');
-  const [newTo, setNewTo] = useState('');
 
   useEffect(() => {
     loadRules();
@@ -22,102 +33,135 @@ export default function App() {
 
   const loadRules = async () => {
     const config = (await getConfigSync('lessonsList.changeDay')) as string;
-    if (config) {
-      const lines = config.split('\n').filter(line => line.trim() && !line.startsWith('//'));
-      const parsedRules = lines
-        .map(line => {
-          const [from, to] = line.split('-').map(s => s.trim());
-          return { from, to };
-        })
-        .filter(rule => rule.from && rule.to);
-      setRules(parsedRules);
-    }
+    if (!config) return;
+
+    const parsed = config
+      .split('\n')
+      .filter(line => line.trim() && !line.startsWith('//'))
+      .map(line => {
+        const [from, to] = line.split(/\s*-\s*/);
+        return { from, to };
+      })
+      .filter(r => r.from && r.to);
+
+    setRules(parsed);
   };
 
   const saveRules = (newRules: DayChange[]) => {
-    const content = [
-      ...newRules.map(rule => `${rule.from} - ${rule.to}`),
-    ].join('\n');
+    const uniqueRules = lodash.uniqBy(newRules, r => `${r.from}-${r.to}`);
+    const content = uniqueRules.map(r => `${r.from} - ${r.to}`).join('\n');
     window.ipc?.send('set-config', 'lessonsList.changeDay', content);
-    setRules(newRules);
+    setRules(uniqueRules);
   };
 
-  const addRule = () => {
-    if (newFrom && newTo) {
-      const newRules = [...rules, { from: newFrom, to: newTo }];
-      saveRules(newRules);
-      setNewFrom('');
-      setNewTo('');
-    }
+  const addRule = (rule: DayChange) => saveRules([...rules, rule]);
+  const deleteRule = (index: number) => saveRules(rules.filter((_, i) => i !== index));
+
+  return { rules, addRule, deleteRule };
+}
+
+export default function App() {
+  const { rules, addRule, deleteRule } = useDayChangeRules();
+  const today = new Date();
+  const [newFrom, setNewFrom] = useState(
+    `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(
+      2,
+      '0'
+    )}`
+  );
+  const [newTo, setNewTo] = useState('');
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleAdd = () => {
+    if (!newFrom || !newTo) return;
+    addRule({ from: newFrom, to: newTo });
   };
 
-  const deleteRule = (index: number) => {
-    const newRules = rules.filter((_, i) => i !== index);
-    saveRules(newRules);
+  const confirmDelete = (index: number) => {
+    setDeleteIndex(index);
+    onOpen();
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteIndex !== null) deleteRule(deleteIndex);
+    onClose();
   };
 
   return (
-    <>
-      <div className='h-full p-4 flex flex-col gap-4'>
-        <Card>
-          <CardBody>
-            <div className='mb-4'>
-              <h2 className='text-lg font-bold mb-2'>添加新的替换规则</h2>
-              <div className='flex gap-4 items-start'>
-                <div>
-                  <label className='block text-sm font-medium mb-1'>原始日期</label>
-                  <Calendar
-                    value={newFrom ? parseDate(newFrom.replaceAll('/','-')) : undefined}
-                    onChange={(date: CalendarDate) => {
-                      setNewFrom(
-                        `${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`
-                      );
-                    }}
-                    className='rounded-md border scrollbar-hide'
-                  />
-                </div>
-                <div>
-                  <label className='block text-sm font-medium mb-1'>替换为</label>
-                  <Calendar
-                    value={newTo ? parseDate(newTo.replaceAll('/','-')) : undefined}
-                    onChange={(date: CalendarDate) => {
-                      setNewTo(
-                        `${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`
-                      );
-                    }}
-                    className='rounded-md border scrollbar-hide'
-                  />
-                </div>
-                <Button onClick={addRule} disabled={!newFrom || !newTo}>
-                  添加规则
-                </Button>
-              </div>
+    <div className='p-4'>
+      <SettingsSection>
+        <SettingsGroup title='添加替换规则'>
+          <div className='flex flex-wrap gap-5 justify-center'>
+            <div className='flex flex-col items-center'>
+              <span>原始日期</span>
+              <Calendar
+                value={newFrom ? parseDate(newFrom.replaceAll('/', '-')) : undefined}
+                onChange={(date: CalendarDate) =>
+                  setNewFrom(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
+                }
+                className='rounded-md border scrollbar-hide'
+              />
             </div>
-          </CardBody>
-        </Card>
+            <div className='flex flex-col items-center'>
+              <span>替换日期</span>
+              <Calendar
+                value={newTo ? parseDate(newTo.replaceAll('/', '-')) : undefined}
+                onChange={(date: CalendarDate) =>
+                  setNewTo(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
+                }
+                className='rounded-md border scrollbar-hide'
+              />
+            </div>
+          </div>
+          <div className='flex justify-center'>
+            <Button onPress={handleAdd} disabled={!newFrom || !newTo}>
+              <AddOutlinedIcon></AddOutlinedIcon>
+            </Button>
+          </div>
+        </SettingsGroup>
 
-        <Card>
-          <CardBody>
-            <h2 className='text-lg font-bold mb-2'>当前替换规则</h2>
+        <SettingsGroup title='当前替换规则'>
+          <div className='grid gap-2 lg:grid-cols-2'>
             {rules.length === 0 ? (
               <p className='text-gray-500'>暂无替换规则</p>
             ) : (
-              <div className='flex flex-col gap-2'>
-                {rules.map((rule, index) => (
-                  <div key={index} className='flex items-center gap-4 p-2 bg-gray-100 rounded'>
-                    <span>{rule.from}</span>
-                    <span>→</span>
-                    <span>{rule.to}</span>
-                    <Button variant='ghost' size='sm' onClick={() => deleteRule(index)} className='ml-auto'>
-                      删除
-                    </Button>
-                  </div>
-                ))}
-              </div>
+              rules.map((rule, index) => (
+                <div key={index} className='flex items-center gap-2 w-full'>
+                  <span className='bg-gray-200 px-2 py-1 rounded-md'>{rule.from}</span>
+                  <ArrowForwardIosOutlinedIcon></ArrowForwardIosOutlinedIcon>
+                  <span className='bg-gray-200 px-2 py-1 rounded-md'>{rule.to}</span>
+                  <Button
+                    variant='flat'
+                    isIconOnly
+                    size='sm'
+                    className='text-red-600'
+                    onPress={() => {
+                      // confirmDelete(index);
+                      deleteRule(index);
+                    }}>
+                    <DeleteOutlineOutlinedIcon />
+                  </Button>
+                </div>
+              ))
             )}
-          </CardBody>
-        </Card>
-      </div>
-    </>
+          </div>
+        </SettingsGroup>
+      </SettingsSection>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalContent>
+          <ModalHeader>确认删除</ModalHeader>
+          <ModalBody>确定要删除这条规则吗？此操作无法撤销。</ModalBody>
+          <ModalFooter>
+            <Button variant='ghost' onPress={onClose}>
+              取消
+            </Button>
+            <Button color='danger' onPress={handleConfirmDelete}>
+              删除
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </div>
   );
 }
