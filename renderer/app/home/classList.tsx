@@ -131,7 +131,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                 const percent = ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * 100;
                 const baseClass = `transition-all duration-300 ease-in-out ${
                   state === 'active'
-                    ? 'border border-blue-500 bg-blue-200/60 shadow-inner'
+                    ? 'bg-blue-200/60 shadow-inner'
                     : state === 'before'
                     ? 'bg-gray-300/60'
                     : 'bg-white/60'
@@ -139,7 +139,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
 
                 return (
                   <Fragment key={refIndex}>
-                    {idx !== 0 && <Divider />}
+                    {idx !== 0 && <Divider className='bg-gray-500' />}
                     <div
                       ref={el => {
                         refList.current[groupIdx * 100 + idx] = el;
