@@ -100,13 +100,19 @@ function isWindows11() {
     if (store.get('display.useWindowBackgroundMaterial') !== true) return false;
     return true;
   })();
+  let extendbBckgroundMaterial = {};
+  if (usebackgroundMaterial) {
+    extendbBckgroundMaterial = {
+      backgroundMaterial: 'acrylic',
+    };
+  }
 
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false,
     },
-    backgroundMaterial: usebackgroundMaterial ? 'acrylic' : 'auto',
+    ...extendbBckgroundMaterial,
     roundedCorners: true,
     frame: false,
     width: mainWindowWidth,
