@@ -1,145 +1,165 @@
 'use client';
-import { Card, CardBody, Switch, Button, Calendar, Divider } from '@heroui/react';
+import { Button, Divider } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { getVersionSync, formatSize, getSysInfoSync } from '../../../components/p_function';
+import { SettingsSection, SettingsGroup, SettingsItem } from '../../../components/settings/SettingsGroup';
 import dayjs from 'dayjs';
 
 export default function App() {
-  const [navigatorInfo, setNavigatorInfo] = useState('');
-  const [versionInfo, setVersionInfo] = useState('Loading');
-  const [storageInfo, setStorageInfo] = useState('Loading');
-  const [sysInfo, setsysInfo] = useState('Loading');
+  const [navigatorInfo, setNavigatorInfo] = useState('Loading...');
+  const [versionInfo, setVersionInfo] = useState('Loading...');
+  const [storageInfo, setStorageInfo] = useState('Loading...');
+  const [sysInfo, setSysInfo] = useState('Loading...');
+  const [runHotspotScriptInfo, setRunHotspotScriptInfo] = useState('');
+
+  // 加载系统信息
+  async function loadSysInfo() {
+    try {
+      const data = await getSysInfoSync({
+        uuid: '*',
+        memLayout: '*',
+        osInfo: '*',
+      });
+      setSysInfo(JSON.stringify(data, null, '\t'));
+    } catch (err) {
+      setSysInfo(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  // 加载版本信息
+  async function loadVersion() {
+    let mainVersion = 'Unknown';
+    let webVersion = 'Unknown';
+    try {
+      mainVersion = (await getVersionSync()) as string;
+    } catch {}
+
+    try {
+      const res = await fetch('/version');
+      const text = await res.text();
+      webVersion = dayjs(Number(text)).format('YYYY/M/D HH:mm:ss');
+    } catch {}
+
+    setVersionInfo(`Main: ${mainVersion}\nWeb: ${webVersion}`);
+  }
+
+  // 刷新浏览器与存储信息
+  async function refreshNavigatorAndStorage() {
+    // navigator
+    const navData: Record<string, any> = {};
+    for (const key in navigator) {
+      try {
+        const val = navigator[key];
+        if (typeof val !== 'object') navData[key] = val;
+      } catch {}
+    }
+    setNavigatorInfo(JSON.stringify(navData, null, '\t'));
+    // storage
+    try {
+      const est = await navigator.storage.estimate();
+      const persisted = await navigator.storage.persisted();
+      setStorageInfo(`${formatSize(est.usage)} / ${formatSize(est.quota)}\nPersisted: ${persisted}`);
+    } catch {
+      setStorageInfo('Unknown');
+    }
+  }
 
   useEffect(() => {
-    (async () => {
-      try {
-        let foo = await getSysInfoSync({
-          uuid: '*',
-          memLayout: '*',
-          osInfo: '*',
-        });
-        setsysInfo(JSON.stringify(foo, null, '\t'));
-      } catch (error) {
-        setsysInfo(error.toString());
-      }
-    })();
-
-    intervalFn();
-    const interval = setInterval(intervalFn, 500);
-    function intervalFn() {
-      (async () => {
-        let foo = {};
-        for (const key in navigator) {
-          const element = navigator[key];
-          if (typeof element !== 'object') foo[key] = element;
-        }
-        setNavigatorInfo(JSON.stringify(foo, null, '\t'));
-      })();
-      (async () => {
-        try {
-          let storageEstimate = await navigator.storage.estimate();
-          let storagePersisted = await navigator.storage.persisted();
-          setStorageInfo(
-            `${formatSize(storageEstimate.usage)} / ${formatSize(
-              storageEstimate.quota
-            )}\nPersisted: ${storagePersisted}`
-          );
-        } catch (error) {
-          setStorageInfo('Unknown');
-        }
-      })();
-    }
-    (async () => {
-      let main_version;
-      try {
-        main_version = (await getVersionSync()) as string;
-      } catch (error) {
-        main_version = 'Unknown';
-      }
-      setVersionInfo(`Main: ${main_version}`);
-      let web_version;
-      try {
-        web_version = await (await fetch('/version')).text();
-        web_version = dayjs(Number(web_version)).format('YYYY/M/D HH:mm:ss');
-      } catch (error) {
-        web_version = 'Unknown';
-      }
-      setVersionInfo(`Main: ${main_version}\nWeb: ${web_version}`);
-    })();
-    return () => {
-      clearInterval(interval);
-    };
+    loadSysInfo();
+    loadVersion();
+    refreshNavigatorAndStorage();
+    const id = setInterval(refreshNavigatorAndStorage, 5000);
+    return () => clearInterval(id);
   }, []);
+
   return (
-    <>
-      <div className='flex gap-5 flex-col'>
-        <div className='flex gap-2 flex-wrap'>
-          <Button
-            color='primary'
-            variant='bordered'
-            onClick={() => {
-              var serviceWorker = navigator.serviceWorker;
-              serviceWorker.getRegistrations
-                ? serviceWorker.getRegistrations().then(function (sws) {
-                    sws.forEach(function (sw) {
-                      sw.unregister();
-                      console.log('sw unregister 1', sw);
-                    });
-                  })
-                : serviceWorker.getRegistration &&
-                  serviceWorker.getRegistration().then(function (sw) {
-                    sw && sw.unregister();
-                    console.log('sw unregister 2', sw);
-                  });
-            }}>
-            Remove Service Worker
-          </Button>
-          <Button
-            color='primary'
-            variant='bordered'
-            onClick={async () => {
-              caches.delete('class-tools').then(function (e) {
-                console.log('cache storage', e);
-              });
-              var request = indexedDB.deleteDatabase('workbox-expiration');
-              console.log(request);
-            }}>
-            Delete Cache
-          </Button>
-          <Button
-            color='primary'
-            variant='bordered'
-            onClick={async () => {
-              let allow = await navigator.storage.persist();
-              alert(`Persiste Storage: Apply ${allow ? 'Success' : 'Failed'}`);
-            }}>
-            Apply Persiste Storage
-          </Button>
+    <div className='min-h-screen'>
+      <div className='max-w-4xl mx-auto py-6 px-4'>
+        <div className='mb-8'>
+          <h1 className='text-3xl font-bold text-gray-900 mb-2'>调试</h1>
+          <p className='text-gray-600'>用于开发与排除错误</p>
         </div>
-        <Divider></Divider>
-        <div className='flex gap-1 flex-col'>
-          <div className=' bg-orange-100 rounded-lg w-fit px-4'>
-            <span className='font-bold'>Versions:</span>
-            <br />
-            <span className='whitespace-pre-wrap'>{versionInfo}</span>
-          </div>
-          <div className=' bg-orange-100 rounded-lg w-fit px-4'>
-            <span className='font-bold'>Storage Usage:</span>
-            <br />
-            <span className='whitespace-pre-wrap'>{storageInfo}</span>
-          </div>
-          <div className=' bg-orange-100 rounded-lg w-fit px-4'>
-            <span className='text-lg font-bold'>Navigator:</span>
-            <br />
-            <span className='whitespace-pre-wrap'>{navigatorInfo}</span>
-          </div>
-          <div className=' bg-orange-100 rounded-lg w-fit px-4'>
-            <span className='text-lg font-bold'>SysInfo:</span>
-            <br />
-            <span className='whitespace-pre-wrap'>{sysInfo}</span>
-          </div>
-        </div>
+        <SettingsSection>
+          <SettingsGroup title='工具'>
+            <SettingsItem title='存储测试' alignRight={false}>
+              <div className='flex gap-2 flex-wrap'>
+                <Button
+                  color='primary'
+                  variant='bordered'
+                  onPress={() => {
+                    const sw = navigator.serviceWorker;
+                    sw.getRegistrations
+                      ? sw.getRegistrations().then(sws => {
+                          sws.forEach(sw => sw.unregister());
+                        })
+                      : sw.getRegistration?.().then(sw => sw?.unregister());
+                  }}>
+                  移除Service Worker
+                </Button>
+
+                <Button
+                  color='primary'
+                  variant='bordered'
+                  onPress={() => {
+                    caches.delete('class-tools');
+                    indexedDB.deleteDatabase('workbox-expiration');
+                  }}>
+                  删除Workbox缓存
+                </Button>
+
+                <Button
+                  color='primary'
+                  variant='bordered'
+                  onPress={async () => {
+                    const allow = await navigator.storage.persist();
+                    alert(`Persist Storage: ${allow ? 'Success' : 'Failed'}`);
+                  }}>
+                  Apply Persist Storage
+                </Button>
+              </div>
+            </SettingsItem>
+            <Divider></Divider>
+            <SettingsItem title='热点Debug' alignRight={false} alignCenter={false}>
+              <div className='flex gap-2 flex-wrap'>
+                <Button
+                  color='primary'
+                  variant='bordered'
+                  onPress={async () => {
+                    const foo = await window.ipc.invoke('runHotspotScript');
+                    setRunHotspotScriptInfo(foo);
+                  }}>
+                  尝试打开
+                </Button>
+                <Button
+                  color='primary'
+                  variant='bordered'
+                  onPress={async () => {
+                    setRunHotspotScriptInfo('');
+                  }}>
+                  清除下方日志
+                </Button>
+              </div>
+              <pre className='whitespace-pre-wrap text-sm pt-2'>{runHotspotScriptInfo}</pre>
+            </SettingsItem>
+          </SettingsGroup>
+
+          <SettingsGroup title='系统信息'>
+            <SettingsItem title='版本' alignRight={false}>
+              <pre className='whitespace-pre-wrap text-sm'>{versionInfo}</pre>
+            </SettingsItem>
+            <SettingsItem title='存储使用' alignRight={false}>
+              <pre className='whitespace-pre-wrap text-sm'>{storageInfo}</pre>
+            </SettingsItem>
+            <Divider></Divider>
+            <SettingsItem title='Navigator' alignRight={false} alignCenter={false}>
+              <pre className='whitespace-pre-wrap text-sm'>{navigatorInfo}</pre>
+            </SettingsItem>
+            <SettingsItem title='系统信息' alignRight={false} alignCenter={false}>
+              <pre className='whitespace-pre-wrap text-sm'>{sysInfo}</pre>
+            </SettingsItem>
+          </SettingsGroup>
+        </SettingsSection>
       </div>
-    </>
+    </div>
   );
 }
