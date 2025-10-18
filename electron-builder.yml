@@ -14,7 +14,7 @@ win:
   target: [nsis]
   publish:
     provider: generic
-    url: 'https://p.mise.run.place/https://update-class-tools.lukass.workers.dev'
+    url: 'https://p.mise.run.place/https://class-tools-update.zdvsn3xs.workers.dev'
 nsis:
   oneClick: false
   perMachine: false

@@ -51,12 +51,12 @@ contextMenu({
     inspect: '检查',
   },
 });
-// setupTitlebar();
 
 // autoUpdater Debug
 log.transports.file.level = 'info';
 autoUpdater.logger = log;
 autoUpdater.autoDownload = false;
+autoUpdater.disableDifferentialDownload = true;
 
 function getProviderPath(params: string) {
   if (isProd) {

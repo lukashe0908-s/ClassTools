@@ -15,7 +15,7 @@ const path = require('path');
 
   console.log(`📦 Uploading latest.yml with tag: ${tag}`);
 
-  const response = await fetch('https://update-class-tools.lukass.workers.dev/push_version', {
+  const response = await fetch('https://class-tools-update.zdvsn3xs.workers.dev/push_version', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
