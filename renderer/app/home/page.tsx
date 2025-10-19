@@ -119,12 +119,13 @@ function FloatWindow({ onShutdownModalOpen }) {
     }
 
     (async () => {
-      const useGameBgsConfig = await getConfigSync('display.background.useGameBgs');
-      const useGameConfig = await getConfigSync('display.background.useGame');
+      const useGameBgs = await getConfigSync('display.background.useGameBgs');
+      const useGame = await getConfigSync('display.background.useGame');
+      const useAllowType = await getConfigSync('display.background.useGameBgsAllowType');
       let gameBg_object: any = { type: 'image' };
-      if (useGameBgsConfig && useGameConfig) {
+      if (useGameBgs && useGame) {
         const res = await fetch(
-          `https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&game_id=${useGameConfig}`
+          `https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&game_id=${useGame}`
         );
         const data = await res.json();
         const info = data?.data?.game_info_list?.[0];
@@ -132,7 +133,11 @@ function FloatWindow({ onShutdownModalOpen }) {
           const bg = info.backgrounds[0];
           if (bg.video?.url) {
             gameBg_object.video_url = bg.video.url;
-            gameBg_object.type = 'mixed';
+            if (useAllowType === 'video-image') {
+              gameBg_object.type = 'video';
+            } else if (useAllowType !== 'image-only') {
+              gameBg_object.type = 'mixed';
+            }
           }
           if (bg.background?.url) gameBg_object.image_url = bg.background.url;
         }
@@ -142,7 +147,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       if (!DISABLE_CACHE && cached && now < expires) {
         try {
           const cachedData: WallpaperItem[] = JSON.parse(cached);
-          let wallpaperList: WallpaperItem[] = useGameBgsConfig ? [gameBg_object, ...cachedData] : cachedData;
+          let wallpaperList: WallpaperItem[] = useGameBgs && useGame ? [gameBg_object, ...cachedData] : cachedData;
           setWallpapers(wallpaperList);
           const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
           const validIndex = savedIndex < wallpaperList.length ? savedIndex : 0;
@@ -153,7 +158,7 @@ function FloatWindow({ onShutdownModalOpen }) {
         return;
       }
 
-      fetchDnsWallpaper(useGameBgsConfig ? [gameBg_object] : []);
+      fetchDnsWallpaper(useGameBgs && useGame ? [gameBg_object] : []);
     })();
 
     async function fetchDnsWallpaper(addBefore?: WallpaperItem[]) {

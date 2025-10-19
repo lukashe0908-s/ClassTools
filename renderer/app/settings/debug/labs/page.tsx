@@ -1,17 +1,15 @@
 'use client';
 import {
-  Card,
-  CardBody,
   Switch,
   Button,
-  Calendar,
   Divider,
-  Checkbox,
   Input,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Autocomplete,
+  AutocompleteItem,
 } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { getConfigSync, getAutoLaunchSync } from '../../../../components/p_function';
@@ -30,6 +28,7 @@ export default function App() {
   const [gameList, setGameList] = useState<{ id: string; name: string }[]>([]);
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [loadingGames, setLoadingGames] = useState(false);
+  const [allowGameBgsType, setAllowGameBgsType] = useState('mixed-video-image');
 
   useEffect(() => {
     (async () => {
@@ -47,19 +46,6 @@ export default function App() {
   }, []);
   useEffect(() => {
     (async () => {
-      try {
-        setAutoLaunch(await getAutoLaunchSync());
-        setAutoLaunchE(null);
-      } catch (error) {
-        setAutoLaunchE('Failed Found');
-      }
-
-      const openHotspot = await getConfigSync('main.startAction.openHotspot');
-      openHotspot && setStartAction_openHotspot(Boolean(openHotspot));
-
-      const openHotspotDelay = await getConfigSync('main.startAction.openHotspotDelay');
-      openHotspotDelay && setStartAction_openHotspotDelay(openHotspotDelay);
-
       const useBg = await getConfigSync('display.background.useGameBgs');
       setUseGameBgs(Boolean(useBg));
 
@@ -68,6 +54,9 @@ export default function App() {
 
       const selected = await getConfigSync('display.background.useGame');
       selected && setSelectedGame(selected);
+
+      const allowTypeValue = await getConfigSync('display.background.useGameBgsAllowType');
+      if (allowTypeValue) setAllowGameBgsType(allowTypeValue);
     })();
   }, []);
   const fetchGameList = async () => {
@@ -134,7 +123,7 @@ export default function App() {
           </SettingsGroup>
 
           <SettingsGroup title='背景' icon={<WallpaperIcon></WallpaperIcon>}>
-            <SettingsItem title='使用 米哈游 游戏背景' description='从米哈游的游戏中获取动态背景'>
+            <SettingsItem title='使用 米哈游 游戏背景' description='从 米哈游启动器API 获取背景'>
               <Switch
                 isSelected={useGameBgs}
                 onChange={() => {
@@ -146,42 +135,58 @@ export default function App() {
             </SettingsItem>
 
             {useGameBgs && (
-              <SettingsItem title='选择游戏' description='选择用于背景展示的游戏'>
-                <div className='flex items-center space-x-2'>
-                  <Dropdown>
-                    <DropdownTrigger>
-                      <Button variant='flat' className='min-w-[160px] justify-start'>
-                        {selectedGame
-                          ? gameList.find(g => g.id === selectedGame)?.name || '已选择未知游戏'
-                          : '选择游戏'}
-                      </Button>
-                    </DropdownTrigger>
-                    <DropdownMenu
-                      aria-label='游戏列表'
-                      disallowEmptySelection
-                      selectionMode='single'
-                      onAction={key => {
-                        setSelectedGame(String(key));
-                        window.ipc?.send('set-config', 'display.background.useGame', String(key));
-                      }}>
-                      {gameList.length > 0 ? (
-                        gameList.map(game => <DropdownItem key={game.id}>{game.name}</DropdownItem>)
-                      ) : (
-                        <DropdownItem key=''>请点击右侧按钮获取列表</DropdownItem>
-                      )}
-                    </DropdownMenu>
-                  </Dropdown>
-                  <Button
-                    isIconOnly
-                    variant='light'
-                    isLoading={loadingGames}
-                    onPress={fetchGameList}
-                    title='刷新列表'
-                    className='text-gray-600'>
-                    <RefreshIcon></RefreshIcon>
-                  </Button>
-                </div>
-              </SettingsItem>
+              <>
+                <SettingsItem title='选择游戏' description='选择作为背景的游戏'>
+                  <div className='flex items-center space-x-2'>
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <Button variant='flat' className='min-w-[160px] justify-start'>
+                          {selectedGame
+                            ? gameList.find(g => g.id === selectedGame)?.name || '已选择未知游戏'
+                            : '选择游戏'}
+                        </Button>
+                      </DropdownTrigger>
+                      <DropdownMenu
+                        disallowEmptySelection
+                        selectionMode='single'
+                        onAction={key => {
+                          setSelectedGame(String(key));
+                          window.ipc?.send('set-config', 'display.background.useGame', String(key));
+                        }}>
+                        {gameList.length > 0 ? (
+                          gameList.map(game => <DropdownItem key={game.id}>{game.name}</DropdownItem>)
+                        ) : (
+                          <DropdownItem key=''>请点击右侧按钮获取列表</DropdownItem>
+                        )}
+                      </DropdownMenu>
+                    </Dropdown>
+                    <Button
+                      isIconOnly
+                      variant='light'
+                      isLoading={loadingGames}
+                      onPress={fetchGameList}
+                      title='刷新列表'
+                      className='text-gray-600'>
+                      <RefreshIcon></RefreshIcon>
+                    </Button>
+                  </div>
+                </SettingsItem>
+                <SettingsItem title='允许类型' description='选择背景允许的展示形式，仅限于游戏背景'>
+                  <Autocomplete
+                    defaultItems={[
+                      { key: 'video-image', label: '视频与图片' },
+                      { key: 'mixed-video-image', label: '可停止的视频与图片' },
+                      { key: 'image-only', label: '仅图片' },
+                    ]}
+                    selectedKey={allowGameBgsType}
+                    onSelectionChange={(value: string) => {
+                      setAllowGameBgsType(value);
+                      window.ipc?.send('set-config', 'display.background.useGameBgsAllowType', value);
+                    }}>
+                    {item => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
+                  </Autocomplete>
+                </SettingsItem>
+              </>
             )}
           </SettingsGroup>
         </SettingsSection>
