@@ -17,7 +17,9 @@ export function DataPrivacySettings() {
       <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4'>
         <h4 className='font-medium text-blue-900 mb-2'>必需诊断数据</h4>
         <p className='text-sm text-blue-800'>
-          您的数据将会被发送至Sentry及Cloudflare Web Analytics，以帮助改进软件并使其保持安全、最新并按预期工作
+          {
+            '您的数据将会被发送至 Sentry 及 Cloudflare Web Analytics(仅在开启在线模式时)，以帮助改进软件并使其保持安全、最新并按预期工作'
+          }
         </p>
       </div>
 

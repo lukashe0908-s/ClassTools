@@ -107,7 +107,6 @@ export function AppearanceSettings() {
       </SettingsItem>
       <SettingsItem title='滑动位置' description='设置滚动时的对齐方式'>
         <Autocomplete
-          className='w-48'
           selectedKey={slidingPosition}
           onSelectionChange={(value: string) => {
             setSlidingPosition(value);
@@ -124,7 +123,6 @@ export function AppearanceSettings() {
       </SettingsItem>
       <SettingsItem title='进度条显示' description='设置进度条的显示时机'>
         <Autocomplete
-          className='w-48'
           selectedKey={progressDisplay}
           onSelectionChange={(value: string) => {
             setProgressDisplay(value);
