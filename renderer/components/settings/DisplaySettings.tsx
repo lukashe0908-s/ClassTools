@@ -169,7 +169,7 @@ export function SystemSettings() {
         title='在线模式'
         description={
           <div className='flex items-center gap-2'>
-            开启此选项后会使用最新的Web版本，过旧的Main版本使用时可能会出现问题
+            开启此选项后会使用最新的Web版本，过旧的版本使用时可能会出现问题
           </div>
         }>
         <Switch
@@ -181,7 +181,7 @@ export function SystemSettings() {
         />
       </SettingsItem>
 
-      <SettingsItem title='检查主程序更新' description='自动检查并通知可用的应用更新' disabled>
+      <SettingsItem title='自动检查更新' description='自动检查并通知可用的应用更新' disabled>
         <Switch isDisabled isSelected={true} />
       </SettingsItem>
     </SettingsGroup>

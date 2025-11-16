@@ -29,7 +29,7 @@ export default function HomePage() {
   }, []);
   return (
     <>
-      <title>Home - Class Tools</title>
+      <title>Class Tools</title>
       <Modal isOpen={isOpen} placement={'bottom'} onOpenChange={onOpenChange}>
         <ModalContent>
           {onClose => (
@@ -219,9 +219,9 @@ function FloatWindow({ onShutdownModalOpen }) {
         const imageElement = container.children[selectedIndex] as HTMLElement;
         if (imageElement) {
           imageElement.scrollIntoView({ behavior: 'instant', block: 'center' });
-          setTimeout(() => {
-            document.getElementById('mainContentHeadPosition').scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 100);
+          // setTimeout(() => {
+          //   document.getElementById('mainContentHeadPosition').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // }, 100);
         }
       }
     }
@@ -258,7 +258,7 @@ function FloatWindow({ onShutdownModalOpen }) {
   }, []);
 
   return (
-    <div className={`flex flex-col gap-0 p-0 h-full rounded-lg shadow-lg ${currentWallpaper ? '' : 'bg-[#dbeafe88]'}`}>
+    <div className={`flex flex-col gap-0 p-0 h-full ${currentWallpaper ? '' : 'bg-[#dbeafe88]'}`}>
       {/* Toolbar */}
       <div className='flex gap-2 items-center bg-white/60 p-2 rounded-lg'>
         <Button
@@ -417,9 +417,10 @@ function FloatWindow({ onShutdownModalOpen }) {
             height: '100%',
             transform: 'translate(-50%, 0)',
             opacity: 0.5,
-            filter: 'blur(40px)',
+            // filter: 'blur(30px)',
             userSelect: 'none',
           }}
+          className='Experimental-blur-filter'
           referrerPolicy='no-referrer'
           draggable='false'
           src={currentWallpaper || null}

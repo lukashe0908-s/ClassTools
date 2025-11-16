@@ -16,7 +16,7 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 export default function Template({ children }) {
   return (
     <>
-      <title>Settings - Class Tools</title>
+      <title>设置 - Class Tools</title>
       <div className='flex h-full select-auto bg-gray-50/30'>
         <div className='h-full flex select-none'>
           <OverlayScrollbarsComponent

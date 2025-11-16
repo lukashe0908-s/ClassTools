@@ -78,16 +78,24 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
 
   const prevStateRef = useRef(null);
   useEffect(() => {
-    // 自动滚动到最后一个非 after 的课程
+    let target = null;
+
+    // 优先：滚到最后一个不是 after 的
     for (let i = refList.current.length - 1; i >= 0; i--) {
       const el = refList.current[i];
       if (el && el.dataset.state !== 'after') {
-        if (el !== prevStateRef.current) {
-          el.scrollIntoView({ behavior: 'smooth', block: slidingPosition });
-          prevStateRef.current = el;
-        }
+        target = el;
         break;
       }
+    }
+    // 如果全是 after → target 为空 → 滚到第一节 after
+    if (!target) {
+      target = refList.current.find(el => el && el.dataset.state === 'after');
+    }
+
+    if (target && target !== prevStateRef.current) {
+      target.scrollIntoView({ behavior: 'smooth', block: slidingPosition });
+      prevStateRef.current = target;
     }
   }, [tick, slidingPosition]);
 

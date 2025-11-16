@@ -6,6 +6,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import CodeIcon from '@mui/icons-material/Code';
 import { getVersionSync } from '../../components/p_function';
 import dayjs from 'dayjs';
+import { Button } from '@heroui/react';
+import UpdateIcon from '@mui/icons-material/Update';
 
 export function AboutSettings() {
   const [version, setVersion] = useState('1.0.0');
