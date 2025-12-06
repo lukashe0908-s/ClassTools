@@ -14,9 +14,9 @@ export function DataPrivacySettings() {
 
   return (
     <SettingsGroup title='数据隐私' description='管理您的数据收集和隐私设置' icon={<SecurityIcon />}>
-      <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4'>
-        <h4 className='font-medium text-blue-900 mb-2'>必需诊断数据</h4>
-        <p className='text-sm text-blue-800'>
+      <div className='bg-blue-50 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4'>
+        <h4 className='font-medium mb-2'>必需诊断数据</h4>
+        <p className='text-sm text-neutral-600 dark:text-neutral-300'>
           {
             '您的数据将会被发送至 Sentry 及 Cloudflare Web Analytics(仅在开启在线模式时)，以帮助改进软件并使其保持安全、最新并按预期工作'
           }
@@ -53,9 +53,11 @@ export function BackupSettings() {
 
   return (
     <SettingsGroup title='数据备份' description='备份和恢复您的应用配置' icon={<BackupIcon />}>
-      <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4'>
-        <h4 className='font-medium text-yellow-900 mb-2'>备份说明</h4>
-        <p className='text-sm text-yellow-800'>定期备份您的配置可以防止数据丢失。备份将包含您的所有设置和偏好。</p>
+      <div className='bg-yellow-50 dark:bg-yellow-900/60 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4'>
+        <h4 className='font-medium  mb-2'>备份说明</h4>
+        <p className='text-sm text-neutral-600 dark:text-neutral-300'>
+          定期备份您的配置可以防止数据丢失。备份将包含您的所有设置和偏好。
+        </p>
       </div>
 
       <SettingsItem title='主要备份' description='备份当前配置到主要备份服务器'>

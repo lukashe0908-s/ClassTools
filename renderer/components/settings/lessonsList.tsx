@@ -18,7 +18,6 @@ import {
   AccordionItem,
   Switch,
 } from '@heroui/react';
-import { DataGridPremium, useGridApiRef } from '@mui/x-data-grid-premium';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider, TimePicker, renderTimeViewClock } from '@mui/x-date-pickers-pro';
@@ -78,8 +77,12 @@ const formattedColumns = columns.map(column => ({
 function List({ rows, setRows, children, isEditMode = false }) {
   const refTable = useRef(null);
   useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+
     const Table = refTable.current as HTMLElement;
-    const osInstance = OverlayScrollbars(Table.parentElement, { scrollbars: { autoHide: 'move' } });
+    const osInstance = OverlayScrollbars(Table.parentElement, {
+      scrollbars: { autoHide: 'move', theme: media.matches ? 'os-theme-light' : 'os-theme-dark' },
+    });
   }, []);
 
   return (
@@ -106,7 +109,10 @@ function List({ rows, setRows, children, isEditMode = false }) {
               <TableRow key={rowIndex}>
                 {columnKey => {
                   return (
-                    <TableCell className={columnKey == 'id' ? 'sticky left-0 bg-white z-[10]' : 'min-w-[14ch]'}>
+                    <TableCell
+                      className={
+                        columnKey == 'id' ? 'sticky left-0 bg-white dark:bg-neutral-900 z-[10]' : 'min-w-[14ch]'
+                      }>
                       {columnKey == 'id' ? rowIndex + 1 : children(row, rowIndex, columnKey)}
                     </TableCell>
                   );
@@ -186,8 +192,6 @@ export function LessonsListName() {
           );
         }}
       </List>
-      <Divider className='my-2'></Divider>
-      <CellSelectionGrid rows={rows}></CellSelectionGrid>
     </>
   );
 }
@@ -226,7 +230,7 @@ export function LessonsListTime() {
       })()}
       <div className='*:mb-4'>
         <Input
-          label='Week Start Time'
+          label='学期开始日期'
           className='max-w-xs'
           value={weekStart}
           onChange={e => {
@@ -352,7 +356,7 @@ export function LessonsListTime() {
                           minutes: renderTimeViewClock,
                         }}
                         ampm={false}
-                        className='resize-none !outline-0 !border-0 w-full h-full rounded-sm !min-w-[14ch]'
+                        className='resize-none outline-0! border-0! h-full rounded-sm w-[15ch]!'
                         value={getKeyValue(row, columnKey) ? dayjs('1970-1-1 ' + startTime) : null}
                         onChange={e => {
                           const time = e.format('HH:mm');
@@ -387,7 +391,7 @@ export function LessonsListTime() {
                           minutes: renderTimeViewClock,
                         }}
                         ampm={false}
-                        className='resize-none !outline-0 !border-0 w-full h-full rounded-sm'
+                        className='resize-none outline-0! border-0!l h-full rounded-sm w-[15ch]!'
                         value={getKeyValue(row, columnKey) ? dayjs('1970-1-1 ' + endTime) : null}
                         onChange={e => {
                           const time = e.format('HH:mm');
@@ -487,31 +491,6 @@ export function LessonsListTime() {
               </div>
             </AccordionItem>
           </Accordion>
-          <Divider className='my-2'></Divider>
-          <CellSelectionGrid
-            rows={(() => {
-              const rows_ = [];
-              for (const key in rows) {
-                const element = rows[key];
-                const element_ = {};
-                if (typeof element == 'object') {
-                  for (const key in element) {
-                    const elementIn = element[key];
-                    if (typeof elementIn == 'object') {
-                      const textArray = [];
-                      textArray.push(elementIn?.start);
-                      textArray.push(elementIn?.end);
-                      textArray.push(elementIn?.divide);
-                      element_[key] = textArray.join('-');
-                    } else {
-                      element_[key] = `[Old] ${elementIn}`;
-                    }
-                  }
-                  rows_.push(element_);
-                }
-              }
-              return rows_;
-            })()}></CellSelectionGrid>
         </div>
       </div>
     </>
@@ -535,41 +514,5 @@ export function LessonsListTime_TimeDisplayer({
         defaultValue={time ? time : ''}
         onChange={onChange}></input>
     </div>
-  );
-}
-
-export function CellSelectionGrid(props) {
-  const apiRef = useGridApiRef();
-  const autosizeOptions = {
-    includeHeaders: true,
-    includeOutliers: true,
-    expand: true,
-  };
-  useEffect(() => {
-    apiRef.current.autosizeColumns(autosizeOptions);
-  }, [props.rows]);
-  return (
-    <>
-      <Button className='!z-[5]' onClick={() => apiRef.current.autosizeColumns(autosizeOptions)}>
-        AUTOWEIGHT
-      </Button>
-      <div style={{ width: '100%' }}>
-        <div style={{ height: '90vh' }}>
-          <DataGridPremium
-            throttleRowsMs={2000}
-            rowSelection={false}
-            checkboxSelection={false}
-            cellSelection={true}
-            disableColumnMenu={true}
-            // sortingOrder={['asc']}
-            rows={formattedRows(props.rows)}
-            columns={formattedColumns}
-            apiRef={apiRef}
-            autosizeOptions={autosizeOptions}
-            autosizeOnMount
-          />
-        </div>
-      </div>
-    </>
   );
 }

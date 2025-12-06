@@ -7,7 +7,12 @@ import TimelineDot from '@mui/lab/TimelineDot';
 export default function App() {
   return (
     <>
-      <span className='ml-4 text-2xl font-bold [box-shadow:inset_0_-8px_#f73246] border-b-2 border-[#f73246]'>渲染序列</span>
+      <div className='ml-4 mb-4'>
+        <span className='text-2xl font-bold [box-shadow:inset_0_-8px_#f73246] border-b-2 border-[#f73246]'>
+          渲染序列
+        </span>
+      </div>
+      <span className='ml-4'>近期课程管理可能重构为类似 Classland 的编辑方式</span>
       <Timeline
         sx={{
           [`& .${timelineItemClasses.root}:before`]: {

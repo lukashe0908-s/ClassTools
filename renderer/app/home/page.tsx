@@ -36,7 +36,7 @@ export default function HomePage() {
             <>
               <ModalHeader className='flex flex-col gap-1'>确认关机</ModalHeader>
               <ModalBody>
-                <p className='text-gray-500 text-sm'>关闭所有应用，然后关闭电脑。</p>
+                <p className='text-neutral-500 text-sm'>关闭所有应用，然后关闭电脑。</p>
               </ModalBody>
               <ModalFooter>
                 <Button
@@ -312,7 +312,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       </div>
 
       {/* Main Content */}
-      <div className='flex flex-col gap-4 py-2 flex-grow overflow-y-auto scrollbar-hide'>
+      <div className='flex flex-col gap-4 py-2 grow overflow-y-auto scrollbar-hide'>
         <div id='mainContentHeadPosition'></div>
         <ClassList
           schedule={classSchedule}
@@ -322,7 +322,7 @@ function FloatWindow({ onShutdownModalOpen }) {
         <div className='flex justify-center px-2'>
           <div
             ref={wallpaperListRef}
-            className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-[16/9] scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
+            className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-video scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
             {wallpapers.map((wallpaper, index) => {
               const { type, image_url, video_url } = wallpaper;
               const key = `wallpaper-${index}`;
@@ -333,7 +333,7 @@ function FloatWindow({ onShutdownModalOpen }) {
                 return (
                   <div
                     key={key}
-                    className='relative max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
+                    className='relative max-w-full aspect-video rounded-lg snap-center select-none object-contain'
                     onClick={handleClick}>
                     {playingMixed ? (
                       <video
@@ -370,7 +370,7 @@ function FloatWindow({ onShutdownModalOpen }) {
                   <video
                     key={key}
                     src={video_url}
-                    className='max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
+                    className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
                     onClick={handleClick}
                     muted
                     loop
@@ -385,7 +385,7 @@ function FloatWindow({ onShutdownModalOpen }) {
                   key={key}
                   src={image_url ?? ''}
                   alt={`Wallpaper ${index}`}
-                  className='max-w-full aspect-[16/9] rounded-lg snap-center select-none object-contain'
+                  className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
                   onClick={handleClick}
                   draggable='true'
                   referrerPolicy='no-referrer'

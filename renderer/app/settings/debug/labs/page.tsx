@@ -78,8 +78,8 @@ export default function App() {
     <div className='min-h-screen'>
       <div className='max-w-4xl mx-auto py-6 px-4'>
         <div className='mb-8'>
-          <h1 className='text-3xl font-bold text-gray-900 mb-2'>实验室</h1>
-          <p className='text-gray-600'>
+          <h1 className='text-3xl font-bold mb-2'>实验室</h1>
+          <p className='text-neutral-600 dark:text-neutral-300'>
             <span className='text-red-400'>这些功能可能不稳定</span>
           </p>
         </div>
@@ -140,7 +140,7 @@ export default function App() {
                   <div className='flex items-center space-x-2'>
                     <Dropdown>
                       <DropdownTrigger>
-                        <Button variant='flat' className='min-w-[160px] justify-start'>
+                        <Button variant='flat' className='min-w-40 justify-start'>
                           {selectedGame
                             ? gameList.find(g => g.id === selectedGame)?.name || '已选择未知游戏'
                             : '选择游戏'}
@@ -165,8 +165,7 @@ export default function App() {
                       variant='light'
                       isLoading={loadingGames}
                       onPress={fetchGameList}
-                      title='刷新列表'
-                      className='text-gray-600'>
+                      title='刷新列表'>
                       <RefreshIcon></RefreshIcon>
                     </Button>
                   </div>

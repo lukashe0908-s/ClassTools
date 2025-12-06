@@ -160,13 +160,13 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                       className={`px-4 py-2 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
                       <div
                         className={`text-sm mb-0 whitespace-pre  ${
-                          state === 'before' ? 'text-gray-600' : 'text-gray-800'
+                          state === 'before' ? 'text-neutral-600' : 'text-neutral-800'
                         }`}>
                         {`${cls.startTime} - ${cls.endTime}`}
                       </div>
                       <div
                         className={`font-semibold mb-0 whitespace-pre-wrap ${
-                          state === 'before' ? 'text-gray-800' : 'text-black'
+                          state === 'before' ? 'text-neutral-800' : 'text-black'
                         }`}
                         style={{
                           fontSize: fontSize + 'rem',
@@ -190,7 +190,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
           </div>
         ))}
       <div className='py-4 px-2'>
-        <span id='weekNumber' className={`text-gray-800 bg-gray-100/50 p-2 rounded-md shadow-md`}>
+        <span id='weekNumber' className={`text-neutral-800 bg-gray-100/50 p-2 rounded-md shadow-md`}>
           #{weekInfo.now}/{weekInfo.total}
         </span>
       </div>

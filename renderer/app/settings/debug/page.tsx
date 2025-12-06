@@ -76,8 +76,8 @@ export default function App() {
     <div className='min-h-screen'>
       <div className='max-w-4xl mx-auto py-6 px-4'>
         <div className='mb-8'>
-          <h1 className='text-3xl font-bold text-gray-900 mb-2'>调试</h1>
-          <p className='text-gray-600'>用于开发与排除错误</p>
+          <h1 className='text-3xl font-bold mb-2'>调试</h1>
+          <p className='text-neutral-600 dark:text-neutral-300'>用于开发与排除错误</p>
         </div>
         <SettingsSection>
           <SettingsGroup title='工具'>

@@ -11,15 +11,17 @@ interface SettingsGroupProps {
 
 export function SettingsGroup({ title, description, children, icon }: SettingsGroupProps) {
   return (
-    <Card className='w-full shadow-sm border border-gray-200/50 bg-white/80'>
+    <Card className='w-full shadow-sm border border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-100 dark:bg-neutral-950'>
       {title ? (
         <>
           <CardHeader className='flex gap-3 px-6 py-4'>
             <div className='flex items-center gap-3'>
-              {icon && <div className='flex-shrink text-gray-600'>{icon}</div>}
+              {icon && <div className='shrink'>{icon}</div>}
               <div className='flex flex-col'>
-                <h3 className='text-lg font-semibold text-gray-900 whitespace-pre-line'>{title}</h3>
-                {description && <p className='text-sm text-gray-600 whitespace-pre-wrap'>{description}</p>}
+                <h3 className='text-lg font-semibold whitespace-pre-line'>{title}</h3>
+                {description && (
+                  <p className='text-sm text-neutral-600 dark:text-neutral-300 whitespace-pre-wrap'>{description}</p>
+                )}
               </div>
             </div>
           </CardHeader>
@@ -59,13 +61,13 @@ export function SettingsItem({
       } py-3 ${disabled ? 'opacity-50' : ''}`}>
       {title ? (
         <div className='pr-4'>
-          <div className='font-medium text-gray-900 whitespace-pre-line'>{title}</div>
-          {description && <div className='text-sm text-gray-600 mt-1 whitespace-pre-wrap'>{description}</div>}
+          <div className='font-medium  whitespace-pre-line'>{title}</div>
+          {description && <div className='text-sm text-neutral-600 dark:text-neutral-300 mt-1 whitespace-pre-wrap'>{description}</div>}
         </div>
       ) : (
         ''
       )}
-      <div className='flex-shrink'>{children}</div>
+      <div className='shrink'>{children}</div>
     </div>
   );
 }

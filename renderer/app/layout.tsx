@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/globals.css';
 import { HeroUIProvider } from '@heroui/react';
 import { LicenseInfo, muiXTelemetrySettings } from '@mui/x-license';
@@ -13,6 +13,8 @@ LicenseInfo.setLicenseKey(
 );
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const [isDark, setIsDark] = useState(false);
+
   useEffect(() => {
     window.alert = function (...args: any[1]) {
       console.log('[Alert]', args[0]);
@@ -45,6 +47,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       document.body.removeEventListener('drop', handleDragStart);
     };
   }, []);
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDark(media.matches);
+    const listener = (e: MediaQueryListEvent) => {
+      setIsDark(e.matches);
+    };
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, []);
   return (
     <>
       <html lang='en' className='h-full overflow-hidden'>
@@ -53,8 +64,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <meta charSet='UTF-8' />
           <meta name='viewport' content='width=device-width, initial-scale=1.0' />
         </head>
-        <body className='h-full !scrollbar-hide'>
-          <HeroUIProvider className='h-full !scrollbar-hide'>{children}</HeroUIProvider>
+        <body className='h-full'>
+          <HeroUIProvider className={`h-full ${isDark && 'dark'} overflow-auto`}>{children}</HeroUIProvider>
         </body>
       </html>
     </>

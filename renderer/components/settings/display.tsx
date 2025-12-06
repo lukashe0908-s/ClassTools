@@ -165,7 +165,7 @@ export function Display() {
             使用在线模式
           </Switch>
           <Tooltip content='开启此选项后会使用最新的Web版本，过旧的Main版本使用时可能会出现问题'>
-            <InfoIcon className='text-gray-600 !w-4 !h-4'></InfoIcon>
+            <InfoIcon className='text-neutral-600 !w-4 !h-4'></InfoIcon>
           </Tooltip>
         </div>
         <Switch isDisabled isSelected={true}>
