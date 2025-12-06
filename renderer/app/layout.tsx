@@ -14,7 +14,6 @@ LicenseInfo.setLicenseKey(
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
-
   useEffect(() => {
     window.alert = function (...args: any[1]) {
       console.log('[Alert]', args[0]);

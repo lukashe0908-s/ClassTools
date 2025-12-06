@@ -145,13 +145,13 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
                   state === 'active'
                     ? 'bg-blue-200/60 shadow-inner'
                     : state === 'before'
-                    ? 'bg-gray-300/60'
-                    : 'bg-white/60'
+                    ? 'bg-neutral-300/60'
+                    : 'bg-white/60 dark:black/40'
                 }`;
 
                 return (
                   <Fragment key={refIndex}>
-                    {idx !== 0 && <Divider className='bg-gray-400/60' />}
+                    {idx !== 0 && <Divider className='bg-neutral-400/60' />}
                     <div
                       ref={el => {
                         refList.current[groupIdx * 100 + idx] = el;
@@ -190,7 +190,7 @@ export default function ClassList({ schedule, progressDisplay = 'active', slidin
           </div>
         ))}
       <div className='py-4 px-2'>
-        <span id='weekNumber' className={`text-neutral-800 bg-gray-100/50 p-2 rounded-md shadow-md`}>
+        <span id='weekNumber' className={`text-neutral-800 bg-neutral-100/50 p-2 rounded-md shadow-md`}>
           #{weekInfo.now}/{weekInfo.total}
         </span>
       </div>

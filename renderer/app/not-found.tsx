@@ -3,7 +3,7 @@ import { Button } from '@heroui/react';
 
 export default function NotFound() {
   return (
-    <div className='flex h-full items-center justify-center flex-col gap-2'>
+    <div className='flex h-full items-center justify-center flex-col gap-2 bg-neutral-50 dark:bg-black text-neutral-800 dark:text-neutral-200'>
       <span className='text-2xl font-bold'>Page Not Found</span>
       <Button
         onPress={() => {

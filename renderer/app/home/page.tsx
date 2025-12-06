@@ -258,9 +258,9 @@ function FloatWindow({ onShutdownModalOpen }) {
   }, []);
 
   return (
-    <div className={`flex flex-col gap-0 p-0 h-full ${currentWallpaper ? '' : 'bg-[#dbeafe88]'}`}>
+    <div className={`flex flex-col gap-0 p-0 h-full ${currentWallpaper ? '' : 'bg-neutral-100/80 dark:bg-neutral-800/80'}`}>
       {/* Toolbar */}
-      <div className='flex gap-2 items-center bg-white/60 p-2 rounded-lg'>
+      <div className='flex gap-2 items-center bg-white/40 dark:bg-black/20 p-2 rounded-lg'>
         <Button
           isIconOnly
           onPress={() => {
@@ -397,7 +397,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       </div>
 
       {/* Footer */}
-      <div className='flex gap-1 items-center bg-white/40 p-1 rounded-lg'>
+      <div className='flex gap-1 items-center bg-white/40 dark:bg-black/10 p-1 rounded-lg'>
         <Button className='font-bold' fullWidth onPress={onShutdownModalOpen}>
           关机
         </Button>
