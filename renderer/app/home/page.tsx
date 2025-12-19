@@ -123,7 +123,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       const useGame = await getConfigSync('display.background.useGame');
       const useAllowType = await getConfigSync('display.background.useGameBgsAllowType');
       let gameBg_object: any = { type: 'image' };
-      // 新逻辑：尝试拉取游戏背景，如果失败则回退为不使用游戏背景（不把 gameBg_object 加到列表前置）
+      // 尝试拉取游戏背景，如果失败则回退为不使用游戏背景（不把 gameBg_object 加到列表前置）
       let useGameBgsEffective = useGameBgs && useGame;
       if (useGameBgs && useGame) {
         try {
@@ -173,7 +173,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       fetchDnsWallpaper(useGameBgsEffective ? [gameBg_object] : []);
     })();
 
-    // 优先使用 dns.pub，再回退到 alidns，再回退到 cloudflare DoH，最后回退到原有的 window.ipc 解析方式
+    // 优先使用 alidns，再回退到 cloudflare DoH，最后回退到原有的 window.ipc 解析方式
     async function fetchDnsWallpaper(addBefore?: WallpaperItem[]) {
       const domain = 'default-bgs.class-tools.app.lukas1.eu.org';
 
@@ -192,7 +192,7 @@ function FloatWindow({ onShutdownModalOpen }) {
               let d = a.data;
               if (typeof d === 'string') {
                 // 移除外层引号
-                d = d.replace(/^"|"$/g, '');
+                d = d.replace(/"| /g, '');
               }
               return d;
             });
@@ -200,7 +200,7 @@ function FloatWindow({ onShutdownModalOpen }) {
           }
           // 某些服务可能返回 { Answer: "..." } 或其他形式，尝试宽松处理
           if (json && json.Answer && typeof json.Answer === 'string') {
-            return [json.Answer.replace(/^"|"$/g, '')];
+            return [json.Answer.replace(/"| /g, '')];
           }
           return null;
         } catch (err) {
@@ -210,19 +210,8 @@ function FloatWindow({ onShutdownModalOpen }) {
       }
 
       let base64String = '';
-
-      // 1) dns.pub
-      try {
-        const url = `https://dns.pub/resolve?name=${encodeURIComponent(domain)}&type=TXT`;
-        const ans = await tryDoH(url);
-        if (ans && ans.length > 0) {
-          base64String = ans[0].replace(/^"|"$/g, '');
-        }
-      } catch (err) {
-        console.warn('dns.pub attempt failed', err);
-      }
-
-      // 2) alidns
+      
+      // 1) alidns
       if (!base64String) {
         try {
           const url = `https://dns.alidns.com/resolve?name=${encodeURIComponent(domain)}&type=TXT`;
@@ -235,20 +224,20 @@ function FloatWindow({ onShutdownModalOpen }) {
         }
       }
 
-      // 3) cloudflare DoH (application/dns-json)
+      // 2) cloudflare DoH (application/dns-json)
       if (!base64String) {
         try {
           const url = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=TXT`;
           const ans = await tryDoH(url, { Accept: 'application/dns-json' });
           if (ans && ans.length > 0) {
-            base64String = ans[0].replace(/^"|"$/g, '');
+            base64String = ans[0].replace(/"| /g, '');
           }
         } catch (err) {
           console.warn('cloudflare doh attempt failed', err);
         }
       }
 
-      // 4) 最后回退到 window.ipc 原有解析方式
+      // 3) 最后回退到 window.ipc 原有解析方式
       if (!base64String) {
         try {
           const txtRecords: string[][] = await window.ipc?.invoke('resolveDns', domain, 'TXT');
