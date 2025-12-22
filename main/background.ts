@@ -1,10 +1,9 @@
 import path from 'path';
 import fs from 'fs-extra';
 import cp from 'child_process';
-import { app, dialog, ipcMain, ipcRenderer, screen } from 'electron';
+import { app, dialog, ipcMain, screen, BrowserWindow, Menu } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
-import { BrowserWindow, Menu } from 'electron';
 import Store from 'electron-store';
 import AutoLaunch from 'auto-launch';
 import systeminformation from 'systeminformation';
@@ -13,6 +12,7 @@ import os from 'os';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import dns from 'dns';
+import * as Sentry from '@sentry/electron/main';
 
 const isProd = process.env.NODE_ENV === 'production';
 if (isProd) {
@@ -21,6 +21,13 @@ if (isProd) {
   // app.setPath('userData', `${app.getPath('userData')} (development)`)
   app.setPath('userData', path.join(process.cwd(), '.data'));
 }
+
+Sentry.init({
+  dsn: 'https://6dca168d15f311911a41313d88e9ecd7@o4509214755782657.ingest.us.sentry.io/4510573802291200',
+  // Enable logs to be sent to Sentry
+  enableLogs: true,
+});
+
 let mainWindow_g: BrowserWindow;
 let settingsWindow_g: BrowserWindow;
 const gotTheLock = app.requestSingleInstanceLock();
@@ -310,7 +317,6 @@ ipcMain.on('settings-window', async (event, arg) => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      webSecurity: false,
     },
     maximizable: true,
     resizable: true,

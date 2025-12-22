@@ -96,7 +96,6 @@ export default function App() {
                   }}>
                   移除Service Worker
                 </Button>
-
                 <Button
                   color='primary'
                   variant='bordered'
@@ -106,7 +105,6 @@ export default function App() {
                   }}>
                   删除Workbox缓存
                 </Button>
-
                 <Button
                   color='primary'
                   variant='bordered'
@@ -115,6 +113,14 @@ export default function App() {
                     alert(`Persist Storage: ${allow ? 'Success' : 'Failed'}`);
                   }}>
                   Apply Persist Storage
+                </Button>
+                <Button
+                  color='primary'
+                  variant='bordered'
+                  onPress={async () => {
+                    throw new Error('Sentry test error in renderer process');
+                  }}>
+                  Throw Error
                 </Button>
               </div>
             </SettingsItem>
