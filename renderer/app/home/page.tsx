@@ -123,23 +123,35 @@ function FloatWindow({ onShutdownModalOpen }) {
       const useGame = await getConfigSync('display.background.useGame');
       const useAllowType = await getConfigSync('display.background.useGameBgsAllowType');
       let gameBg_object: any = { type: 'image' };
+      // 尝试拉取游戏背景，如果失败则回退为不使用游戏背景（不把 gameBg_object 加到列表前置）
+      let useGameBgsEffective = useGameBgs && useGame;
       if (useGameBgs && useGame) {
-        const res = await fetch(
-          `https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&game_id=${useGame}`
-        );
-        const data = await res.json();
-        const info = data?.data?.game_info_list?.[0];
-        if (info && info.backgrounds?.length > 0) {
-          const bg = info.backgrounds[0];
-          if (bg.video?.url) {
-            gameBg_object.video_url = bg.video.url;
-            if (useAllowType === 'video-image') {
-              gameBg_object.type = 'video';
-            } else if (useAllowType !== 'image-only') {
-              gameBg_object.type = 'mixed';
+        try {
+          const res = await fetch(
+            `https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&game_id=${useGame}`
+          );
+          const data = await res.json();
+          const info = data?.data?.game_info_list?.[0];
+          if (info && info.backgrounds?.length > 0) {
+            const bg = info.backgrounds[0];
+            if (bg.video?.url) {
+              gameBg_object.video_url = bg.video.url;
+              if (useAllowType === 'video-image') {
+                gameBg_object.type = 'video';
+              } else if (useAllowType !== 'image-only') {
+                gameBg_object.type = 'mixed';
+              }
             }
+            if (bg.background?.url) gameBg_object.image_url = bg.background.url;
           }
-          if (bg.background?.url) gameBg_object.image_url = bg.background.url;
+          // 如果没有拿到有效的 image/video，则认为拉取无效
+          if (!gameBg_object.video_url && !gameBg_object.image_url) {
+            useGameBgsEffective = false;
+          }
+        } catch (err) {
+          console.error('Failed to fetch game backgrounds, disabling useGameBgs:', err);
+          // 拉取失败则不使用游戏背景
+          useGameBgsEffective = false;
         }
       }
 
@@ -147,7 +159,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       if (!DISABLE_CACHE && cached && now < expires) {
         try {
           const cachedData: WallpaperItem[] = JSON.parse(cached);
-          let wallpaperList: WallpaperItem[] = useGameBgs && useGame ? [gameBg_object, ...cachedData] : cachedData;
+          let wallpaperList: WallpaperItem[] = useGameBgsEffective ? [gameBg_object, ...cachedData] : cachedData;
           setWallpapers(wallpaperList);
           const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
           const validIndex = savedIndex < wallpaperList.length ? savedIndex : 0;
@@ -158,20 +170,89 @@ function FloatWindow({ onShutdownModalOpen }) {
         return;
       }
 
-      fetchDnsWallpaper(useGameBgs && useGame ? [gameBg_object] : []);
+      fetchDnsWallpaper(useGameBgsEffective ? [gameBg_object] : []);
     })();
 
+    // 优先使用 alidns，再回退到 cloudflare DoH，最后回退到原有的 window.ipc 解析方式
     async function fetchDnsWallpaper(addBefore?: WallpaperItem[]) {
+      const domain = 'default-bgs.class-tools.app.lukas1.eu.org';
+
+      // 封装：尝试通过一个 DoH 提供者获取 TXT 记录，返回字符串数组或 null
+      async function tryDoH(url: string, headers?: Record<string, string>) {
+        try {
+          const res = await fetch(url, { headers: headers || {} , cache: 'no-store' });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status} from ${url}`);
+          }
+          const json = await res.json();
+          // 常见 JSON 结构：{ Answer: [ { data: "..." }, ... ] }
+          if (json && Array.isArray(json.Answer) && json.Answer.length > 0) {
+            const joined = json.Answer.map((a: any) => {
+              // TXT 记录通常以引号包裹，如: "\"BASE64...\"" 或 "BASE64..."
+              let d = a.data;
+              if (typeof d === 'string') {
+                // 移除外层引号
+                d = d.replace(/"| /g, '');
+              }
+              return d;
+            });
+            return joined;
+          }
+          // 某些服务可能返回 { Answer: "..." } 或其他形式，尝试宽松处理
+          if (json && json.Answer && typeof json.Answer === 'string') {
+            return [json.Answer.replace(/"| /g, '')];
+          }
+          return null;
+        } catch (err) {
+          console.warn('tryDoH failed for', url, err);
+          return null;
+        }
+      }
+
+      let base64String = '';
+      
+      // 1) alidns
+      if (!base64String) {
+        try {
+          const url = `https://dns.alidns.com/resolve?name=${encodeURIComponent(domain)}&type=TXT`;
+          const ans = await tryDoH(url);
+          if (ans && ans.length > 0) {
+            base64String = ans[0].replace(/^"|"$/g, '');
+          }
+        } catch (err) {
+          console.warn('alidns attempt failed', err);
+        }
+      }
+
+      // 2) cloudflare DoH (application/dns-json)
+      if (!base64String) {
+        try {
+          const url = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=TXT`;
+          const ans = await tryDoH(url, { Accept: 'application/dns-json' });
+          if (ans && ans.length > 0) {
+            base64String = ans[0].replace(/"| /g, '');
+          }
+        } catch (err) {
+          console.warn('cloudflare doh attempt failed', err);
+        }
+      }
+
+      // 3) 最后回退到 window.ipc 原有解析方式
+      if (!base64String) {
+        try {
+          const txtRecords: string[][] = await window.ipc?.invoke('resolveDns', domain, 'TXT');
+          base64String = Array.isArray(txtRecords) ? txtRecords[0].join('') : '';
+        } catch (err) {
+          console.error('ipc resolveDns fallback failed', err);
+        }
+      }
+
+      if (!base64String) {
+        console.error('No valid TXT record found from any DNS provider');
+        return;
+      }
+
       try {
-        const txtRecords: string[][] = await window.ipc?.invoke(
-          'resolveDns',
-          'default-bgs.class-tools.app.lukas1.eu.org',
-          'TXT'
-        );
-        const base64String = Array.isArray(txtRecords) ? txtRecords[0].join('') : '';
-
-        if (!base64String) throw new Error('No valid TXT record found');
-
         const decodedUrls_json = atob(base64String);
         const rawList = JSON.parse(decodedUrls_json);
 
@@ -198,7 +279,7 @@ function FloatWindow({ onShutdownModalOpen }) {
         const validIndex = savedIndex < wallpaperList.length ? savedIndex : 0;
         updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
       } catch (err) {
-        console.error('Failed to resolve DNS TXT record for wallpaper:', err);
+        console.error('Failed to decode/parse wallpaper TXT record payload:', err);
       }
     }
   }, []);
