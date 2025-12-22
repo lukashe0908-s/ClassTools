@@ -7,6 +7,7 @@ import { Snackbar, Fade } from '@mui/material';
 import { createRoot } from 'react-dom/client';
 import 'overlayscrollbars/overlayscrollbars.css';
 import * as Sentry from '@sentry/electron/renderer';
+import * as SentryReact from '@sentry/react';
 
 muiXTelemetrySettings.disableTelemetry();
 LicenseInfo.setLicenseKey(
@@ -15,32 +16,28 @@ LicenseInfo.setLicenseKey(
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    Sentry.init({
-      // Adds request headers and IP for users, for more info visit:
-      // https://docs.sentry.io/platforms/javascript/guides/electron/configuration/options/#sendDefaultPii
+    let sentryConfig = {
+      dsn: 'https://6dca168d15f311911a41313d88e9ecd7@o4509214755782657.ingest.us.sentry.io/4510573802291200',
       sendDefaultPii: true,
-      integrations: [
-        Sentry.browserTracingIntegration(),
-        Sentry.replayIntegration({ maskAllText: false, blockAllMedia: false }),
-      ],
-
-      // Set tracesSampleRate to 1.0 to capture 100%
-      // of transactions for performance monitoring.
-      // We recommend adjusting this value in production
-      // Learn more at
-      // https://docs.sentry.io/platforms/javascript/configuration/options/#traces-sample-rate
+      integrations: [],
       tracesSampleRate: 1.0,
-
-      // Capture Replay for 10% of all sessions,
-      // plus for 100% of sessions with an error
-      // Learn more at
-      // https://docs.sentry.io/platforms/javascript/session-replay/configuration/#general-integration-configuration
       replaysSessionSampleRate: 0.1,
       replaysOnErrorSampleRate: 1.0,
-
-      // Enable logs to be sent to Sentry
       enableLogs: true,
-    });
+    };
+    if (window.ipc) {
+      sentryConfig.integrations = [
+        Sentry.browserTracingIntegration(),
+        Sentry.replayIntegration({ maskAllText: false, blockAllMedia: false }),
+      ];
+      Sentry.init(sentryConfig);
+    } else {
+      sentryConfig.integrations = [
+        SentryReact.browserTracingIntegration(),
+        SentryReact.replayIntegration({ maskAllText: false, blockAllMedia: false }),
+      ];
+      SentryReact.init(sentryConfig);
+    }
   }, []);
 
   const [isDark, setIsDark] = useState(false);
