@@ -1,57 +1,48 @@
-name: Tag new version
+name: Tag on version change
 
 on:
+  workflow_dispatch:
   push:
-    paths:
-      - 'package.json'
     branches:
       - main
+    paths:
+      - package.json
 
 jobs:
-  tag-version:
+  tag:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 必须 fetch 全部 commit 才能比较版本号
+          fetch-depth: 0
 
       - name: Get current version
-        id: get_current
         run: |
-          CUR_VER=$(node -p "require('./package.json').version")
-          echo "CUR_VER=$CUR_VER" >> $GITHUB_ENV
-          echo "current=$CUR_VER" >> $GITHUB_OUTPUT
+          echo "CUR_VER=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
 
-      - name: Get last version from previous commit
-        id: get_last
+      - name: Check if version changed
         run: |
-          git show HEAD~1:package.json > prev_package.json || echo '{}' > prev_package.json
-          LAST_VER=$(node -p "require('./prev_package.json').version || '0.0.0'")
-          echo "LAST_VER=$LAST_VER" >> $GITHUB_ENV
-          echo "last=$LAST_VER" >> $GITHUB_OUTPUT
-
-      - name: Compare versions
-        id: compare
-        run: |
-          CUR=$GITHUB_ENV_CUR_VER
-          LAST=$GITHUB_ENV_LAST_VER
-          echo "CUR=$CUR"
-          echo "LAST=$LAST"
-          # 使用 npm version 比较
-          if [ "$(node -e "console.log(require('semver').gt('$CUR', '$LAST'))")" = "true" ]; then
-            echo "VERSION_UP=true" >> $GITHUB_ENV
+          if git diff HEAD~1 HEAD -- package.json | grep '"version"'; then
+            echo "VERSION_CHANGED=true" >> $GITHUB_ENV
           else
-            echo "VERSION_UP=false" >> $GITHUB_ENV
+            echo "VERSION_CHANGED=false" >> $GITHUB_ENV
           fi
 
-      - name: Create Git tag if version increased
-        if: env.VERSION_UP == 'true'
-        env:
-          VERSION: ${{ env.CUR_VER }}
+      - name: Check if tag already exists
+        if: env.VERSION_CHANGED == 'true'
+        run: |
+          if git rev-parse "v$CUR_VER" >/dev/null 2>&1; then
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create tag
+        if: env.VERSION_CHANGED == 'true' && env.TAG_EXISTS == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "v$VERSION" -m "Release v$VERSION"
-          git push origin "v$VERSION"
+          git tag -a "v$CUR_VER" -m "Release v$CUR_VER"
+          git push origin "v$CUR_VER"
