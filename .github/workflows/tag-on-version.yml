@@ -1,6 +1,7 @@
 name: Tag on version change
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - package.json
