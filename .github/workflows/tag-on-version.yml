@@ -1,7 +1,6 @@
 name: Tag on version change
 
 on:
-  workflow_dispatch:
   push:
     paths:
       - package.json
@@ -16,32 +15,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get current version
-        run: |
-          node -e "require('fs').appendFileSync(process.env.GITHUB_ENV, `CUR_VER=${require('./package.json').version}\n`);"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
 
-
-      - name: Check if version changed
-        run: |
-          if git diff HEAD~1 HEAD -- package.json | grep '"version"'; then
-            echo "VERSION_CHANGED=true" >> $GITHUB_ENV
-          else
-            echo "VERSION_CHANGED=false" >> $GITHUB_ENV
-          fi
-
-      - name: Check if tag already exists
-        if: env.VERSION_CHANGED == 'true'
-        run: |
-          if git rev-parse "v$CUR_VER" >/dev/null 2>&1; then
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
-          fi
-
-      - name: Create tag
-        if: env.VERSION_CHANGED == 'true' && env.TAG_EXISTS == 'false'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "v$CUR_VER" -m "Release v$CUR_VER"
-          git push origin "v$CUR_VER"
+      - name: Check version and create tag
+        run: node main/builders/check-version.js
