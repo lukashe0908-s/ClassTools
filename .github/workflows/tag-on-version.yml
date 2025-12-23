@@ -1,0 +1,57 @@
+name: Tag new version
+
+on:
+  push:
+    paths:
+      - 'package.json'
+    branches:
+      - main
+
+jobs:
+  tag-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 必须 fetch 全部 commit 才能比较版本号
+
+      - name: Get current version
+        id: get_current
+        run: |
+          CUR_VER=$(node -p "require('./package.json').version")
+          echo "CUR_VER=$CUR_VER" >> $GITHUB_ENV
+          echo "current=$CUR_VER" >> $GITHUB_OUTPUT
+
+      - name: Get last version from previous commit
+        id: get_last
+        run: |
+          git show HEAD~1:package.json > prev_package.json || echo '{}' > prev_package.json
+          LAST_VER=$(node -p "require('./prev_package.json').version || '0.0.0'")
+          echo "LAST_VER=$LAST_VER" >> $GITHUB_ENV
+          echo "last=$LAST_VER" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: compare
+        run: |
+          CUR=$GITHUB_ENV_CUR_VER
+          LAST=$GITHUB_ENV_LAST_VER
+          echo "CUR=$CUR"
+          echo "LAST=$LAST"
+          # 使用 npm version 比较
+          if [ "$(node -e "console.log(require('semver').gt('$CUR', '$LAST'))")" = "true" ]; then
+            echo "VERSION_UP=true" >> $GITHUB_ENV
+          else
+            echo "VERSION_UP=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create Git tag if version increased
+        if: env.VERSION_UP == 'true'
+        env:
+          VERSION: ${{ env.CUR_VER }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$VERSION" -m "Release v$VERSION"
+          git push origin "v$VERSION"

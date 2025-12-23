@@ -10,17 +10,13 @@ jobs:
   build:
     runs-on: windows-latest
 
-    strategy:
-      matrix:
-        node-version: [22.x]
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js (LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: lts/*
 
       - name: Enable Corepack
         run: corepack enable
@@ -35,7 +31,7 @@ jobs:
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v5
         with:
-          mode: "COMMIT"
+          mode: 'COMMIT'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -62,4 +58,3 @@ jobs:
         env:
           TAG_NAME: ${{ github.ref_name }}
         run: node main/builders/upload-yml.js ${{ secrets.PUSH_TOKEN }}
-
