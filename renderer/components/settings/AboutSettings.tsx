@@ -59,7 +59,7 @@ export function AboutSettings() {
 
       <SettingsItem title='版本信息' description='当前应用版本和构建信息'>
         <div className='text-right'>
-          <div className='font-mono text-sm'>v{version}</div>
+          <div className='font-mono text-sm'>{version}</div>
           <div className='text-xs text-neutral-600 dark:text-neutral-300'>Build {buildVersion}</div>
         </div>
       </SettingsItem>

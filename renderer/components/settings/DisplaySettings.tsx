@@ -169,7 +169,7 @@ export function SystemSettings() {
         title='在线模式'
         description={
           <div className='flex items-center gap-2'>
-            开启此选项后会使用最新的Web版本，过旧的版本使用时可能会出现问题
+            开启此选项后会使用最新的 UI 版本，过旧的版本使用时可能会出现问题
           </div>
         }>
         <Switch

@@ -29,7 +29,7 @@ export default function App() {
   // 加载版本信息
   async function loadVersion() {
     let mainVersion = 'Unknown';
-    let webVersion = 'Unknown';
+    let UIVersion = 'Unknown';
     try {
       mainVersion = (await getVersionSync()) as string;
     } catch {}
@@ -37,10 +37,10 @@ export default function App() {
     try {
       const res = await fetch('/version');
       const text = await res.text();
-      webVersion = dayjs(Number(text)).format('YYYY/M/D HH:mm:ss');
+      UIVersion = dayjs(Number(text)).format('YYYY/M/D HH:mm:ss');
     } catch {}
 
-    setVersionInfo(`Main: ${mainVersion}\nWeb: ${webVersion}`);
+    setVersionInfo(`Version: ${mainVersion}\nUI Version: ${UIVersion}`);
   }
 
   // 刷新浏览器与存储信息
@@ -80,8 +80,8 @@ export default function App() {
           <p className='text-neutral-600 dark:text-neutral-300'>用于开发与排除错误</p>
         </div>
         <SettingsSection>
-          <SettingsGroup title='工具'>
-            <SettingsItem title='存储测试' alignRight={false}>
+          <SettingsGroup title='测试工具'>
+            <SettingsItem title='存储' alignRight={false}>
               <div className='flex gap-2 flex-wrap'>
                 <Button
                   color='primary'
@@ -114,18 +114,18 @@ export default function App() {
                   }}>
                   Apply Persist Storage
                 </Button>
-                <Button
+                {/* <Button
                   color='primary'
                   variant='bordered'
                   onPress={async () => {
                     throw new Error('Sentry test error in renderer process');
                   }}>
                   Throw Error
-                </Button>
+                </Button> */}
               </div>
             </SettingsItem>
             <Divider></Divider>
-            <SettingsItem title='热点Debug' alignRight={false} alignCenter={false}>
+            <SettingsItem title='热点' alignRight={false} alignCenter={false}>
               <div className='flex gap-2 flex-wrap'>
                 <Button
                   color='primary'
