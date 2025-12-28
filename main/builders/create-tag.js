@@ -25,7 +25,7 @@ async function main() {
       process.exit(1);
     }
 
-    const defaultTag = `v${version}`;
+    const defaultTag = `${version}`;
 
     // 询问用户输入 tag 名，默认使用 package.json 版本号
     let inputTag = await askQuestion(`请输入 tag 名（默认 ${defaultTag}）：`);
