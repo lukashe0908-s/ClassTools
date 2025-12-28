@@ -15,10 +15,7 @@ import dns from 'dns';
 import * as Sentry from '@sentry/electron/main';
 
 const isProd = process.env.NODE_ENV === 'production';
-if (isProd) {
-  serve({ directory: 'build/app' });
-} else {
-  // app.setPath('userData', `${app.getPath('userData')} (development)`)
+if (!isProd) {
   app.setPath('userData', path.join(process.cwd(), '.data'));
 }
 
@@ -27,6 +24,10 @@ Sentry.init({
   // Enable logs to be sent to Sentry
   enableLogs: true,
 });
+
+if (isProd) {
+  serve({ directory: 'build/app' });
+}
 
 let mainWindow_g: BrowserWindow;
 let settingsWindow_g: BrowserWindow;
