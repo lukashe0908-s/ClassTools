@@ -3,6 +3,17 @@ const path = require('path');
 
 (async () => {
   const filePath = path.resolve('build/dist/latest.yml');
+  const filePath_beta = path.resolve('build/dist/beta.yml');
+  if (fs.existsSync(filePath)) {
+    uploadYML(filePath);
+  } else if (fs.existsSync(filePath_beta)) {
+    uploadYML(filePath_beta);
+  } else {
+    console.warn(`❌ Upload failed: Couldn't find ${filePath}`);
+  }
+})();
+
+async function uploadYML(filePath) {
   const fileContent = fs.readFileSync(filePath, 'utf-8');
 
   const tag = process.env.TAG_NAME;
@@ -32,4 +43,4 @@ const path = require('path');
   }
 
   console.log(`✅ Upload successful for tag: ${tag}`);
-})();
+}
