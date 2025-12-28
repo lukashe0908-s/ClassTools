@@ -154,7 +154,7 @@ export function LessonsListName() {
   useEffect(() => {
     (async () => {
       const data: any = await getConfigSync('lessonsList.name');
-      if (data.length > 0) data && setRows(data);
+      if (data && data.length > 0) data && setRows(data);
     })();
   }, []);
 
@@ -205,7 +205,7 @@ export function LessonsListTime() {
     (async () => {
       try {
         const data: any = await getConfigSync('lessonsList.time');
-        if (data.length > 0) data && setRows(data);
+        if (data && data.length > 0) data && setRows(data);
       } catch (error) {}
       setIsLoading(false);
     })();
