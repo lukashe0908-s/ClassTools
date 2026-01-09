@@ -7,13 +7,6 @@ Class Tools 是一款基于 Electron 与 Next‑React 的班级课表管理工
 
 ---
 
-## 界面预览
-
-<img src="assets/image main.png" alt="Main" style="max-height:300px" />
-<img src="assets/image settings display.png" alt="Display Settings" style="max-height:300px"  />
-
----
-
 ## 功能概览
 
 | 功能           | 说明                                     |
