@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, Slider, Autocomplete, AutocompleteItem, Tooltip } from '@heroui/react';
 import { SettingsGroup, SettingsItem, SettingsSection } from './SettingsGroup';
-import { getConfigSync } from '../p_function';
+import { getConfigSync } from '../../features/p_function';
 import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
@@ -192,7 +192,6 @@ export function InterfaceSettings() {
   const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
   const [hiddenJumpto, setHiddenJumpto] = useState(false);
-  const [useLegacyHome, setUseLegacyHome] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -204,9 +203,6 @@ export function InterfaceSettings() {
 
       const jumptoData = await getConfigSync('display.hidden.jumpto');
       jumptoData && setHiddenJumpto(Boolean(jumptoData));
-
-      const legacyData = await getConfigSync('display.useLegacyHome');
-      legacyData && setUseLegacyHome(Boolean(legacyData));
     })();
   }, []);
 
@@ -238,16 +234,6 @@ export function InterfaceSettings() {
           onChange={() => {
             setHiddenJumpto(!hiddenJumpto);
             window.ipc?.send('set-config', 'display.hidden.jumpto', !hiddenJumpto);
-          }}
-        />
-      </SettingsItem>
-
-      <SettingsItem title='使用旧版本页面' description='启动时默认使用旧版本的用户界面'>
-        <Switch
-          isSelected={useLegacyHome}
-          onChange={() => {
-            setUseLegacyHome(!useLegacyHome);
-            window.ipc?.send('set-config', 'display.useLegacyHome', !useLegacyHome);
           }}
         />
       </SettingsItem>

@@ -22,7 +22,7 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider, TimePicker, renderTimeViewClock } from '@mui/x-date-pickers-pro';
 import { OverlayScrollbars } from 'overlayscrollbars';
-import { getConfigSync } from '../p_function';
+import { getConfigSync } from '../../features/p_function';
 
 const columns = [
   {

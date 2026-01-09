@@ -169,12 +169,7 @@ function isWindows11() {
   }
 
   if (isProd) {
-    const legacy = store.get('display.useLegacyHome');
-    if (legacy) {
-      await mainWindow.loadURL(getProviderPath('/float'));
-    } else {
-      await mainWindow.loadURL(getProviderPath('/home'));
-    }
+    await mainWindow.loadURL(getProviderPath('/home'));
     autoUpdater.checkForUpdates();
   } else {
     await mainWindow.loadURL(getProviderPath('/home'));

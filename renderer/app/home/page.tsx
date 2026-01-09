@@ -10,12 +10,12 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import UpdateModal from './updateModal';
 import ClassList from './classList';
 import { Weather } from './weather';
-import { generateConfig, getConfigSync } from '../../components/p_function';
+import { generateConfig, getConfigSync } from '../../features/p_function';
 
 export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   useEffect(() => {
-    const serviceWorkerScope = `/sw.js`;
+    const serviceWorkerScope = `/buildArtifacts/sw.js`;
     navigator.serviceWorker &&
       location.protocol === 'https:' &&
       navigator.serviceWorker
@@ -289,7 +289,6 @@ function FloatWindow({ onShutdownModalOpen }) {
   const [progressDisplay, setProgressDisplay] = useState('always');
   const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
-  const [hiddenJumpto, setHiddenJumpto] = useState(false);
   const [playingMixed, setPlayingMixed] = useState(true);
 
   // 处理初始滚动到选中的壁纸
@@ -322,7 +321,6 @@ function FloatWindow({ onShutdownModalOpen }) {
       setProgressDisplay(prog);
       setHiddenCloseWindow(hiddenClose);
       setHiddenRefreshWindow(hiddenRefresh);
-      setHiddenJumpto(hiddenJump);
     };
 
     loadConfig();
@@ -364,17 +362,6 @@ function FloatWindow({ onShutdownModalOpen }) {
             title='刷新'
             aria-label='Refresh'>
             <ArrowPathIcon className='w-5 h-5' />
-          </Button>
-        )}
-        {!hiddenJumpto && (
-          <Button
-            isIconOnly
-            onPress={() => {
-              window.location.href = '/float/index.html';
-            }}
-            title='跳转'
-            aria-label='JumpTo'>
-            <ArrowTopRightOnSquareIcon className='w-5 h-5' />
           </Button>
         )}
         {!hiddenCloseWindow && (

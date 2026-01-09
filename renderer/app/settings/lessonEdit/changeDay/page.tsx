@@ -12,7 +12,7 @@ import {
 import { Calendar } from '@heroui/calendar';
 import { useEffect, useState } from 'react';
 import * as lodash from 'lodash';
-import { getConfigSync } from '../../../../components/p_function';
+import { getConfigSync } from '../../../../features/p_function';
 import { CalendarDate, parseDate } from '@internationalized/date';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';

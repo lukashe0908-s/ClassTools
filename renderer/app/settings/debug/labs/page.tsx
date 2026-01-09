@@ -12,7 +12,7 @@ import {
   AutocompleteItem,
 } from '@heroui/react';
 import { useEffect, useState } from 'react';
-import { getConfigSync, getAutoLaunchSync } from '../../../../components/p_function';
+import { getConfigSync, getAutoLaunchSync } from '../../../../features/p_function';
 import { SettingsSection, SettingsGroup, SettingsItem } from '../../../../components/settings/SettingsGroup';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';

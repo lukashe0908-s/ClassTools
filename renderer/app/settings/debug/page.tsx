@@ -1,7 +1,7 @@
 'use client';
 import { Button, Divider } from '@heroui/react';
 import { useEffect, useState } from 'react';
-import { getVersionSync, formatSize, getSysInfoSync } from '../../../components/p_function';
+import { getVersionSync, formatSize, getSysInfoSync } from '../../../features/p_function';
 import { SettingsSection, SettingsGroup, SettingsItem } from '../../../components/settings/SettingsGroup';
 import dayjs from 'dayjs';
 
@@ -35,7 +35,7 @@ export default function App() {
     } catch {}
 
     try {
-      const res = await fetch('/version');
+      const res = await fetch('/buildArtifacts/UIVersion');
       const text = await res.text();
       UIVersion = dayjs(Number(text)).format('YYYY/M/D HH:mm:ss');
     } catch {}

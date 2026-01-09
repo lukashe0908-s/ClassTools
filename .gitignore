@@ -9,6 +9,4 @@ dist
 
 .data
 .yarn
-renderer/public/sw.js
-renderer/public/workbox-*.js
-renderer/public/version
+renderer/public/buildArtifacts

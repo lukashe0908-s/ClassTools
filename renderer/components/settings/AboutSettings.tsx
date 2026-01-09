@@ -4,7 +4,7 @@ import { SettingsGroup, SettingsItem } from './SettingsGroup';
 import InfoIcon from '@mui/icons-material/Info';
 import PersonIcon from '@mui/icons-material/Person';
 import CodeIcon from '@mui/icons-material/Code';
-import { getVersionSync } from '../../components/p_function';
+import { getVersionSync } from '../../features/p_function';
 import dayjs from 'dayjs';
 import { Button } from '@heroui/react';
 import UpdateIcon from '@mui/icons-material/Update';
@@ -23,7 +23,7 @@ export function AboutSettings() {
       setVersion(main_version);
       let web_version;
       try {
-        web_version = await (await fetch('/version')).text();
+        web_version = await (await fetch('/buildArtifacts/UIVersion')).text();
         web_version = dayjs(Number(web_version)).format('YYYY.M.D');
       } catch (error) {
         web_version = 'Unknown';

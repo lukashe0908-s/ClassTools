@@ -9,14 +9,14 @@ const urlPattern = new RegExp(`/.*`);
 // https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-build#.generateSW
 const buildSW = () => {
   return workboxBuild.generateSW({
-    swDest: 'renderer/public/sw.js',
+    swDest: 'renderer/public/buildArtifacts/sw.js',
     clientsClaim: true,
     mode: NODE_ENV,
     skipWaiting: true,
     sourcemap: false,
     runtimeCaching: [
       {
-        urlPattern: new RegExp(String.raw`/(static|float/lib)/.*`),
+        urlPattern: new RegExp(String.raw`/(static)/.*`),
         handler: 'CacheFirst',
         options: {
           cacheName: 'class-tools',
@@ -44,4 +44,4 @@ const buildSW = () => {
 buildSW();
 
 // Add Web Build Time
-fs.writeFile(path.resolve(process.cwd(), 'renderer/public/version'), Date.now().toString());
+fs.writeFile(path.resolve(process.cwd(), 'renderer/public/buildArtifacts/UIVersion'), Date.now().toString());
