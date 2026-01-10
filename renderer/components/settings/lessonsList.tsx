@@ -19,15 +19,13 @@ import {
   Switch,
 } from '@heroui/react';
 import dayjs from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
-import { LocalizationProvider, TimePicker, renderTimeViewClock } from '@mui/x-date-pickers-pro';
 import { OverlayScrollbars } from 'overlayscrollbars';
 import { getConfigSync } from '../../features/p_function';
 
 const columns = [
   {
     id: 'id',
-    label: 'Index',
+    label: '#',
   },
   {
     id: 'all',
@@ -35,31 +33,31 @@ const columns = [
   },
   {
     id: 'sunday',
-    label: 'Sunday',
+    label: 'S',
   },
   {
     id: 'monday',
-    label: 'Monday',
+    label: 'M',
   },
   {
     id: 'tuesday',
-    label: 'Tuesday',
+    label: 'T',
   },
   {
     id: 'wednesday',
-    label: 'Wednesday',
+    label: 'W',
   },
   {
     id: 'thursday',
-    label: 'Thursday',
+    label: 'T',
   },
   {
     id: 'friday',
-    label: 'Friday',
+    label: 'F',
   },
   {
     id: 'saturday',
-    label: 'Saturday',
+    label: 'S',
   },
 ];
 function formattedRows(rows) {
@@ -111,7 +109,7 @@ function List({ rows, setRows, children, isEditMode = false }) {
                   return (
                     <TableCell
                       className={
-                        columnKey == 'id' ? 'sticky left-0 bg-white dark:bg-neutral-900 z-[10]' : 'min-w-[14ch]'
+                        columnKey == 'id' ? 'sticky left-0 bg-white dark:bg-neutral-900 z-10' : 'min-w-[14ch]'
                       }>
                       {columnKey == 'id' ? rowIndex + 1 : children(row, rowIndex, columnKey)}
                     </TableCell>
@@ -137,7 +135,7 @@ function CustomTextarea(props) {
     <textarea
       {...props}
       className={
-        'resize-none focus-visible:!outline-none bg-[transparent] w-full h-full rounded-sm' +
+        'resize-none focus-visible:outline-none! bg-transparent w-full h-full rounded-sm' +
         (props.className ? ' ' + props.className : '')
       }
       onInput={e => {
@@ -198,7 +196,6 @@ export function LessonsListName() {
 export function LessonsListTime() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoading2, setIsLoading2] = useState(true);
-  const [isEditMode, setEditMode] = useState(false);
   const [rows, setRows] = useState([{}]) as any;
   const [weekStart, setWeekStart] = useState('') as any;
   useEffect(() => {
@@ -238,10 +235,7 @@ export function LessonsListTime() {
             setWeekStart(e.target.value);
           }}></Input>
         <div>
-          <Switch isSelected={isEditMode} onValueChange={setEditMode} size='sm'>
-            使用时间选择器
-          </Switch>
-          <List rows={rows} setRows={setRows} isEditMode={isEditMode}>
+          <List rows={rows} setRows={setRows} isEditMode={true}>
             {(row, rowIndex, columnKey) => {
               let context: { [key: string]: string } | undefined = getKeyValue(row, columnKey);
               const startTime = context?.start;
@@ -284,143 +278,66 @@ export function LessonsListTime() {
                       }
                     });
                   }}>
-                  {!isEditMode ? (
-                    <>
-                      <LessonsListTime_TimeDisplayer
-                        time={startTime}
-                        onChange={e => {
-                          const time = dayjs('1970-1-1 ' + e.target.value).format('HH:mm');
-                          if (time == 'Invalid Date') return;
-                          let new_rows = [...rows];
-                          if (time && e.target.value !== '') {
-                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
-                            new_rows[rowIndex][columnKey].start = time;
+                  <LessonsListTime_TimeDisplayer
+                    time={startTime}
+                    onChange={e => {
+                      const time = dayjs('1970-1-1 ' + e.target.value).format('HH:mm');
+                      if (time == 'Invalid Date') return;
+                      let new_rows = [...rows];
+                      if (time && e.target.value !== '') {
+                        if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
+                        new_rows[rowIndex][columnKey].start = time;
+                      } else {
+                        delete new_rows[rowIndex][columnKey];
+                      }
+                      let finished_delete = false;
+                      for (let i = 0; i < new_rows.length; i++) {
+                        const element = new_rows[new_rows.length - 1 - i];
+                        if (!finished_delete) {
+                          if (Object.keys(element).length == 0) {
+                            new_rows[new_rows.length - 1 - i] = undefined;
                           } else {
-                            delete new_rows[rowIndex][columnKey];
+                            finished_delete = true;
                           }
-                          let finished_delete = false;
-                          for (let i = 0; i < new_rows.length; i++) {
-                            const element = new_rows[new_rows.length - 1 - i];
-                            if (!finished_delete) {
-                              if (Object.keys(element).length == 0) {
-                                new_rows[new_rows.length - 1 - i] = undefined;
-                              } else {
-                                finished_delete = true;
-                              }
-                            }
-                          }
-                          new_rows = new_rows.filter(value => value != undefined);
-                          new_rows.push({});
-                          window.ipc?.send('set-config', 'lessonsList.time', new_rows);
-                          setRows(new_rows);
-                        }}>
-                        Start Time
-                      </LessonsListTime_TimeDisplayer>
-                      <LessonsListTime_TimeDisplayer
-                        time={endTime}
-                        onChange={e => {
-                          const time = dayjs('1970-1-1 ' + e.target.value).format('HH:mm');
-                          if (time == 'Invalid Date') return;
-                          let new_rows = [...rows];
-                          if (time && e.target.value !== '') {
-                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
-                            new_rows[rowIndex][columnKey]['end'] = time;
+                        }
+                      }
+                      new_rows = new_rows.filter(value => value != undefined);
+                      new_rows.push({});
+                      window.ipc?.send('set-config', 'lessonsList.time', new_rows);
+                      setRows(new_rows);
+                    }}>
+                    Start Time
+                  </LessonsListTime_TimeDisplayer>
+                  <LessonsListTime_TimeDisplayer
+                    time={endTime}
+                    onChange={e => {
+                      const time = dayjs('1970-1-1 ' + e.target.value).format('HH:mm');
+                      if (time == 'Invalid Date') return;
+                      let new_rows = [...rows];
+                      if (time && e.target.value !== '') {
+                        if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
+                        new_rows[rowIndex][columnKey]['end'] = time;
+                      } else {
+                        delete new_rows[rowIndex][columnKey]['end'];
+                      }
+                      let finished_delete = false;
+                      for (let i = 0; i < new_rows.length; i++) {
+                        const element = new_rows[new_rows.length - 1 - i];
+                        if (!finished_delete) {
+                          if (Object.keys(element).length == 0) {
+                            new_rows[new_rows.length - 1 - i] = undefined;
                           } else {
-                            delete new_rows[rowIndex][columnKey]['end'];
+                            finished_delete = true;
                           }
-                          let finished_delete = false;
-                          for (let i = 0; i < new_rows.length; i++) {
-                            const element = new_rows[new_rows.length - 1 - i];
-                            if (!finished_delete) {
-                              if (Object.keys(element).length == 0) {
-                                new_rows[new_rows.length - 1 - i] = undefined;
-                              } else {
-                                finished_delete = true;
-                              }
-                            }
-                          }
-                          new_rows = new_rows.filter(value => value != undefined);
-                          new_rows.push({});
-                          window.ipc?.send('set-config', 'lessonsList.time', new_rows);
-                          setRows(new_rows);
-                        }}>
-                        End Time
-                      </LessonsListTime_TimeDisplayer>
-                    </>
-                  ) : (
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <TimePicker
-                        label='Start Time'
-                        viewRenderers={{
-                          hours: renderTimeViewClock,
-                          minutes: renderTimeViewClock,
-                        }}
-                        ampm={false}
-                        className='resize-none outline-0! border-0! h-full rounded-sm w-[15ch]!'
-                        value={getKeyValue(row, columnKey) ? dayjs('1970-1-1 ' + startTime) : null}
-                        onChange={e => {
-                          const time = e.format('HH:mm');
-                          let new_rows = [...rows];
-                          if (time && time !== 'Invalid Date') {
-                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
-                            new_rows[rowIndex][columnKey]['start'] = time;
-                          } else {
-                            delete new_rows[rowIndex][columnKey];
-                          }
-                          let finished_delete = false;
-                          for (let i = 0; i < new_rows.length; i++) {
-                            const element = new_rows[new_rows.length - 1 - i];
-                            if (!finished_delete) {
-                              if (Object.keys(element).length == 0) {
-                                new_rows[new_rows.length - 1 - i] = undefined;
-                              } else {
-                                finished_delete = true;
-                              }
-                            }
-                          }
-                          new_rows = new_rows.filter(value => value != undefined);
-                          new_rows.push({});
-                          window.ipc?.send('set-config', 'lessonsList.time', new_rows);
-                          setRows(new_rows);
-                        }}
-                      />
-                      <TimePicker
-                        label='End Time'
-                        viewRenderers={{
-                          hours: renderTimeViewClock,
-                          minutes: renderTimeViewClock,
-                        }}
-                        ampm={false}
-                        className='resize-none outline-0! border-0!l h-full rounded-sm w-[15ch]!'
-                        value={getKeyValue(row, columnKey) ? dayjs('1970-1-1 ' + endTime) : null}
-                        onChange={e => {
-                          const time = e.format('HH:mm');
-                          let new_rows = [...rows];
-                          if (time && time !== 'Invalid Date') {
-                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
-                            new_rows[rowIndex][columnKey]['end'] = time;
-                          } else {
-                            delete new_rows[rowIndex][columnKey]['end'];
-                          }
-                          let finished_delete = false;
-                          for (let i = 0; i < new_rows.length; i++) {
-                            const element = new_rows[new_rows.length - 1 - i];
-                            if (!finished_delete) {
-                              if (Object.keys(element).length == 0) {
-                                new_rows[new_rows.length - 1 - i] = undefined;
-                              } else {
-                                finished_delete = true;
-                              }
-                            }
-                          }
-                          new_rows = new_rows.filter(value => value != undefined);
-                          new_rows.push({});
-                          window.ipc?.send('set-config', 'lessonsList.time', new_rows);
-                          setRows(new_rows);
-                        }}
-                      />
-                    </LocalizationProvider>
-                  )}
+                        }
+                      }
+                      new_rows = new_rows.filter(value => value != undefined);
+                      new_rows.push({});
+                      window.ipc?.send('set-config', 'lessonsList.time', new_rows);
+                      setRows(new_rows);
+                    }}>
+                    End Time
+                  </LessonsListTime_TimeDisplayer>
                   {addDivide ? <Divider></Divider> : <></>}
                 </div>
               );
@@ -510,7 +427,7 @@ export function LessonsListTime_TimeDisplayer({
     <div className='inline-flex items-start justify-center box-border select-none whitespace-nowrap overflow-hidden text-small rounded-medium bg-default h-auto min-h-10 flex-col gap-0 py-1 px-3'>
       <div className='text-sm text-default-foreground'>{children}</div>
       <input
-        className='text-lg bg-transparent focus-visible:![outline:0] min-w-[6ch] !w-full'
+        className='text-lg bg-transparent focus-visible:[outline:0]! min-w-[6ch] w-full!'
         defaultValue={time ? time : ''}
         onChange={onChange}></input>
     </div>

@@ -29,12 +29,12 @@ const settingsNavNodes: NavNode[] = [
         label: '总览',
         href: '/settings/lessonEdit',
       },
-      {
-        type: 'item',
-        label: '基本配置',
-        href: '/settings/lessonEdit/default',
-        badge: 'Beta',
-      },
+      // {
+      //   type: 'item',
+      //   label: '基本配置',
+      //   href: '/settings/lessonEdit/default',
+      //   badge: 'Beta',
+      // },
       {
         type: 'item',
         label: '名称',
@@ -50,12 +50,12 @@ const settingsNavNodes: NavNode[] = [
         label: '换课 (天)',
         href: '/settings/lessonEdit/changeDay',
       },
-      {
-        type: 'item',
-        label: '换课',
-        href: '/settings/lessonEdit/change',
-        badge: 'Beta',
-      },
+      // {
+      //   type: 'item',
+      //   label: '换课',
+      //   href: '/settings/lessonEdit/change',
+      //   badge: 'Beta',
+      // },
     ],
   },
   {

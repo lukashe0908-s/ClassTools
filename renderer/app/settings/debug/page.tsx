@@ -114,14 +114,6 @@ export default function App() {
                   }}>
                   Apply Persist Storage
                 </Button>
-                {/* <Button
-                  color='primary'
-                  variant='bordered'
-                  onPress={async () => {
-                    throw new Error('Sentry test error in renderer process');
-                  }}>
-                  Throw Error
-                </Button> */}
               </div>
             </SettingsItem>
             <Divider></Divider>
@@ -146,6 +138,36 @@ export default function App() {
                 </Button>
               </div>
               <pre className='whitespace-pre-wrap text-sm pt-2'>{runHotspotScriptInfo}</pre>
+            </SettingsItem>
+            <Divider></Divider>
+            <SettingsItem title='其他' alignRight={false}>
+              <div className='flex gap-2 flex-wrap'>
+                <Button
+                  color='primary'
+                  variant='bordered'
+                  onPress={async () => {
+                    const options = {
+                      enableHighAccuracy: true,
+                      timeout: 5000,
+                      maximumAge: 0,
+                    };
+
+                    function success(pos) {
+                      const crd = pos.coords;
+                      alert(
+                        `你当前的位置是：\n纬度：${crd.latitude}\n经度：${crd.longitude}\n海拔约 ${crd.accuracy} 米。`
+                      );
+                    }
+
+                    function error(err) {
+                      alert(`错误（${err.code}）：${err.message}`);
+                    }
+
+                    navigator.geolocation.getCurrentPosition(success, error, options);
+                  }}>
+                  定位
+                </Button>
+              </div>
             </SettingsItem>
           </SettingsGroup>
 
