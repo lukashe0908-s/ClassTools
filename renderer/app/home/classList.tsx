@@ -116,7 +116,7 @@ export default function ClassList({
         <Card className='mx-2 mb-2 shadow-md bg-white/60 dark:black/40'>
           <div
             className='text-center py-6 text-neutral-900 font-bold'
-            style={{ fontSize: `min(${fontSize * 1.8}em,5em)` }}>
+            style={{ fontSize: `min(1.8em,5rem)` }}>
             暂无课程
           </div>
         </Card>
@@ -173,22 +173,16 @@ export default function ClassList({
                         className={`px-4 py-2 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
                         {(timeDisplay === 'always' || (timeDisplay === 'active' && state === 'active')) && (
                           <div
-                            className={`mb-0 whitespace-pre  ${
+                            className={`mb-0 whitespace-pre text-sm  ${
                               state === 'before' ? 'text-neutral-600' : 'text-neutral-800'
-                            }`}
-                            style={{
-                              fontSize: fontSize * 0.875 + 'em',
-                            }}>
+                            }`}>
                             {`${cls.startTime} - ${cls.endTime}`}
                           </div>
                         )}
                         <div
-                          className={`font-semibold mb-0 whitespace-pre-wrap ${
+                          className={`font-semibold mb-0 whitespace-pre-wrap text-2xl ${
                             state === 'before' ? 'text-neutral-800' : 'text-black'
-                          }`}
-                          style={{
-                            fontSize: fontSize * 1.5 + 'em',
-                          }}>
+                          }`}>
                           {`${cls.subject.replace('\\n', '\n')}`}
                         </div>
                         {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
