@@ -173,14 +173,14 @@ export default function ClassList({
                         className={`px-4 py-2 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
                         {(timeDisplay === 'always' || (timeDisplay === 'active' && state === 'active')) && (
                           <div
-                            className={`mb-0 whitespace-pre text-sm  ${
+                            className={`mb-0 whitespace-pre text-[0.875em]  ${
                               state === 'before' ? 'text-neutral-600' : 'text-neutral-800'
                             }`}>
                             {`${cls.startTime} - ${cls.endTime}`}
                           </div>
                         )}
                         <div
-                          className={`font-semibold mb-0 whitespace-pre-wrap text-2xl ${
+                          className={`font-semibold mb-0 whitespace-pre-wrap text-[1.5em] ${
                             state === 'before' ? 'text-neutral-800' : 'text-black'
                           }`}>
                           {`${cls.subject.replace('\\n', '\n')}`}
