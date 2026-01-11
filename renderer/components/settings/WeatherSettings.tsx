@@ -17,9 +17,9 @@ export default function App() {
   useEffect(() => {
     (async () => {
       const weatherEnabled = await getConfigSync('features.weather.enable');
-      setUseWeather(Boolean(weatherEnabled));
+      weatherEnabled && setUseWeather(Boolean(weatherEnabled));
       const showWeatherFeellike = await getConfigSync('features.weather.showFeellike');
-      setShowWeatherFeellike(Boolean(showWeatherFeellike));
+      showWeatherFeellike && setShowWeatherFeellike(Boolean(showWeatherFeellike));
 
       const savedLocationKey = await getConfigSync('features.weather.locationKey');
       const savedLocationLabel = await getConfigSync('features.weather.locationLabel');
