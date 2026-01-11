@@ -65,14 +65,14 @@ export function Weather() {
     };
 
     fetchWeather();
-    timer = setInterval(() => fetchWeather(), 30 * 1000);
+    timer = setInterval(() => fetchWeather(), 10 * 1000);
     })();
 
     return () => timer && clearInterval(timer);
   }, []);
 
   const handleClick = () => {
-    // window.open('/weather', '_blank');
+   window.open('/weather', '_blank');
   };
 
   if (loading || !weather?.current) {
@@ -81,8 +81,14 @@ export function Weather() {
 
   if (!enabled) return;
 
+  // 判断是否是夜间
+  const now = Date.now();
+  const sunRise = new Date(weather.forecastDaily.sunRiseSet[0].from).getTime();
+  const sunSet = new Date(weather.forecastDaily.sunRiseSet[0].to).getTime();
+  const isNight = now < sunRise || now > sunSet;
+  
   const weatherName = getXiaomiWeatherName(Number(weather.current.weather));
-  const weatherIcon = getXiaomiWeatherIcon(Number(weather.current.weather));
+  const weatherIcon = getXiaomiWeatherIcon(Number(weather.current.weather, isNight));
 
   return (
     <div
