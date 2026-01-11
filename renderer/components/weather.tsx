@@ -13,16 +13,13 @@ export function Weather() {
   const [showFeellike, setShowFeellike] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      const useWeather = (await getConfigSync('features.weather.enable')) || false;
-      setEnabled(Boolean(useWeather));
+    const useWeather = (await getConfigSync('features.weather.enable')) || false;
+    if (!Boolean(useWeather)) return;
+    setEnabled(Boolean(useWeather));
 
-      const showWeatherFeellike = (await getConfigSync('features.weather.showFeellike')) || true;
-      setShowFeellike(Boolean(showWeatherFeellike));
-    })();
-  }, []);
+    const showWeatherFeellike = (await getConfigSync('features.weather.showFeellike')) || true;
+    setShowFeellike(Boolean(showWeatherFeellike));
 
-  useEffect(() => {
     let timer: any;
 
     const fetchWeather = async (force = false) => {
@@ -101,7 +98,7 @@ export function Weather() {
         {`${weatherName ? `${weatherName} ` : ''}${weather.current.temperature.value}°`}
       </span>
       {showFeellike && (
-        <span className='text-sm text-gray-500 dark:text-gray-300 hidden min-[20em]:inline whitespace-nowrap'>
+        <span className='text-sm text-gray-300 hidden min-[20em]:inline whitespace-nowrap'>
           体感 {weather.current.feelsLike.value}°
         </span>
       )}
