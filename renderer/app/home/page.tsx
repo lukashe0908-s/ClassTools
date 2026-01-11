@@ -17,7 +17,6 @@ import { generateConfig, getConfigSync } from '@renderer/features/p_function';
 
 export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [fontSize, setFontSize] = useState(1);
 
   useEffect(() => {
     const serviceWorkerScope = `/buildArtifacts/sw.js`;
@@ -31,14 +30,6 @@ export default function HomePage() {
         .catch(error => {
           console.error('Error in serviceWorker registration: ', error);
         });
-  }, []);
-
-  useEffect(() => {
-    const loadFontSize = async () => {
-      const size = await getConfigSync('display.fontSize');
-      setFontSize(Number(size) || 1);
-    };
-    loadFontSize();
   }, []);
 
   return (
@@ -87,6 +78,15 @@ function FloatWindow({ onShutdownModalOpen }) {
   const [currentWallpaper, setCurrentWallpaper] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const wallpaperListRef = useRef<HTMLDivElement>(null);
+  const [fontSize, setFontSize] = useState(1);
+
+  useEffect(() => {
+    const loadFontSize = async () => {
+      const size = await getConfigSync('display.fontSize');
+      setFontSize(Number(size) || 1);
+    };
+    loadFontSize();
+  }, []);
 
   useEffect(() => {
     const savedIndex = localStorage.getItem('default_wallpaper_select');
