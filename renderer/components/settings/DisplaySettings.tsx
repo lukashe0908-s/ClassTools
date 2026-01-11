@@ -11,7 +11,7 @@ import CloudIcon from '@mui/icons-material/Cloud';
 import InfoIcon from '@mui/icons-material/Info';
 
 export function WindowSettings() {
-  const [windowWidth, setWindowWidth] = useState(0.13);
+  const [windowWidth, setWindowWidth] = useState(0.2);
   const [windowHeight, setWindowHeight] = useState(1);
 
   useEffect(() => {
@@ -67,8 +67,9 @@ export function WindowSettings() {
 }
 
 export function AppearanceSettings() {
-  const [fontSize, setFontSize] = useState(1.2);
+  const [fontSize, setFontSize] = useState(1);
   const [slidingPosition, setSlidingPosition] = useState('center');
+  const [timeDisplay, setTimeDisplay] = useState('always');
   const [progressDisplay, setProgressDisplay] = useState('always');
   const [useWindowBackgroundMaterial, setUseWindowBackgroundMaterial] = useState(false);
 
@@ -79,6 +80,9 @@ export function AppearanceSettings() {
 
       const slidingData = await getConfigSync('display.slidingPosition');
       slidingData && setSlidingPosition(String(slidingData));
+
+      const timeData = await getConfigSync('display.timeDisplay');
+      timeData && setTimeDisplay(String(timeData));
 
       const progressData = await getConfigSync('display.progressDisplay');
       progressData && setProgressDisplay(String(progressData));
@@ -95,7 +99,7 @@ export function AppearanceSettings() {
           <Slider
             step={0.1}
             maxValue={5}
-            minValue={0.1}
+            minValue={0.5}
             showSteps={true}
             value={fontSize}
             onChange={(value: number) => {
@@ -117,6 +121,21 @@ export function AppearanceSettings() {
             { value: 'center', label: '居中' },
             { value: 'end', label: '结束' },
             { value: 'nearest', label: '最近' },
+          ]}>
+          {item => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
+        </Autocomplete>
+      </SettingsItem>
+      <SettingsItem title='时间显示' description='设置课程时间的显示时机'>
+        <Autocomplete
+          selectedKey={timeDisplay}
+          onSelectionChange={(value: string) => {
+            setTimeDisplay(value);
+            window.ipc?.send('set-config', 'display.timeDisplay', value);
+          }}
+          defaultItems={[
+            { value: 'always', label: '始终显示' },
+            { value: 'active', label: '活动时显示' },
+            { value: 'never', label: '从不显示' },
           ]}>
           {item => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
         </Autocomplete>
@@ -191,7 +210,6 @@ export function SystemSettings() {
 export function InterfaceSettings() {
   const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
-  const [hiddenJumpto, setHiddenJumpto] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -200,9 +218,6 @@ export function InterfaceSettings() {
 
       const refreshData = await getConfigSync('display.hidden.refreshWindow');
       refreshData && setHiddenRefreshWindow(Boolean(refreshData));
-
-      const jumptoData = await getConfigSync('display.hidden.jumpto');
-      jumptoData && setHiddenJumpto(Boolean(jumptoData));
     })();
   }, []);
 
@@ -224,16 +239,6 @@ export function InterfaceSettings() {
           onChange={() => {
             setHiddenRefreshWindow(!hiddenRefreshWindow);
             window.ipc?.send('set-config', 'display.hidden.refreshWindow', !hiddenRefreshWindow);
-          }}
-        />
-      </SettingsItem>
-
-      <SettingsItem title='隐藏跳转按钮' description='隐藏页面跳转按钮'>
-        <Switch
-          isSelected={hiddenJumpto}
-          onChange={() => {
-            setHiddenJumpto(!hiddenJumpto);
-            window.ipc?.send('set-config', 'display.hidden.jumpto', !hiddenJumpto);
           }}
         />
       </SettingsItem>

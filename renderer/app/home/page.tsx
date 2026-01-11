@@ -1,15 +1,18 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
-import { Cog6ToothIcon, ArrowPathIcon, ArrowTopRightOnSquareIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
-import PlayIcon from '@mui/icons-material/PlayArrowRounded';
-import PauseIcon from '@mui/icons-material/PauseRounded';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Image } from '@heroui/react';
+import {
+  Cog6ToothIcon,
+  ArrowPathIcon,
+  XMarkIcon,
+  CheckIcon,
+  PowerIcon,
+  PlayIcon,
+  PauseIcon,
+} from '@heroicons/react/24/solid';
 import UpdateModal from './updateModal';
 import ClassList from './classList';
-import { Weather } from './weather';
+import { Weather } from '@renderer/components/weather';
 import { generateConfig, getConfigSync } from '@renderer/features/p_function';
 
 export default function HomePage() {
@@ -46,7 +49,7 @@ export default function HomePage() {
                   className='min-w-1'
                   radius='full'
                   fullWidth={true}>
-                  <CloseIcon></CloseIcon>取消
+                  <XMarkIcon className='w-5 h-5'></XMarkIcon>取消
                 </Button>
                 <Button
                   color='danger'
@@ -56,7 +59,7 @@ export default function HomePage() {
                   onPress={() => {
                     window.ipc?.send('sys-shutdown');
                   }}>
-                  <CheckIcon></CheckIcon>确认
+                  <CheckIcon className='w-5 h-5'></CheckIcon>确认
                 </Button>
               </ModalFooter>
             </>
@@ -180,7 +183,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       // 封装：尝试通过一个 DoH 提供者获取 TXT 记录，返回字符串数组或 null
       async function tryDoH(url: string, headers?: Record<string, string>) {
         try {
-          const res = await fetch(url, { headers: headers || {} , cache: 'no-store' });
+          const res = await fetch(url, { headers: headers || {}, cache: 'no-store' });
           if (!res.ok) {
             throw new Error(`HTTP ${res.status} from ${url}`);
           }
@@ -210,7 +213,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       }
 
       let base64String = '';
-      
+
       // 1) alidns
       if (!base64String) {
         try {
@@ -286,6 +289,7 @@ function FloatWindow({ onShutdownModalOpen }) {
 
   const [classSchedule, setClassSchedule] = useState(null);
   const [slidingPosition, setSlidingPosition] = useState('center');
+  const [timeDisplay, setTimeDisplay] = useState('always');
   const [progressDisplay, setProgressDisplay] = useState('always');
   const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
@@ -311,13 +315,14 @@ function FloatWindow({ onShutdownModalOpen }) {
     const loadConfig = async () => {
       const config = await generateConfig();
       const pos = ((await getConfigSync('display.slidingPosition')) as any) || 'center';
+      const timeDis = ((await getConfigSync('display.timeDisplay')) as any) || 'always';
       const prog = ((await getConfigSync('display.progressDisplay')) as any) || 'always';
       const hiddenClose = ((await getConfigSync('display.hidden.closeWindow')) as any) || false;
       const hiddenRefresh = ((await getConfigSync('display.hidden.refreshWindow')) as any) || false;
-      const hiddenJump = ((await getConfigSync('display.hidden.jumpto')) as any) || false;
 
       setClassSchedule(config);
       setSlidingPosition(pos);
+      setTimeDisplay(timeDis);
       setProgressDisplay(prog);
       setHiddenCloseWindow(hiddenClose);
       setHiddenRefreshWindow(hiddenRefresh);
@@ -337,44 +342,22 @@ function FloatWindow({ onShutdownModalOpen }) {
   }, []);
 
   return (
-    <div className={`flex flex-col gap-0 p-0 h-full ${currentWallpaper ? '' : 'bg-neutral-100/80 dark:bg-neutral-800/80'}`}>
+    <div
+      className={`flex flex-col gap-0 p-0 h-full ${
+        currentWallpaper ? '' : 'bg-neutral-100/80 dark:bg-neutral-800/80'
+      }`}>
       {/* Toolbar */}
-      <div className='flex gap-2 items-center bg-white/40 dark:bg-black/20 p-2 rounded-lg'>
-        <Button
-          isIconOnly
-          onPress={() => {
-            try {
-              window.ipc?.send('settings-window');
-            } catch {
-              window.location.href = '/settings';
-            }
-          }}
-          title='设置'
-          aria-label='Settings'>
-          <Cog6ToothIcon className='w-5 h-5' />
-        </Button>
-        {!hiddenRefreshWindow && (
-          <Button
-            isIconOnly
-            onPress={() => {
-              window.location.reload();
-            }}
-            title='刷新'
-            aria-label='Refresh'>
-            <ArrowPathIcon className='w-5 h-5' />
-          </Button>
-        )}
+      <div className='flex gap-2 items-center bg-white/40 dark:bg-black/20'>
         {!hiddenCloseWindow && (
           <Button
             isIconOnly
-            variant='faded'
+            variant='light'
+            radius='none'
             onPress={() => {
               window.ipc?.send('close-window');
             }}
-            title='关闭'
-            aria-label='Close'
-            className='ml-auto'>
-            <XMarkIcon className='w-5 h-5' />
+            className='ml-auto h-6 w-6 flex items-center justify-center hover:bg-red-600/80! focus:bg-red-600/80! focus:outline-0! '>
+            <XMarkIcon className='w-4 h-4 text-gray-900 dark:text-gray-100' />
           </Button>
         )}
       </div>
@@ -385,6 +368,7 @@ function FloatWindow({ onShutdownModalOpen }) {
         <ClassList
           schedule={classSchedule}
           slidingPosition={slidingPosition}
+          timeDisplay={timeDisplay}
           progressDisplay={progressDisplay}></ClassList>
         {/* Background Picture List */}
         <div className='flex justify-center px-2'>
@@ -396,68 +380,62 @@ function FloatWindow({ onShutdownModalOpen }) {
               const key = `wallpaper-${index}`;
               const handleClick = () => updateWallpaper(image_url, index);
 
-              // mixed 模式的特殊处理
-              if (type === 'mixed') {
-                return (
-                  <div
-                    key={key}
-                    className='relative max-w-full aspect-video rounded-lg snap-center select-none object-contain'
-                    onClick={handleClick}>
-                    {playingMixed ? (
-                      <video
-                        src={video_url}
-                        className='w-full h-full rounded-lg object-contain'
-                        muted
-                        loop
-                        autoPlay
-                        playsInline
-                      />
-                    ) : (
-                      <img
-                        src={image_url}
-                        alt={`Wallpaper ${index}`}
-                        className='w-full h-full rounded-lg object-contain'
-                        draggable='false'
-                        referrerPolicy='no-referrer'
-                      />
-                    )}
-
-                    <button
-                      onClick={() => {
-                        setPlayingMixed(!playingMixed);
-                      }}
-                      className='absolute bottom-1 left-1 bg-black/30 text-white/60 text-sm p-1 rounded-full hover:bg-black/40 hover:text-white/80 transition-colors'>
-                      {playingMixed ? <PauseIcon></PauseIcon> : <PlayIcon></PlayIcon>}
-                    </button>
-                  </div>
-                );
-              }
-
-              if (type === 'video') {
-                return (
-                  <video
-                    key={key}
-                    src={video_url}
-                    className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
-                    onClick={handleClick}
-                    muted
-                    loop
-                    autoPlay
-                    playsInline
-                  />
-                );
-              }
-
               return (
-                <img
+                <div
                   key={key}
-                  src={image_url ?? ''}
-                  alt={`Wallpaper ${index}`}
-                  className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
-                  onClick={handleClick}
-                  draggable='true'
-                  referrerPolicy='no-referrer'
-                />
+                  className='relative w-full aspect-video rounded-lg snap-center object-contain'
+                  onClick={handleClick}>
+                  {type === 'mixed' ? (
+                    <>
+                      {playingMixed ? (
+                        <video
+                          src={video_url}
+                          className='w-full h-full rounded-lg object-contain'
+                          muted
+                          loop
+                          autoPlay
+                          playsInline
+                        />
+                      ) : (
+                        <Image
+                          src={image_url}
+                          className='w-full h-full rounded-lg object-contain'
+                          referrerPolicy='no-referrer'
+                        />
+                      )}
+                      <button
+                        onClick={() => {
+                          setPlayingMixed(!playingMixed);
+                        }}
+                        className='z-20 absolute bottom-1 left-1 bg-black/30 text-white/60 text-sm p-1 rounded-full hover:bg-black/40 hover:text-white/80 transition-colors'>
+                        {playingMixed ? (
+                          <PauseIcon className='w-4 h-4'></PauseIcon>
+                        ) : (
+                          <PlayIcon className='w-4 h-4'></PlayIcon>
+                        )}
+                      </button>
+                    </>
+                  ) : type === 'video' ? (
+                    <video
+                      key={key}
+                      src={video_url}
+                      className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
+                      onClick={handleClick}
+                      muted
+                      loop
+                      autoPlay
+                      playsInline
+                    />
+                  ) : (
+                    <Image
+                      key={key}
+                      src={image_url ?? ''}
+                      className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
+                      onClick={handleClick}
+                      referrerPolicy='no-referrer'
+                    />
+                  )}
+                </div>
               );
             })}
           </div>
@@ -465,30 +443,41 @@ function FloatWindow({ onShutdownModalOpen }) {
       </div>
 
       {/* Footer */}
-      <div className='flex gap-1 items-center bg-white/40 dark:bg-black/10 p-1 rounded-lg'>
-        <Button className='font-bold' fullWidth onPress={onShutdownModalOpen}>
-          关机
+      <div className='flex gap-1 items-center bg-white/40 dark:bg-black/10 p-1 rounded-lg overflow-auto'>
+        <Button
+          isIconOnly
+          onPress={() => {
+            try {
+              window.ipc?.send('settings-window');
+            } catch {
+              window.location.href = '/settings';
+            }
+          }}
+          aria-label='Settings'>
+          <Cog6ToothIcon className='w-5 h-5' />
+        </Button>
+        {!hiddenRefreshWindow && (
+          <Button
+            isIconOnly
+            onPress={() => {
+              window.location.reload();
+            }}
+            aria-label='Refresh'>
+            <ArrowPathIcon className='w-5 h-5' />
+          </Button>
+        )}
+        <div className='flex-1'></div>
+        <Button className='font-bold' onPress={onShutdownModalOpen} isIconOnly={true}>
+          <PowerIcon className='w-5 h-5'></PowerIcon>
         </Button>
         <Weather />
       </div>
       {/* Background */}
       <div className='absolute top-0 z-[-1] w-full h-full'>
-        <img
-          style={{
-            zIndex: -1,
-            top: 0,
-            left: '50%',
-            position: 'absolute',
-            objectFit: 'cover',
-            minWidth: '100%',
-            width: 'auto',
-            height: '100%',
-            transform: 'translate(-50%, 0)',
-            opacity: 0.5,
-            // filter: 'blur(30px)',
-            userSelect: 'none',
-          }}
-          className='Experimental-blur-filter'
+        <Image
+          className='object-cover select-none opacity-50 h-full blur-[30px] dis-Experimental-blur-filter'
+          radius='none'
+          removeWrapper={true}
           referrerPolicy='no-referrer'
           draggable='false'
           src={currentWallpaper || null}

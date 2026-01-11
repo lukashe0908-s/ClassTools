@@ -89,7 +89,7 @@ function isWindows11() {
 
 (async () => {
   await app.whenReady();
-  const mainWindowDefaultWidthPercent = 0.13;
+  const mainWindowDefaultWidthPercent = 0.2;
   const mainWindowDefaultHeightPercent = 1;
   let mainWindowWidth = (() => {
     let base = screen.getPrimaryDisplay().size.width * mainWindowDefaultWidthPercent;
@@ -149,7 +149,7 @@ function isWindows11() {
       try {
         mainWindowWidth = (() => {
           let base = screen.getPrimaryDisplay().size.width * Number(widthP || mainWindowDefaultWidthPercent);
-          if (base < 200) base = 200;
+          if (base < 300) base = 300;
           base = Math.floor(base);
           return base;
         })();

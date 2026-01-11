@@ -19,7 +19,6 @@
         "name": "next"
       }
     ],
-    "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["./*"],
       "@main/*": ["./main/*"],
