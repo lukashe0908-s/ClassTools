@@ -106,7 +106,7 @@ export function Weather() {
         {`${weatherName ? `${weatherName} ` : ''}${weather.current.temperature.value}°`}
       </span>
       {showFeellike && (
-        <span className='text-sm text-gray-300 hidden min-[20em]:inline whitespace-nowrap'>
+        <span className='text-[0.875em] text-gray-300 hidden min-[20em]:inline whitespace-nowrap'>
           体感 {weather.current.feelsLike.value}°
         </span>
       )}
