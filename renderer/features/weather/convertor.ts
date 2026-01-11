@@ -1,102 +1,112 @@
-const WEATHER_NAMES_CN = [
-  '晴',
-  '多云',
-  '阴',
-  '雾',
-  '特大暴雨',
-  '大暴雨',
-  '暴雨',
-  '雷阵雨',
-  '阵雨',
-  '大雨',
-  '中雨',
-  '小雨',
-  '雨夹雪',
-  '暴雪',
-  '阵雪',
-  '大雪',
-  '中雪',
-  '小雪',
-  '强沙尘暴',
-  '沙尘暴',
-  '沙尘',
-  '扬沙',
-  '冰雹',
-  '浮尘',
-  '霾',
-  '冻雨',
-];
-const WEATHER_NAMES_EN = [
-  'Clear',
-  'Cloudy',
-  'Overcast',
-  'Foggy',
-  'Heavy rainstorm',
-  'Downpour',
-  'Rainstorm',
-  'Thunderstorm',
-  'Rain',
-  'Heavy rainfall',
-  'Moderate rain',
-  'Light rain',
-  'Rain and snow mixed',
-  'Blizzard',
-  'Snow',
-  'Heavy snow',
-  'Moderate snow',
-  'Light snow',
-  'Strong sandstorm',
-  'Sand storm',
-  'Sand',
-  'Windy',
-  'Hail',
-  'Dust',
-  'Haze',
-  'Freezing rain',
-];
-const WEATHER_ICONS = [
-  { day: 'icon_sunny', night: 'icon_sunny_night' }, // 0
-  { day: 'icon_cloudy', night: 'icon_cloudy_night' }, // 1
-  { day: 'icon_overcast' }, // 2
-  { day: 'icon_fog', night: 'icon_fog_night' }, // 3
-  { day: 'icon_heavy_rain' }, // 4
-  { day: 'icon_heavy_rain' }, // 5
-  { day: 'icon_heavy_rain' }, // 6
-  { day: 'icon_t_storm' }, // 7
-  { day: 'icon_light_rain' }, // 8
-  { day: 'icon_heavy_rain' }, // 9
-  { day: 'icon_moderate_rain' }, // 10
-  { day: 'icon_light_rain' }, // 11
-  { day: 'icon_rain_snow' }, // 12
-  { day: 'icon_heavy_snow' }, // 13
-  { day: 'icon_light_snow' }, // 14
-  { day: 'icon_heavy_snow' }, // 15
-  { day: 'icon_moderate_snow' }, // 16
-  { day: 'icon_light_snow' }, // 17
-  { day: 'icon_sand' }, // 18
-  { day: 'icon_sand' }, // 19
-  { day: 'icon_pm_dirt' }, // 20
-  { day: 'icon_pm_dirt' }, // 21
-  { day: 'icon_t_storm' }, // 22
-  { day: 'icon_float_dirt' }, // 23
-  { day: 'icon_pm_dirt' }, // 24
-  { day: 'icon_ice_rain' }, // 25
-];
+type Lang = 'cn' | 'en';
 
-export function getXiaomiWeatherName(type: number, lang: 'cn' | 'en' = 'cn'): string {
-  const names = lang === 'en' ? WEATHER_NAMES_EN : WEATHER_NAMES_CN;
-  if (type >= 0 && type < names.length) {
-    return names[type];
-  }
-  return lang === 'en' ? 'Unknown' : '未知';
+const WEATHER_NAME_MAP: Record<number, { cn: string; en: string }> = {
+  0: { cn: '晴', en: 'Clear' },
+  1: { cn: '多云', en: 'Cloudy' },
+  2: { cn: '阴', en: 'Overcast' },
+  3: { cn: '阵雨', en: 'Showers' },
+  4: { cn: '雷阵雨', en: 'Thunderstorm' },
+  5: { cn: '雷阵雨并伴有冰雹', en: 'Thunderstorm with hail' },
+  6: { cn: '雨夹雪', en: 'Sleet' },
+  7: { cn: '小雨', en: 'Light rain' },
+  8: { cn: '中雨', en: 'Moderate rain' },
+  9: { cn: '大雨', en: 'Heavy rain' },
+  10: { cn: '暴雨', en: 'Rainstorm' },
+  11: { cn: '大暴雨', en: 'Heavy rainstorm' },
+  12: { cn: '特大暴雨', en: 'Torrential rain' },
+  13: { cn: '阵雪', en: 'Snow showers' },
+  14: { cn: '小雪', en: 'Light snow' },
+  15: { cn: '中雪', en: 'Moderate snow' },
+  16: { cn: '大雪', en: 'Heavy snow' },
+  17: { cn: '暴雪', en: 'Blizzard' },
+  18: { cn: '雾', en: 'Fog' },
+  19: { cn: '冻雨', en: 'Freezing rain' },
+  20: { cn: '沙尘暴', en: 'Sandstorm' },
+
+  // 区间型天气
+  21: { cn: '小雨-中雨', en: 'Light to moderate rain' },
+  22: { cn: '中雨-大雨', en: 'Moderate to heavy rain' },
+  23: { cn: '大雨-暴雨', en: 'Heavy rain to rainstorm' },
+  24: { cn: '暴雨-大暴雨', en: 'Rainstorm to heavy rainstorm' },
+  25: { cn: '大暴雨-特大暴雨', en: 'Heavy to torrential rain' },
+  26: { cn: '小雪-中雪', en: 'Light to moderate snow' },
+  27: { cn: '中雪-大雪', en: 'Moderate to heavy snow' },
+  28: { cn: '大雪-暴雪', en: 'Heavy snow to blizzard' },
+
+  29: { cn: '浮尘', en: 'Dust' },
+  30: { cn: '扬沙', en: 'Blowing sand' },
+  31: { cn: '强沙尘暴', en: 'Severe sandstorm' },
+  32: { cn: '飑', en: 'Squall' },
+  33: { cn: '龙卷风', en: 'Tornado' },
+  34: { cn: '若高吹雪', en: 'Drifting snow' },
+  35: { cn: '轻雾', en: 'Light fog' },
+  53: { cn: '霾', en: 'Haze' },
+  99: { cn: '未知', en: 'Unknown' },
+};
+
+export function getWeatherName(code: number, lang: Lang = 'cn'): string {
+  return WEATHER_NAME_MAP[code]?.[lang] ?? WEATHER_NAME_MAP[99][lang];
 }
 
-export function getXiaomiWeatherIcon(type: number, isNight: boolean = false): string {
-  const icon = WEATHER_ICONS[type];
-  return icon ? (isNight && icon.night ? icon.night : icon.day) : '';
+type WeatherIcon = {
+  day: string;
+  night?: string;
+};
+
+const WEATHER_ICON_MAP: Record<number, WeatherIcon> = {
+  0: { day: 'icon_sunny', night: 'icon_sunny_night' },
+  1: { day: 'icon_cloudy', night: 'icon_cloudy_night' },
+  2: { day: 'icon_overcast' },
+  3: { day: 'icon_shower' },
+  4: { day: 'icon_t_storm' },
+  5: { day: 'icon_t_storm_hail' },
+  6: { day: 'icon_rain_snow' },
+  7: { day: 'icon_light_rain' },
+  8: { day: 'icon_moderate_rain' },
+  9: { day: 'icon_heavy_rain' },
+  10: { day: 'icon_heavy_rain' },
+  11: { day: 'icon_heavy_rain' },
+  12: { day: 'icon_heavy_rain' },
+  13: { day: 'icon_snow' },
+  14: { day: 'icon_light_snow' },
+  15: { day: 'icon_moderate_snow' },
+  16: { day: 'icon_heavy_snow' },
+  17: { day: 'icon_blizzard' },
+  18: { day: 'icon_fog', night: 'icon_fog_night' },
+  19: { day: 'icon_ice_rain' },
+  20: { day: 'icon_sand' },
+
+  // 区间天气 → 用“较重”图标
+  21: { day: 'icon_moderate_rain' },
+  22: { day: 'icon_heavy_rain' },
+  23: { day: 'icon_heavy_rain' },
+  24: { day: 'icon_heavy_rain' },
+  25: { day: 'icon_heavy_rain' },
+  26: { day: 'icon_moderate_snow' },
+  27: { day: 'icon_heavy_snow' },
+  28: { day: 'icon_blizzard' },
+
+  29: { day: 'icon_float_dirt' },
+  30: { day: 'icon_sand' },
+  31: { day: 'icon_sandstorm' },
+  32: { day: 'icon_wind' },
+  33: { day: 'icon_tornado' },
+  34: { day: 'icon_snow_wind' },
+  35: { day: 'icon_fog' },
+  53: { day: 'icon_haze' },
+  99: { day: 'icon_unknown' },
+};
+
+const DEFAULT_ICON = 'icon_unknown';
+
+export function getWeatherIcon(
+  code: number,
+  isNight = false
+): string {
+  const icon = WEATHER_ICON_MAP[code] ?? WEATHER_ICON_MAP[99];
+  return isNight && icon.night ? icon.night : icon.day ?? DEFAULT_ICON;
 }
 
-// ---------- 风向映射 ----------
 const WIND_DIRECTIONS_CN = ['北风', '东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风'];
 const WIND_DIRECTIONS_EN = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 
