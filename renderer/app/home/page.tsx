@@ -17,6 +17,8 @@ import { generateConfig, getConfigSync } from '@renderer/features/p_function';
 
 export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [fontSize, setFontSize] = useState(1);
+
   useEffect(() => {
     const serviceWorkerScope = `/buildArtifacts/sw.js`;
     navigator.serviceWorker &&
@@ -30,6 +32,15 @@ export default function HomePage() {
           console.error('Error in serviceWorker registration: ', error);
         });
   }, []);
+
+  useEffect(() => {
+    const loadFontSize = async () => {
+      const size = await getConfigSync('display.fontSize');
+      setFontSize(Number(size) || 1);
+    };
+    loadFontSize();
+  }, []);
+
   return (
     <>
       <title>Class Tools</title>
@@ -345,7 +356,10 @@ function FloatWindow({ onShutdownModalOpen }) {
     <div
       className={`flex flex-col gap-0 p-0 h-full ${
         currentWallpaper ? '' : 'bg-neutral-100/80 dark:bg-neutral-800/80'
-      }`}>
+      }`}
+      style={{
+        fontSize: fontSize + em',
+      }}>
       {/* Toolbar */}
       <div className='flex gap-2 items-center bg-white/40 dark:bg-black/20'>
         {!hiddenCloseWindow && (
