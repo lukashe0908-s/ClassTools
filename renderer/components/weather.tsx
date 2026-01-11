@@ -88,7 +88,7 @@ export function Weather() {
   const isNight = now < sunRise || now > sunSet;
   
   const weatherName = getXiaomiWeatherName(Number(weather.current.weather));
-  const weatherIcon = getXiaomiWeatherIcon(Number(weather.current.weather, isNight));
+  const weatherIcon = getXiaomiWeatherIcon(Number(weather.current.weather), isNight);
 
   return (
     <div
