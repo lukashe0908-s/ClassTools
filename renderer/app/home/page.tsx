@@ -358,7 +358,7 @@ function FloatWindow({ onShutdownModalOpen }) {
         currentWallpaper ? '' : 'bg-neutral-100/80 dark:bg-neutral-800/80'
       }`}
       style={{
-        fontSize: fontSize + em',
+        fontSize: fontSize + 'em',
       }}>
       {/* Toolbar */}
       <div className='flex gap-2 items-center bg-white/40 dark:bg-black/20'>
