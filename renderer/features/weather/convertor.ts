@@ -44,7 +44,7 @@ const WEATHER_NAME_MAP: Record<number, { cn: string; en: string }> = {
   99: { cn: '未知', en: 'Unknown' },
 };
 
-export function getWeatherName(code: number, lang: Lang = 'cn'): string {
+export function getXiaomiWeatherName(code: number, lang: Lang = 'cn'): string {
   return WEATHER_NAME_MAP[code]?.[lang] ?? WEATHER_NAME_MAP[99][lang];
 }
 
@@ -99,7 +99,7 @@ const WEATHER_ICON_MAP: Record<number, WeatherIcon> = {
 
 const DEFAULT_ICON = 'icon_unknown';
 
-export function getWeatherIcon(
+export function getXiaomiWeatherIcon(
   code: number,
   isNight = false
 ): string {
