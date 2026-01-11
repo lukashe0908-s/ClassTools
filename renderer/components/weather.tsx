@@ -13,16 +13,17 @@ export function Weather() {
   const [showFeellike, setShowFeellike] = useState(true);
 
   useEffect(() => {
-    const useWeather = (await getConfigSync('features.weather.enable')) || false;
-    if (!Boolean(useWeather)) return;
-    setEnabled(Boolean(useWeather));
+    (async () => {
+     const useWeather = (await getConfigSync('features.weather.enable')) || false;
+     if (!Boolean(useWeather)) return;
+     setEnabled(Boolean(useWeather));
 
-    const showWeatherFeellike = (await getConfigSync('features.weather.showFeellike')) || true;
-    setShowFeellike(Boolean(showWeatherFeellike));
+     const showWeatherFeellike = (await getConfigSync('features.weather.showFeellike')) || true;
+     setShowFeellike(Boolean(showWeatherFeellike));
 
-    let timer: any;
+     let timer: any;
 
-    const fetchWeather = async (force = false) => {
+     const fetchWeather = async (force = false) => {
       let requestLocation = (await getConfigSync('features.weather.locationKey')) || 'weathercn:101010100';
 
       try {
