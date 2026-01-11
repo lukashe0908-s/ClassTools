@@ -1,4 +1,4 @@
-import { WeatherData, LightWeatherData } from './xiaomiWeathertypes';
+import { WeatherData, LightWeatherData } from './xiaomiWeatherTypes';
 
 export async function fetchCityList(
   name: string,

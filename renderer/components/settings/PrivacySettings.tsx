@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Switch, Button } from '@heroui/react';
 import { SettingsGroup, SettingsItem, SettingsSection } from './SettingsGroup';
-import { getConfigSync } from '../../features/p_function';
+import { getConfigSync } from '@renderer/features/p_function';
 import SecurityIcon from '@mui/icons-material/Security';
 import CloudSyncIcon from '@mui/icons-material/CloudSync';
 import BackupIcon from '@mui/icons-material/Backup';

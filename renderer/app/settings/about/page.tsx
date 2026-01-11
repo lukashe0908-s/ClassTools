@@ -1,6 +1,6 @@
 'use client';
-import { SettingsSection } from '../../../components/settings/SettingsGroup';
-import { AboutSettings } from '../../../components/settings/AboutSettings';
+import { SettingsSection } from '@renderer/components/settings/SettingsGroup';
+import { AboutSettings } from '@renderer/components/settings/AboutSettings';
 
 export default function App() {
   return (

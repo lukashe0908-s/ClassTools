@@ -16,7 +16,7 @@ import { Divider } from '@heroui/react';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import { SidebarNav, NavNode } from '../../components/SidebarNav';
+import { SidebarNav, NavNode } from '@renderer/components/SidebarNav';
 const settingsNavNodes: NavNode[] = [
   {
     type: 'group',

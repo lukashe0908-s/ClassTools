@@ -10,7 +10,7 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import UpdateModal from './updateModal';
 import ClassList from './classList';
 import { Weather } from './weather';
-import { generateConfig, getConfigSync } from '../../features/p_function';
+import { generateConfig, getConfigSync } from '@renderer/features/p_function';
 
 export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

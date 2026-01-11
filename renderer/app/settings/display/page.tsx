@@ -1,10 +1,10 @@
-import { SettingsSection } from '../../../components/settings/SettingsGroup';
+import { SettingsSection } from '@renderer/components/settings/SettingsGroup';
 import {
   WindowSettings,
   AppearanceSettings,
   SystemSettings,
   InterfaceSettings,
-} from '../../../components/settings/DisplaySettings';
+} from '@renderer/components/settings/DisplaySettings';
 
 export default function App() {
   return (

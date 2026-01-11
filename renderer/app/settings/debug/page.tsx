@@ -1,8 +1,8 @@
 'use client';
 import { Button, Divider } from '@heroui/react';
 import { useEffect, useState } from 'react';
-import { getVersionSync, formatSize, getSysInfoSync } from '../../../features/p_function';
-import { SettingsSection, SettingsGroup, SettingsItem } from '../../../components/settings/SettingsGroup';
+import { getVersionSync, formatSize, getSysInfoSync } from '@renderer/features/p_function';
+import { SettingsSection, SettingsGroup, SettingsItem } from '@renderer/components/settings/SettingsGroup';
 import dayjs from 'dayjs';
 
 export default function App() {

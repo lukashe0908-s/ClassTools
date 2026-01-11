@@ -8,7 +8,7 @@ import {
   getWeekDate,
   listClassesForDay,
   getConfigSync,
-} from '../../features/p_function';
+} from '@renderer/features/p_function';
 
 export default function ClassList({ schedule, progressDisplay = 'active', slidingPosition = 'nearest' }) {
   const containerRef = useRef(null);

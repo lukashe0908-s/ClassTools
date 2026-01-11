@@ -1,6 +1,6 @@
 'use client';
-import { SettingsSection } from '../../../components/settings/SettingsGroup';
-import { DataPrivacySettings, BackupSettings } from '../../../components/settings/PrivacySettings';
+import { SettingsSection } from '@renderer/components/settings/SettingsGroup';
+import { DataPrivacySettings, BackupSettings } from '@renderer/components/settings/PrivacySettings';
 
 export default function App() {
   return (

@@ -4,7 +4,7 @@ import { SettingsGroup, SettingsItem } from './SettingsGroup';
 import InfoIcon from '@mui/icons-material/Info';
 import PersonIcon from '@mui/icons-material/Person';
 import CodeIcon from '@mui/icons-material/Code';
-import { getVersionSync } from '../../features/p_function';
+import { getVersionSync } from '@renderer/features/p_function';
 import dayjs from 'dayjs';
 import { Button } from '@heroui/react';
 import UpdateIcon from '@mui/icons-material/Update';

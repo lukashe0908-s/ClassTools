@@ -1,9 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import '../styles/globals.css';
+import '@renderer/styles/globals.css';
 import { HeroUIProvider, addToast } from '@heroui/react';
 import { ToastProvider } from '@heroui/toast';
-import { XMarkIcon } from '@heroicons/react/24/solid';
 import 'overlayscrollbars/overlayscrollbars.css';
 import * as Sentry from '@sentry/electron/renderer';
 import * as SentryReact from '@sentry/react';

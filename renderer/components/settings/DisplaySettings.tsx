@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, Slider, Autocomplete, AutocompleteItem, Tooltip } from '@heroui/react';
 import { SettingsGroup, SettingsItem, SettingsSection } from './SettingsGroup';
-import { getConfigSync } from '../../features/p_function';
+import { getConfigSync } from '@renderer/features/p_function';
 import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';

@@ -20,7 +20,7 @@ import {
 } from '@heroui/react';
 import dayjs from 'dayjs';
 import { OverlayScrollbars } from 'overlayscrollbars';
-import { getConfigSync } from '../../features/p_function';
+import { getConfigSync } from '@renderer/features/p_function';
 
 const columns = [
   {

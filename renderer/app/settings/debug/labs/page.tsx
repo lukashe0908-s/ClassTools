@@ -12,8 +12,8 @@ import {
   AutocompleteItem,
 } from '@heroui/react';
 import { useEffect, useState } from 'react';
-import { getConfigSync, getAutoLaunchSync } from '../../../../features/p_function';
-import { SettingsSection, SettingsGroup, SettingsItem } from '../../../../components/settings/SettingsGroup';
+import { getConfigSync, getAutoLaunchSync } from '@renderer/features/p_function';
+import { SettingsSection, SettingsGroup, SettingsItem } from '@renderer/components/settings/SettingsGroup';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import RefreshIcon from '@mui/icons-material/Refresh';

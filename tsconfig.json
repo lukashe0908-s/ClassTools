@@ -18,7 +18,13 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@main/*": ["./main/*"],
+      "@renderer/*": ["./renderer/*"]
+    }
   },
   "exclude": ["node_modules", "build"],
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"]

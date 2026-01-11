@@ -12,12 +12,12 @@ import {
 import { Calendar } from '@heroui/calendar';
 import { useEffect, useState } from 'react';
 import * as lodash from 'lodash';
-import { getConfigSync } from '../../../../features/p_function';
+import { getConfigSync } from '@renderer/features/p_function';
 import { CalendarDate, parseDate } from '@internationalized/date';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import { SettingsGroup, SettingsItem, SettingsSection } from '../../../../components/settings/SettingsGroup';
+import { SettingsGroup, SettingsItem, SettingsSection } from '@renderer/components/settings/SettingsGroup';
 
 interface DayChange {
   from: string;
