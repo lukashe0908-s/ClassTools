@@ -80,7 +80,7 @@ const NavNodeItem: React.FC<NavNodeItemProps> = ({ node, pathname, depth = 0 }) 
             height='12'
             fill='currentColor'
             viewBox='0 0 256 256'
-            className={`text-neutral-400 dark:text-neutral-500 group-hover/expander:text-neutral-600 dark:group-hover/expander:text-neutral-400 transition-all flex-shrink-0 -mr-px ${
+            className={`text-neutral-400 dark:text-neutral-500 group-hover/expander:text-neutral-600 dark:group-hover/expander:text-neutral-400 transition-all shrink-0 -mr-px ${
               open ? 'rotate-90' : ''
             }`}>
             <path d='M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z'></path>
@@ -121,7 +121,7 @@ const NavNodeItem: React.FC<NavNodeItemProps> = ({ node, pathname, depth = 0 }) 
       {node.icon && <span className='opacity-50 shrink-0'>{node.icon}</span>}
       <span className='truncate min-w-0 leading-none overflow-visible'>{node.label}</span>
       {node.badge && (
-        <span className='inline-flex items-center w-fit whitespace-nowrap flex-none shrink-0 justify-self-start text-[11px]/none font-[550] px-[7px] py-[3px] rounded-full border border-dashed bg-transparent border-neutral-300 dark:border-neutral-700 text-neutral-950 dark:text-white'>
+        <span className='inline-flex items-center w-fit whitespace-nowrap flex-none shrink-0 justify-self-start text-[11px]/none font-[550] px-1.75 py-0.75 rounded-full border border-dashed bg-transparent border-neutral-300 dark:border-neutral-700 text-neutral-950 dark:text-white'>
           <span>{node.badge}</span>
         </span>
       )}
@@ -157,7 +157,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({ nodes, className }) => {
 
   return (
     <nav className={'w-full ' + className}>
-      <ul className='list-none relative w-full mx-0 mb-[60px] mt-0 flex flex-col gap-y-0.5 items-stretch'>
+      <ul className='list-none relative w-full mx-0 mb-15 mt-0 flex flex-col gap-y-0.5 items-stretch'>
         {nodes.map((node, index) => (
           <NavNodeItem key={index} node={node} pathname={pathname} depth={0} />
         ))}
