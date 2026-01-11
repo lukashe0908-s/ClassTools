@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Skeleton, Image } from '@heroui/react';
+import { getConfigSync } from '@renderer/features/p_function';
 import { getXiaomiWeatherName, getXiaomiWeatherIcon } from '@renderer/features/weather/convertor';
 import { fetchTotalWeather, fetchApartWeather } from '@renderer/features/weather/xiaomiWeather';
 import { WeatherData } from '@renderer/features/weather/xiaomiWeatherTypes';
@@ -8,13 +9,25 @@ import { WeatherData } from '@renderer/features/weather/xiaomiWeatherTypes';
 export function Weather() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [enabled, setEnabled] = useState(true);
+  const [showFeellike, setShowFeellike] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const useWeather = (await getConfigSync('features.weather.enable')) || false;
+      setEnabled(Boolean(useWeather));
+
+      const showWeatherFeellike = (await getConfigSync('features.weather.showFeellike')) || true;
+      setShowFeellike(Boolean(showWeatherFeellike));
+    })();
+  }, []);
 
   useEffect(() => {
     let timer: any;
 
-    let requestLocation = 'weathercn:101010100';
-
     const fetchWeather = async (force = false) => {
+      let requestLocation = (await getConfigSync('features.weather.locationKey')) || 'weathercn:101010100';
+
       try {
         setLoading(true);
 
@@ -63,17 +76,18 @@ export function Weather() {
     // window.open('/weather', '_blank');
   };
 
-  // Skeleton 占位
   if (loading || !weather?.current) {
     return <Skeleton className='w-28 h-10 rounded-lg' />;
   }
+
+  if (!enabled) return;
 
   const weatherName = getXiaomiWeatherName(Number(weather.current.weather));
   const weatherIcon = getXiaomiWeatherIcon(Number(weather.current.weather));
 
   return (
     <div
-      className='flex gap-1 items-center  bg-primary-400 text-primary-foreground px-3 py-2 rounded-lg cursor-pointer select-none'
+      className='flex gap-1 items-center bg-primary-400 text-primary-foreground px-3 py-2 rounded-lg cursor-pointer select-none'
       onClick={handleClick}>
       {weatherIcon && (
         <Image
@@ -86,7 +100,11 @@ export function Weather() {
       <span className='whitespace-nowrap'>
         {`${weatherName ? `${weatherName} ` : ''}${weather.current.temperature.value}°`}
       </span>
-      <span className='hidden min-[24em]:inline whitespace-nowrap'>体感 {weather.current.feelsLike.value}°</span>
+      {showFeellike && (
+        <span className='text-sm text-gray-500 dark:text-gray-300 hidden min-[20em]:inline whitespace-nowrap'>
+          体感 {weather.current.feelsLike.value}°
+        </span>
+      )}
     </div>
   );
 }

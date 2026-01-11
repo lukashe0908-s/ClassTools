@@ -17,6 +17,7 @@ import { SettingsSection, SettingsGroup, SettingsItem } from '@renderer/componen
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import WeatherSettings from '@renderer/components/settings/WeatherSettings';
 
 export default function App() {
   const [autoLaunch, setAutoLaunch] = useState(false);
@@ -188,6 +189,8 @@ export default function App() {
               </>
             )}
           </SettingsGroup>
+
+          <WeatherSettings></WeatherSettings>
         </SettingsSection>
       </div>
     </div>
