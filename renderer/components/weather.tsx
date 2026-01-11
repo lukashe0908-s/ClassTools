@@ -62,7 +62,7 @@ export function Weather() {
       } finally {
         setLoading(false);
       }
-    });
+    };
 
     fetchWeather();
     timer = setInterval(() => fetchWeather(), 30 * 1000);
