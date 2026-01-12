@@ -457,7 +457,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       </div>
 
       {/* Footer */}
-      <div className='flex gap-1 items-center bg-white/40 dark:bg-black/10 p-1 rounded-lg overflow-auto'>
+      <div className='flex gap-1 items-center bg-white/40 dark:bg-black/10 p-1 rounded-lg overflow-x-auto'>
         <Button
           isIconOnly
           onPress={() => {
