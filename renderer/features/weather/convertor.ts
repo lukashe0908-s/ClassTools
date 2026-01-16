@@ -94,17 +94,12 @@ const WEATHER_ICON_MAP: Record<number, WeatherIcon> = {
   34: { day: 'icon_light_snow' },
   35: { day: 'icon_fog' },
   53: { day: 'icon_pm_dirt' },
-  99: { day: 'icon_unknown' },
+  99: { day: '' },
 };
 
-const DEFAULT_ICON = 'icon_unknown';
-
-export function getXiaomiWeatherIcon(
-  code: number,
-  isNight = false
-): string {
+export function getXiaomiWeatherIcon(code: number, isNight = false): string {
   const icon = WEATHER_ICON_MAP[code] ?? WEATHER_ICON_MAP[99];
-  return isNight && icon.night ? icon.night : icon.day ?? DEFAULT_ICON;
+  return isNight && icon.night ? icon.night : icon.day ?? '';
 }
 
 const WIND_DIRECTIONS_CN = ['北风', '东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风'];

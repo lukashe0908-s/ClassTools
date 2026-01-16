@@ -13,7 +13,7 @@ export function Weather() {
   const [showFeellike, setShowFeellike] = useState(true);
 
   useEffect(() => {
-    let timer: any
+    let timer: any;
     (async () => {
       const useWeather = (await getConfigSync('features.weather.enable')) || false;
       setEnabled(Boolean(useWeather));
@@ -24,55 +24,55 @@ export function Weather() {
       if (!Boolean(useWeather)) return;
 
       const fetchWeather = async (force = false) => {
-      let requestLocation = (await getConfigSync('features.weather.locationKey')) || 'weathercn:101010100';
+        let requestLocation = (await getConfigSync('features.weather.locationKey')) || 'weathercn:101010100';
 
-      try {
-        setLoading(true);
+        try {
+          setLoading(true);
 
-        // 使用缓存
-        if (!force && localStorage.getItem('weatherFull')) {
-          const weatherFull: { data: any; location: string; updateTime: number } = JSON.parse(
-            localStorage.getItem('weatherFull')
-          );
-          if (
-            weatherFull.location === requestLocation &&
-            weatherFull?.updateTime + 10 * 60 * 1000 > Date.now() &&
-            weatherFull?.data?.current
-          ) {
-            setWeather(weatherFull?.data);
-            setLoading(false);
-            return;
+          // 使用缓存
+          if (!force && localStorage.getItem('weatherFull')) {
+            const weatherFull: { data: any; location: string; updateTime: number } = JSON.parse(
+              localStorage.getItem('weatherFull')
+            );
+            if (
+              weatherFull.location === requestLocation &&
+              weatherFull?.updateTime + 10 * 60 * 1000 > Date.now() &&
+              weatherFull?.data?.current
+            ) {
+              setWeather(weatherFull?.data);
+              setLoading(false);
+              return;
+            }
           }
+
+          const weatherData = await fetchTotalWeather(requestLocation);
+          console.log(weatherData);
+
+          if (weatherData?.current) {
+            localStorage.setItem(
+              'weatherFull',
+              JSON.stringify({ data: weatherData, location: requestLocation, updateTime: Date.now() })
+            );
+            setWeather(weatherData);
+          } else {
+            alert('天气获取失败: 配置错误');
+          }
+        } catch (error) {
+          setWeather(null);
+        } finally {
+          setLoading(false);
         }
+      };
 
-        const weatherData = await fetchTotalWeather(requestLocation);
-        console.log(weatherData);
-
-        if (weatherData?.current) {
-          localStorage.setItem(
-            'weatherFull',
-            JSON.stringify({ data: weatherData, location: requestLocation, updateTime: Date.now() })
-          );
-          setWeather(weatherData);
-        } else {
-          alert('天气获取失败: 配置错误');
-        }
-      } catch (error) {
-        setWeather(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWeather();
-    timer = setInterval(() => fetchWeather(), 10 * 1000);
+      fetchWeather();
+      timer = setInterval(() => fetchWeather(), 10 * 1000);
     })();
 
     return () => timer && clearInterval(timer);
   }, []);
 
   const handleClick = () => {
-   window.open('/weather', '_blank');
+    window.open('/weather', '_blank');
   };
 
   if (loading || !weather?.current) {
@@ -86,7 +86,7 @@ export function Weather() {
   const sunRise = new Date(weather.forecastDaily.sunRiseSet.value[0].from).getTime();
   const sunSet = new Date(weather.forecastDaily.sunRiseSet.value[0].to).getTime();
   const isNight = now < sunRise || now > sunSet;
-  
+
   const weatherName = getXiaomiWeatherName(Number(weather.current.weather));
   const weatherIcon = getXiaomiWeatherIcon(Number(weather.current.weather), isNight);
 
