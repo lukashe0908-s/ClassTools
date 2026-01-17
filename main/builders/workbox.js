@@ -5,7 +5,6 @@ const path = require('path');
 const fs = require('fs-extra');
 const { NODE_ENV } = process.env;
 const urlPattern = new RegExp(`/.*`);
-
 // https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-build#.generateSW
 const buildSW = () => {
   return workboxBuild.generateSW({
@@ -43,5 +42,11 @@ const buildSW = () => {
 
 buildSW();
 
-// Add Web Build Time
-fs.writeFile(path.resolve(process.cwd(), 'renderer/public/buildArtifacts/UIVersion'), Date.now().toString());
+// Add Build Time
+(async () => {
+  const dirPath = path.resolve(process.cwd(), 'renderer/public/buildArtifacts');
+  if (!fs.pathExistsSync(dirPath)) {
+    fs.mkdirsSync(dirPath);
+  }
+  fs.writeFileSync(path.resolve(dirPath, 'UIVersion'), Date.now().toString());
+})();
