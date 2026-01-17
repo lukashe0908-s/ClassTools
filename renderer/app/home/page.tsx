@@ -19,7 +19,7 @@ export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
-    const serviceWorkerScope = `/buildArtifacts/sw.js`;
+    const serviceWorkerScope = `/workbox-sw.js`;
     navigator.serviceWorker &&
       location.protocol === 'https:' &&
       navigator.serviceWorker

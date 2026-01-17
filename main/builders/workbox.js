@@ -9,7 +9,7 @@ const urlPattern = new RegExp(`/.*`);
 // https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-build#.generateSW
 const buildSW = () => {
   return workboxBuild.generateSW({
-    swDest: 'renderer/public/buildArtifacts/sw.js',
+    swDest: 'renderer/public/workbox-sw.js',
     clientsClaim: true,
     mode: NODE_ENV,
     skipWaiting: true,
