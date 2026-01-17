@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { Skeleton, Image } from '@heroui/react';
 import { getConfigSync } from '@renderer/features/p_function';
-import { getXiaomiWeatherName, getXiaomiWeatherIcon } from '@renderer/features/weather/convertor';
-import { fetchTotalWeather, fetchApartWeather } from '@renderer/features/weather/xiaomiWeather';
+import { getXiaomiWeatherName, getXiaomiWeatherIcon, timeIsNight } from '@renderer/features/weather/convertor';
+import { fetchTotalWeather } from '@renderer/features/weather/xiaomiWeather';
 import { WeatherData } from '@renderer/features/weather/xiaomiWeatherTypes';
 
 export function Weather() {
@@ -82,10 +82,7 @@ export function Weather() {
   }
 
   // 判断是否是夜间
-  const now = Date.now();
-  const sunRise = new Date(weather.forecastDaily.sunRiseSet.value[0].from).getTime();
-  const sunSet = new Date(weather.forecastDaily.sunRiseSet.value[0].to).getTime();
-  const isNight = now < sunRise || now > sunSet;
+  const isNight = timeIsNight(weather.forecastDaily.sunRiseSet.value);
 
   const weatherName = getXiaomiWeatherName(Number(weather.current.weather));
   const weatherIcon = getXiaomiWeatherIcon(Number(weather.current.weather), isNight);

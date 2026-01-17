@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import { SunRiseSet } from './xiaomiWeatherTypes';
+
 type Lang = 'cn' | 'en';
 
 const WEATHER_NAME_MAP: Record<number, { cn: string; en: string }> = {
@@ -99,7 +102,27 @@ const WEATHER_ICON_MAP: Record<number, WeatherIcon> = {
 
 export function getXiaomiWeatherIcon(code: number, isNight = false): string {
   const icon = WEATHER_ICON_MAP[code] ?? WEATHER_ICON_MAP[99];
-  return isNight && icon.night ? icon.night : icon.day ?? '';
+  return isNight && icon.night ? icon.night : (icon.day ?? '');
+}
+
+/**
+ * 判断某个时间点是否在夜晚
+ * @param sunRiseSetList 多天日出日落数组（ISO）
+ * @param time 想判断的时间，默认当前时间
+ */
+export function timeIsNight(sunRiseSetList: SunRiseSet[], time = dayjs()) {
+  const todaySet = sunRiseSetList.find(s => {
+    const date = dayjs(s.from).format('YYYY-MM-DD');
+    return date === time.format('YYYY-MM-DD');
+  });
+
+  if (!todaySet) return false;
+
+  const sunriseTime = dayjs(todaySet.from);
+  const sunsetTime = dayjs(todaySet.to);
+
+  // 夜晚 = 当前时间 < 日出 || 当前时间 > 日落
+  return time.isBefore(sunriseTime) || time.isAfter(sunsetTime);
 }
 
 const WIND_DIRECTIONS_CN = ['北风', '东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风'];
@@ -141,7 +164,7 @@ export function getWindPower(speed: number): number {
 export function convertWindSpeed(
   speed: number,
   fromUnit: 'km/h' | 'm/s' | 'mph' | 'kn',
-  toUnit: 'km/h' | 'm/s' | 'mph' | 'kn'
+  toUnit: 'km/h' | 'm/s' | 'mph' | 'kn',
 ): number {
   let speedMs: number;
 
@@ -185,7 +208,7 @@ export function getWindDescription(
   speed: number,
   degree: number,
   unit: 'km/h' | 'm/s' | 'mph' | 'kn' = 'km/h',
-  lang: 'cn' | 'en' = 'cn'
+  lang: 'cn' | 'en' = 'cn',
 ): string {
   const direction = getWindDirection(degree, lang);
   const speedMs = convertWindSpeed(speed, unit, 'm/s'); // 计算风力等级需要 m/s
@@ -232,7 +255,7 @@ export function getWeatherSummary(
   windDegree: number,
   windUnit: 'km/h' | 'm/s' | 'mph' | 'kn' = 'km/h',
   aqi: number,
-  lang: 'cn' | 'en' = 'cn'
+  lang: 'cn' | 'en' = 'cn',
 ) {
   const temp = `${tempC}°C / ${celsiusToFahrenheit(tempC)}°F`;
   const wind = getWindDescription(windSpeed, windDegree, windUnit, lang);
