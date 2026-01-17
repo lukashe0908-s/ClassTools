@@ -66,14 +66,10 @@ export function AboutSettings() {
 
       <div className='bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 mt-4'>
         <h4 className='font-medium mb-2'>技术信息</h4>
-        <div className='grid grid-cols-2 gap-4 text-sm'>
+        <div className='grid grid-cols-[repeat(auto-fit,minmax(10em,1fr))] gap-4 text-sm'>
           <div>
             <span className='text-content3-foreground'>开源:</span>
             <span className='ml-2 font-mono'>https://github.com/lukashe0908-s/ClassTools</span>
-          </div>
-          <div>
-            <span className='text-content3-foreground'>许可证:</span>
-            <span className='ml-2 font-mono'>MIT</span>
           </div>
         </div>
       </div>
