@@ -1,11 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import '@renderer/styles/globals.css';
-import { HeroUIProvider, addToast } from '@heroui/react';
+import { addToast } from '@heroui/react';
 import { ToastProvider } from '@heroui/toast';
 import 'overlayscrollbars/overlayscrollbars.css';
 import * as Sentry from '@sentry/electron/renderer';
 import * as SentryReact from '@sentry/react';
+import { Providers } from './providers';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -32,8 +33,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       SentryReact.init(sentryConfig);
     }
   }, []);
-
-  const [isDark, setIsDark] = useState(false);
   useEffect(() => {
     window.alert = function (...args: any[1]) {
       console.log('[Alert]', args[0]);
@@ -48,27 +47,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       return true;
     };
   }, []);
-  useEffect(() => {
-    const handleDragStart = event => {
-      event.preventDefault();
-    };
-    document.body.addEventListener('drop', handleDragStart);
-    return () => {
-      document.body.removeEventListener('drop', handleDragStart);
-    };
-  }, []);
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(media.matches);
-    const listener = (e: MediaQueryListEvent) => {
-      setIsDark(e.matches);
-    };
-    media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, []);
+
   return (
     <>
-      <html lang='en' className='h-full overflow-hidden'>
+      <html suppressHydrationWarning className='h-full'>
         <head>
           <title>Class Tools</title>
           <meta charSet='UTF-8' />
@@ -76,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </head>
         <body className='h-full'>
           <ToastProvider />
-          <HeroUIProvider className={`h-full ${isDark && 'dark'} overflow-auto`}>{children}</HeroUIProvider>
+          <Providers>{children}</Providers>
         </body>
       </html>
     </>
