@@ -32,7 +32,7 @@ export function Weather() {
           // 使用缓存
           if (!force && localStorage.getItem('weatherFull')) {
             const weatherFull: { data: any; location: string; updateTime: number } = JSON.parse(
-              localStorage.getItem('weatherFull')
+              localStorage.getItem('weatherFull'),
             );
             if (
               weatherFull.location === requestLocation &&
@@ -51,7 +51,7 @@ export function Weather() {
           if (weatherData?.current) {
             localStorage.setItem(
               'weatherFull',
-              JSON.stringify({ data: weatherData, location: requestLocation, updateTime: Date.now() })
+              JSON.stringify({ data: weatherData, location: requestLocation, updateTime: Date.now() }),
             );
             setWeather(weatherData);
           } else {
@@ -75,11 +75,11 @@ export function Weather() {
     window.open('/weather', '_blank');
   };
 
+  if (!enabled) return;
+
   if (loading || !weather?.current) {
     return <Skeleton className='w-28 h-10 rounded-lg' />;
   }
-
-  if (!enabled) return;
 
   // 判断是否是夜间
   const now = Date.now();
