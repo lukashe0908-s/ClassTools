@@ -86,7 +86,7 @@ export default function UpdateModal() {
                       showValueLabel
                       className='w-full'
                     />
-                    <p className='text-sm text-neutral-500 mt-1'>
+                    <p className='text-sm mt-1'>
                       {`${progress.toFixed(1)}% ${formatSpeed(downloadSpeed)} \n已下载 ${formatSize(
                         downloadSize
                       )} / ${formatSize(downloadTotalSize)}`}

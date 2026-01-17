@@ -124,7 +124,7 @@ export default function App() {
         <SettingsGroup title='当前替换规则'>
           <div className='grid gap-2 lg:grid-cols-2'>
             {rules.length === 0 ? (
-              <p className='text-neutral-600 dark:text-neutral-300'>暂无替换规则</p>
+              <p className='text-content3-foreground'>暂无替换规则</p>
             ) : (
               rules.map((rule, index) => (
                 <div key={index} className='flex items-center gap-2 w-full'>

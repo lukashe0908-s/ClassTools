@@ -20,7 +20,7 @@ export function SettingsGroup({ title, description, children, icon }: SettingsGr
               <div className='flex flex-col'>
                 <h3 className='text-lg font-semibold whitespace-pre-line'>{title}</h3>
                 {description && (
-                  <p className='text-sm text-neutral-600 dark:text-neutral-300 whitespace-pre-wrap'>{description}</p>
+                  <p className='text-sm text-content3-foreground whitespace-pre-wrap'>{description}</p>
                 )}
               </div>
             </div>
@@ -62,7 +62,7 @@ export function SettingsItem({
       {title ? (
         <div className='pr-4'>
           <div className='font-medium  whitespace-pre-line'>{title}</div>
-          {description && <div className='text-sm text-neutral-600 dark:text-neutral-300 mt-1 whitespace-pre-wrap'>{description}</div>}
+          {description && <div className='text-sm text-content3-foreground mt-1 whitespace-pre-wrap'>{description}</div>}
         </div>
       ) : (
         ''

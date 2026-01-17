@@ -40,7 +40,7 @@ export function AboutSettings() {
           </div>
           <div>
             <h3 className='text-xl font-bold'>Class Tools</h3>
-            <p className='text-neutral-600 dark:text-neutral-300'>课程管理工具</p>
+            <p className='text-content3-foreground'>课程管理工具</p>
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@ export function AboutSettings() {
           </div>
           <div>
             <div className='font-semibold'>Lukas</div>
-            <div className='text-sm text-neutral-600 dark:text-neutral-300'>主要开发者</div>
+            <div className='text-sm text-content3-foreground'>主要开发者</div>
           </div>
         </div>
       </SettingsItem>
@@ -60,7 +60,7 @@ export function AboutSettings() {
       <SettingsItem title='版本信息' description='当前应用版本和构建信息'>
         <div className='text-right'>
           <div className='font-mono text-sm'>{version}</div>
-          <div className='text-xs text-neutral-600 dark:text-neutral-300'>Build {buildVersion}</div>
+          <div className='text-xs text-content3-foreground'>Build {buildVersion}</div>
         </div>
       </SettingsItem>
 
@@ -68,11 +68,11 @@ export function AboutSettings() {
         <h4 className='font-medium mb-2'>技术信息</h4>
         <div className='grid grid-cols-2 gap-4 text-sm'>
           <div>
-            <span className='text-neutral-600 dark:text-neutral-300'>开源:</span>
+            <span className='text-content3-foreground'>开源:</span>
             <span className='ml-2 font-mono'>https://github.com/lukashe0908-s/ClassTools</span>
           </div>
           <div>
-            <span className='text-neutral-600 dark:text-neutral-300'>许可证:</span>
+            <span className='text-content3-foreground'>许可证:</span>
             <span className='ml-2 font-mono'>MIT</span>
           </div>
         </div>

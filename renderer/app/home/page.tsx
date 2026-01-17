@@ -41,7 +41,7 @@ export default function HomePage() {
             <>
               <ModalHeader className='flex flex-col gap-1'>确认关机</ModalHeader>
               <ModalBody>
-                <p className='text-neutral-500 text-sm'>关闭所有应用，然后关闭电脑。</p>
+                <p className='text-content3-foreground text-sm'>关闭所有应用，然后关闭电脑。</p>
               </ModalBody>
               <ModalFooter>
                 <Button

@@ -80,7 +80,7 @@ export default function App() {
       <div className='max-w-4xl mx-auto py-6 px-4'>
         <div className='mb-8'>
           <h1 className='text-3xl font-bold mb-2'>实验室</h1>
-          <p className='text-neutral-600 dark:text-neutral-300'>
+          <p className='text-content3-foreground'>
             <span className='text-red-400'>这些功能可能不稳定</span>
           </p>
         </div>
