@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <>
       <title>Not Found</title>
-      <div className='min-h-screen flex items-center justify-center px-4'>
+      <div className='h-full flex items-center justify-center px-4'>
         <main className='flex flex-col items-center max-w-xl'>
           <SearchXIcon className='text-[3rem] mb-4 w-[1em] h-[1em] text-primary-600'></SearchXIcon>
           <h1 className='text-[3rem] font-semibold mb-3 leading-[1.1] tracking-[-0.15rem]'>404 Not Found</h1>
