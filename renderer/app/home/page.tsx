@@ -1,6 +1,16 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Image } from '@heroui/react';
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Image,
+  Skeleton,
+} from '@heroui/react';
 import {
   Cog6ToothIcon,
   ArrowPathIcon,
@@ -75,6 +85,7 @@ export default function HomePage() {
 }
 function FloatWindow({ onShutdownModalOpen }) {
   const [wallpapers, setWallpapers] = useState([]);
+  const [wallpapersLoading, setWallpapersLoading] = useState(true);
   const [currentWallpaper, setCurrentWallpaper] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const wallpaperListRef = useRef<HTMLDivElement>(null);
@@ -97,13 +108,8 @@ function FloatWindow({ onShutdownModalOpen }) {
   const updateWallpaper = (newWallpaper: string, index: number) => {
     localStorage.setItem('default_wallpaper_select', index.toString());
     setSelectedIndex(index);
-    if (document.startViewTransition) {
-      document.startViewTransition(() => {
-        setCurrentWallpaper(newWallpaper ?? '');
-      });
-    } else {
-      setCurrentWallpaper(newWallpaper ?? '');
-    }
+    setCurrentWallpaper(newWallpaper ?? '');
+
     // 使用 requestAnimationFrame 确保在 DOM 更新后再滚动
     requestAnimationFrame(() => {
       const container = wallpaperListRef.current;
@@ -133,6 +139,7 @@ function FloatWindow({ onShutdownModalOpen }) {
     }
 
     (async () => {
+      setWallpapersLoading(true);
       const useGameBgs = await getConfigSync('display.background.useGameBgs');
       const useGame = await getConfigSync('display.background.useGame');
       const useAllowType = await getConfigSync('display.background.useGameBgsAllowType');
@@ -175,6 +182,7 @@ function FloatWindow({ onShutdownModalOpen }) {
           const cachedData: WallpaperItem[] = JSON.parse(cached);
           let wallpaperList: WallpaperItem[] = useGameBgsEffective ? [gameBg_object, ...cachedData] : cachedData;
           setWallpapers(wallpaperList);
+          setWallpapersLoading(false);
           const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
           const validIndex = savedIndex < wallpaperList.length ? savedIndex : 0;
           updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
@@ -294,6 +302,8 @@ function FloatWindow({ onShutdownModalOpen }) {
         updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
       } catch (err) {
         console.error('Failed to decode/parse wallpaper TXT record payload:', err);
+      } finally {
+        setWallpapersLoading(false);
       }
     }
   }, []);
@@ -375,7 +385,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       </div>
 
       {/* Main Content */}
-      <div className='flex flex-col gap-4 py-2 grow overflow-y-auto scrollbar-hide'>
+      <div className='flex flex-col gap-2 py-0 grow overflow-y-auto scrollbar-hide'>
         <div id='mainContentHeadPosition'></div>
         <ClassList
           schedule={classSchedule}
@@ -383,73 +393,79 @@ function FloatWindow({ onShutdownModalOpen }) {
           timeDisplay={timeDisplay}
           progressDisplay={progressDisplay}></ClassList>
         {/* Background Picture List */}
-        <div className='flex justify-center px-2'>
+        <div className='w-full flex justify-center px-2'>
           <div
             ref={wallpaperListRef}
             className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-video scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
-            {wallpapers.map((wallpaper, index) => {
-              const { type, image_url, video_url } = wallpaper;
-              const key = `wallpaper-${index}`;
-              const handleClick = () => updateWallpaper(image_url, index);
+            {wallpapersLoading ? (
+              <div className='w-screen grow max-w-full snap-center object-contain'>
+                <Skeleton className='w-full aspect-video rounded-lg'></Skeleton>
+              </div>
+            ) : (
+              wallpapers.map((wallpaper, index) => {
+                const { type, image_url, video_url } = wallpaper;
+                const key = `wallpaper-${index}`;
+                const handleClick = () => updateWallpaper(image_url, index);
 
-              return (
-                <div
-                  key={key}
-                  className='relative w-full aspect-video rounded-lg snap-center object-contain'
-                  onClick={handleClick}>
-                  {type === 'mixed' ? (
-                    <>
-                      {playingMixed ? (
-                        <video
-                          src={video_url}
-                          className='w-full h-full rounded-lg object-contain'
-                          muted
-                          loop
-                          autoPlay
-                          playsInline
-                        />
-                      ) : (
-                        <Image
-                          src={image_url}
-                          className='w-full h-full rounded-lg object-contain'
-                          referrerPolicy='no-referrer'
-                        />
-                      )}
-                      <button
-                        onClick={() => {
-                          setPlayingMixed(!playingMixed);
-                        }}
-                        className='z-20 absolute bottom-1 left-1 bg-black/30 text-white/60 text-sm p-1 rounded-full hover:bg-black/40 hover:text-white/80 transition-colors'>
+                return (
+                  <div
+                    key={key}
+                    className='relative w-full aspect-video rounded-lg snap-center object-contain'
+                    onClick={handleClick}>
+                    {type === 'mixed' ? (
+                      <>
                         {playingMixed ? (
-                          <PauseIcon className='w-4 h-4'></PauseIcon>
+                          <video
+                            src={video_url}
+                            className='w-full h-full rounded-lg object-contain'
+                            muted
+                            loop
+                            autoPlay
+                            playsInline
+                          />
                         ) : (
-                          <PlayIcon className='w-4 h-4'></PlayIcon>
+                          <Image
+                            src={image_url}
+                            className='w-full h-full rounded-lg object-contain'
+                            referrerPolicy='no-referrer'
+                          />
                         )}
-                      </button>
-                    </>
-                  ) : type === 'video' ? (
-                    <video
-                      key={key}
-                      src={video_url}
-                      className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
-                      onClick={handleClick}
-                      muted
-                      loop
-                      autoPlay
-                      playsInline
-                    />
-                  ) : (
-                    <Image
-                      key={key}
-                      src={image_url ?? ''}
-                      className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
-                      onClick={handleClick}
-                      referrerPolicy='no-referrer'
-                    />
-                  )}
-                </div>
-              );
-            })}
+                        <button
+                          onClick={() => {
+                            setPlayingMixed(!playingMixed);
+                          }}
+                          className='z-20 absolute bottom-1 left-1 bg-black/30 text-white/60 text-sm p-1 rounded-full hover:bg-black/40 hover:text-white/80 transition-colors'>
+                          {playingMixed ? (
+                            <PauseIcon className='w-4 h-4'></PauseIcon>
+                          ) : (
+                            <PlayIcon className='w-4 h-4'></PlayIcon>
+                          )}
+                        </button>
+                      </>
+                    ) : type === 'video' ? (
+                      <video
+                        key={key}
+                        src={video_url}
+                        className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
+                        onClick={handleClick}
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                      />
+                    ) : (
+                      <Image
+                        key={key}
+                        src={image_url ?? ''}
+                        className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
+                        onClick={handleClick}
+                        referrerPolicy='no-referrer'
+                      />
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>
