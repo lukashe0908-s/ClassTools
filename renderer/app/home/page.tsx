@@ -354,7 +354,7 @@ function MainContent({ onShutdownModalOpen }) {
         progressDisplay: ((await getConfigSync('display.progressDisplay')) as any) ?? 'always',
         hiddenCloseWindow: ((await getConfigSync('display.hidden.closeWindow')) as any) ?? false,
         hiddenRefreshWindow: ((await getConfigSync('display.hidden.refreshWindow')) as any) ?? false,
-        useWindowBackgroundMaterial: ((await getConfigSync('display.useWindowBackgroundMaterial')) as any) ?? true,
+        useWindowBackgroundMaterial: ((await getConfigSync('display.useWindowBackgroundMaterial')) as any) ?? false,
       };
 
       dispatch({
