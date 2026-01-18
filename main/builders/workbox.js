@@ -4,7 +4,7 @@ const workboxBuild = require('workbox-build');
 const path = require('path');
 const fs = require('fs-extra');
 const { NODE_ENV } = process.env;
-const urlPattern = new RegExp(`/.*`);
+
 // https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-build#.generateSW
 const buildSW = () => {
   return workboxBuild.generateSW({
@@ -14,26 +14,37 @@ const buildSW = () => {
     skipWaiting: true,
     sourcemap: false,
     runtimeCaching: [
+      // Next.js Chunks
       {
-        urlPattern: new RegExp(String.raw`/(static)/.*`),
+        urlPattern: /^\/_next\/static\/.+$/i,
         handler: 'CacheFirst',
         options: {
-          cacheName: 'class-tools',
+          cacheName: 'next-static',
           expiration: {
             maxEntries: 500,
             maxAgeSeconds: 30 * 24 * 60 * 60,
           },
         },
       },
+      // Static Files
       {
-        urlPattern: urlPattern,
-        handler: 'StaleWhileRevalidate',
+        urlPattern: /^\/static\/.*/,
+        handler: 'CacheFirst',
         options: {
-          cacheName: 'class-tools',
+          cacheName: 'public-static',
           expiration: {
-            maxEntries: 500,
-            maxAgeSeconds: 7 * 24 * 60 * 60,
+            maxEntries: 200,
+            maxAgeSeconds: 14 * 24 * 60 * 60,
           },
+        },
+      },
+      // Next.js Pages
+      {
+        urlPattern: ({ request }) => request.destination === 'document' || request.url.includes('/_next/data/'),
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'next-pages',
+          networkTimeoutSeconds: 3,
         },
       },
     ],
