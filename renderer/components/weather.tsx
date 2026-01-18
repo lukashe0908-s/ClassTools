@@ -72,7 +72,7 @@ export function Weather() {
   }, []);
 
   const handleClick = () => {
-    window.open('/weather', '_blank');
+    window.open('/weather', '_blank', 'width=1000,height=700,resizable=yes');
   };
 
   if (!enabled) return;

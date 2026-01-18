@@ -109,8 +109,8 @@ export function DailyWeatherChart() {
   );
 
   return !data.length ? (
-    <div className='w-[40vw] min-w-full max-w-[100vw] p-4'>
-      <Skeleton className='h-50 rounded-lg'></Skeleton>
+    <div className='w-[60em] max-w-full p-4'>
+      <Skeleton className='h-65 rounded-lg'></Skeleton>
     </div>
   ) : (
     <div ref={containerRef} className='w-full overflow-x-auto scrollbar-hide'>

@@ -67,7 +67,7 @@ export function HourlyWeatherChart() {
 
     try {
       const json = JSON.parse(raw);
-      const { forecastHourly, forecastDaily } = json.data as WeatherData;
+      const { forecastHourly, forecastDaily, current: currnetWeather } = json.data as WeatherData;
 
       const temps: number[] = forecastHourly.temperature.value;
       const weathers: number[] = forecastHourly.weather.value;
@@ -85,7 +85,16 @@ export function HourlyWeatherChart() {
         };
       });
 
-      setData([...points]);
+      const pointCurrent = (() => {
+        const currentTime = dayjs();
+        return {
+          time: '现在',
+          temp: Number(currnetWeather.temperature.value),
+          icon: `/static/weatherIcons/${getXiaomiWeatherIcon(Number(currnetWeather.weather), timeIsNight(sunRiseSet, currentTime)).replace('icon_', 'icon_gray_bg_')}.webp`,
+        };
+      })();
+
+      setData([pointCurrent, ...points]);
     } catch (err) {
       console.error('解析 weatherFull 失败', err);
     }
@@ -99,20 +108,11 @@ export function HourlyWeatherChart() {
   }, [data]);
 
   return !data.length ? (
-    <div className='w-[40vw] min-w-full max-w-[100vw] p-4'>
+    <div className='w-[60em] max-w-full px-4'>
       <Skeleton className='h-50 rounded-lg'></Skeleton>
     </div>
   ) : (
-    <div
-      ref={containerRef}
-      className='w-full overflow-x-auto scrollbar-hide'
-      style={{
-        maxWidth: totalWidth,
-      }}
-      onWheel={e => {
-        const container = e.currentTarget;
-        container.scrollBy({ left: e.deltaY, behavior: 'smooth' });
-      }}>
+    <div ref={containerRef} className='w-full overflow-x-auto scrollbar-hide'>
       <motion.div
         drag='x'
         dragConstraints={{

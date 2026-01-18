@@ -142,7 +142,7 @@ function FloatWindow({ onShutdownModalOpen }) {
       if (useGameBgs && useGame) {
         try {
           const res = await fetch(
-            `https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&game_id=${useGame}`
+            `https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&game_id=${useGame}`,
           );
           const data = await res.json();
           const info = data?.data?.game_info_list?.[0];
@@ -354,9 +354,7 @@ function FloatWindow({ onShutdownModalOpen }) {
 
   return (
     <div
-      className={`flex flex-col gap-0 p-0 h-full ${
-        currentWallpaper ? '' : 'bg-neutral-100/80 dark:bg-neutral-800/80'
-      }`}
+      className={`flex flex-col gap-0 p-0 h-full ${currentWallpaper ? '' : 'bg-neutral-100/80 dark:bg-neutral-800/80'}`}
       style={{
         fontSize: fontSize + 'em',
       }}>
@@ -461,9 +459,9 @@ function FloatWindow({ onShutdownModalOpen }) {
         <Button
           isIconOnly
           onPress={() => {
-            try {
+            if (window.ipc) {
               window.ipc?.send('settings-window');
-            } catch {
+            } else {
               window.location.href = '/settings';
             }
           }}
