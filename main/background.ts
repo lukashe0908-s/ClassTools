@@ -132,7 +132,7 @@ function isWindows11() {
     minimizable: false,
   });
   mainWindow.webContents.setUserAgent(
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
   );
   mainWindow.on('close', () => {
     mainWindow_g = undefined;
@@ -225,7 +225,7 @@ ipcMain.handle('get-config', async (event, name: string) => {
 });
 ipcMain.on('set-config', async (event, name: string, value: any) => {
   store.set(name, value);
-  mainWindow_g.webContents.send('sync-config');
+  mainWindow_g.webContents.send('sync-config', name);
 });
 ipcMain.handle('get-version', async event => {
   return app.getVersion();
@@ -389,7 +389,7 @@ async function runHotspotScript(isDebug = false) {
       ],
       {
         windowsHide: true,
-      }
+      },
     );
     // 标准输出
     ps.stdout.on('data', data => {

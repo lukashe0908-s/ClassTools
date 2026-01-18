@@ -22,28 +22,6 @@ export default function ClassList({
   const [tick, setTick] = useState(0);
   const [currentDate, setCurrentDate] = useState(dayjs().format('YYYY-MM-DD')); // 当前日期字符串
   const refList = useRef([]);
-  const [fontSize, setFontSize] = useState(1);
-
-  useEffect(() => {
-    const loadFontSize = async () => {
-      const size = await getConfigSync('display.fontSize');
-      setFontSize(Number(size) || 1);
-    };
-    loadFontSize();
-  }, []);
-
-  useEffect(() => {
-    const handler = async () => {
-      const size = await getConfigSync('display.fontSize');
-      setFontSize(Number(size) || 1);
-    };
-
-    window.ipc?.on('sync-config', handler);
-
-    return () => {
-      window.ipc?.removeListener?.('sync-config', handler);
-    };
-  }, []);
 
   useEffect(() => {
     dayjs.extend(weekOfYear);
@@ -114,9 +92,7 @@ export default function ClassList({
     <div className='class-list' ref={containerRef}>
       {!groupedClasses || groupedClasses.length === 0 ? (
         <Card className='mx-2 mb-2 shadow-md bg-white/60 dark:black/40'>
-          <div
-            className='text-center py-6 text-neutral-900 font-bold'
-            style={{ fontSize: `min(1.8em,5rem)` }}>
+          <div className='text-center py-6 text-neutral-900 font-bold' style={{ fontSize: `min(1.8em,5rem)` }}>
             暂无课程
           </div>
         </Card>
@@ -137,14 +113,14 @@ export default function ClassList({
                     currentTime.getMonth(),
                     currentTime.getDate(),
                     sh,
-                    sm
+                    sm,
                   );
                   const end = new Date(
                     currentTime.getFullYear(),
                     currentTime.getMonth(),
                     currentTime.getDate(),
                     eh,
-                    em
+                    em,
                   );
 
                   // state timeline: default | before > active > after
@@ -158,8 +134,8 @@ export default function ClassList({
                     state === 'active'
                       ? 'bg-blue-200/60 shadow-inner'
                       : state === 'before'
-                      ? 'bg-neutral-300/60'
-                      : 'bg-white/60 dark:black/40'
+                        ? 'bg-neutral-300/60'
+                        : 'bg-white/60 dark:black/40'
                   }`;
 
                   return (

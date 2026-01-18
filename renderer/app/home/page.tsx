@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import {
   Button,
   Modal,
@@ -91,15 +91,22 @@ function FloatWindow({ onShutdownModalOpen }) {
   const wallpaperListRef = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState(1);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const loadFontSize = async () => {
       const size = await getConfigSync('display.fontSize');
       setFontSize(Number(size) || 1);
     };
     loadFontSize();
-  }, []);
+    const handler = (name: string) => {
+      if (name === 'display.fontSize') loadFontSize();
+    };
 
-  useEffect(() => {
+    window.ipc?.on('sync-config', handler);
+    return () => {
+      window.ipc?.removeListener?.('sync-config', handler);
+    };
+  }, []);
+  useLayoutEffect(() => {
     const savedIndex = localStorage.getItem('default_wallpaper_select');
     if (savedIndex) {
       setSelectedIndex(parseInt(savedIndex, 10));
@@ -351,12 +358,11 @@ function FloatWindow({ onShutdownModalOpen }) {
 
     loadConfig();
 
-    const handler = () => {
-      loadConfig();
+    const handler = (name: string) => {
+      if (name.startsWith('display.')) loadConfig();
     };
 
     window.ipc?.on('sync-config', handler);
-
     return () => {
       window.ipc?.removeListener?.('sync-config', handler);
     };
