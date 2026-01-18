@@ -139,8 +139,8 @@ function isWindows11() {
   });
   mainWindow_g = mainWindow;
   resizeWindow();
-  ipcMain.on('set-config', async (event, ...arg) => {
-    resizeWindow();
+  ipcMain.on('set-config', async (event, name, ...arg) => {
+    if (name === 'display.windowWidth' || name === 'display.windowHeight') resizeWindow();
   });
   function resizeWindow() {
     const widthP = store.get('display.windowWidth');
@@ -226,6 +226,20 @@ ipcMain.handle('get-config', async (event, name: string) => {
 ipcMain.on('set-config', async (event, name: string, value: any) => {
   store.set(name, value);
   mainWindow_g.webContents.send('sync-config', name);
+
+  switch (name) {
+    case 'display.useWindowBackgroundMaterial':
+      if (!isWindows11()) return;
+      if (value === true) {
+        mainWindow_g.setBackgroundMaterial('acrylic');
+      } else {
+        mainWindow_g.setBackgroundMaterial('none');
+      }
+      break;
+
+    default:
+      break;
+  }
 });
 ipcMain.handle('get-version', async event => {
   return app.getVersion();

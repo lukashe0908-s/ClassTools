@@ -79,16 +79,10 @@ export default function UpdateModal() {
 
                 {isDownloading && (
                   <div className='mt-4'>
-                    <Progress
-                      aria-label='下载进度'
-                      value={progress}
-                      color='primary'
-                      showValueLabel
-                      className='w-full'
-                    />
+                    <Progress aria-label='下载进度' value={progress} color='primary' className='w-full' />
                     <p className='text-sm mt-1'>
                       {`${progress.toFixed(1)}% ${formatSpeed(downloadSpeed)} \n已下载 ${formatSize(
-                        downloadSize
+                        downloadSize,
                       )} / ${formatSize(downloadTotalSize)}`}
                     </p>
                   </div>
@@ -121,7 +115,7 @@ export default function UpdateModal() {
             <>
               <ModalHeader>更新已准备就绪</ModalHeader>
               <ModalBody>
-                <p>新版本已成功下载，是否现在重启并安装更新？</p>
+                <p>新版本已成功下载，是否重启并安装？</p>
               </ModalBody>
               <ModalFooter>
                 <Button color='default' onPress={onClose} fullWidth>
@@ -134,7 +128,7 @@ export default function UpdateModal() {
                     onClose();
                   }}
                   fullWidth>
-                  重启并更新
+                  重启应用
                 </Button>
               </ModalFooter>
             </>

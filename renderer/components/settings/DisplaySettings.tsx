@@ -158,7 +158,7 @@ export function AppearanceSettings() {
       <SettingsItem
         title='使用窗口级背景模糊'
         description={
-          <div className='flex items-center gap-2'>{`在 Windows 11 22H2 及更高版本中，窗口可使用亚克力背景`}</div>
+          <div className='flex items-center gap-2'>{`在 Windows 11 22H2 及更高版本中，窗口可使用亚克力背景，开启时不显示应用背景`}</div>
         }>
         <Switch
           isSelected={useWindowBackgroundMaterial}

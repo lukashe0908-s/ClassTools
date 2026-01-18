@@ -180,7 +180,7 @@ export default function ClassList({
       )}
       <div className='p-2'>
         <span id='weekNumber' className={`text-neutral-800 bg-neutral-100/50 p-2 rounded-md shadow-md`}>
-          {weekInfo.now}周/今年{weekInfo.total}周
+          {weekInfo.now}周/年{weekInfo.total}周
         </span>
       </div>
     </div>

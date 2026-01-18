@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { useEffect, useState, useRef, useLayoutEffect, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -24,6 +24,7 @@ import UpdateModal from './updateModal';
 import ClassList from './classList';
 import { Weather } from '@renderer/components/weather';
 import { generateConfig, getConfigSync } from '@renderer/features/p_function';
+import { reducer, initialState as reducerInitialState } from './reducer';
 
 export default function HomePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -78,18 +79,19 @@ export default function HomePage() {
           )}
         </ModalContent>
       </Modal>
-      <FloatWindow onShutdownModalOpen={onOpen}></FloatWindow>
+      <MainContent onShutdownModalOpen={onOpen}></MainContent>
       <UpdateModal></UpdateModal>
     </>
   );
 }
-function FloatWindow({ onShutdownModalOpen }) {
+function MainContent({ onShutdownModalOpen }) {
   const [wallpapers, setWallpapers] = useState([]);
   const [wallpapersLoading, setWallpapersLoading] = useState(true);
   const [currentWallpaper, setCurrentWallpaper] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const wallpaperListRef = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState(1);
+  const [windowFocused, setWindowFocused] = useState(true);
 
   useLayoutEffect(() => {
     const loadFontSize = async () => {
@@ -111,6 +113,18 @@ function FloatWindow({ onShutdownModalOpen }) {
     if (savedIndex) {
       setSelectedIndex(parseInt(savedIndex, 10));
     }
+  }, []);
+  useEffect(() => {
+    const handleFocus = () => setWindowFocused(true);
+    const handleBlur = () => setWindowFocused(false);
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+    };
   }, []);
   const updateWallpaper = (newWallpaper: string, index: number) => {
     localStorage.setItem('default_wallpaper_select', index.toString());
@@ -315,14 +329,6 @@ function FloatWindow({ onShutdownModalOpen }) {
     }
   }, []);
 
-  const [classSchedule, setClassSchedule] = useState(null);
-  const [slidingPosition, setSlidingPosition] = useState('center');
-  const [timeDisplay, setTimeDisplay] = useState('always');
-  const [progressDisplay, setProgressDisplay] = useState('always');
-  const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
-  const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
-  const [playingMixed, setPlayingMixed] = useState(true);
-
   // 处理初始滚动到选中的壁纸
   useEffect(() => {
     if (wallpapers.length > 0) {
@@ -331,35 +337,41 @@ function FloatWindow({ onShutdownModalOpen }) {
         const imageElement = container.children[selectedIndex] as HTMLElement;
         if (imageElement) {
           imageElement.scrollIntoView({ behavior: 'instant', block: 'center' });
-          // setTimeout(() => {
-          //   document.getElementById('mainContentHeadPosition').scrollIntoView({ behavior: 'smooth', block: 'start' });
-          // }, 100);
         }
       }
     }
   }, [wallpapers]);
 
+  const [state, dispatch] = useReducer(reducer, reducerInitialState);
+
   useEffect(() => {
     const loadConfig = async () => {
       const config = await generateConfig();
-      const pos = ((await getConfigSync('display.slidingPosition')) as any) || 'center';
-      const timeDis = ((await getConfigSync('display.timeDisplay')) as any) || 'always';
-      const prog = ((await getConfigSync('display.progressDisplay')) as any) || 'always';
-      const hiddenClose = ((await getConfigSync('display.hidden.closeWindow')) as any) || false;
-      const hiddenRefresh = ((await getConfigSync('display.hidden.refreshWindow')) as any) || false;
 
-      setClassSchedule(config);
-      setSlidingPosition(pos);
-      setTimeDisplay(timeDis);
-      setProgressDisplay(prog);
-      setHiddenCloseWindow(hiddenClose);
-      setHiddenRefreshWindow(hiddenRefresh);
+      const display = {
+        slidingPosition: ((await getConfigSync('display.slidingPosition')) as any) ?? 'center',
+        timeDisplay: ((await getConfigSync('display.timeDisplay')) as any) ?? 'always',
+        progressDisplay: ((await getConfigSync('display.progressDisplay')) as any) ?? 'always',
+        hiddenCloseWindow: ((await getConfigSync('display.hidden.closeWindow')) as any) ?? false,
+        hiddenRefreshWindow: ((await getConfigSync('display.hidden.refreshWindow')) as any) ?? false,
+        useWindowBackgroundMaterial: ((await getConfigSync('display.useWindowBackgroundMaterial')) as any) ?? true,
+      };
+
+      dispatch({
+        type: 'UPDATE',
+        payload: {
+          classSchedule: config,
+          display,
+        },
+      });
     };
 
     loadConfig();
 
     const handler = (name: string) => {
-      if (name.startsWith('display.')) loadConfig();
+      if (name.startsWith('display.') || name.startsWith('lessonsList.')) {
+        loadConfig();
+      }
     };
 
     window.ipc?.on('sync-config', handler);
@@ -370,13 +382,18 @@ function FloatWindow({ onShutdownModalOpen }) {
 
   return (
     <div
-      className={`flex flex-col gap-0 p-0 h-full ${currentWallpaper ? '' : 'bg-neutral-100/80 dark:bg-neutral-800/80'}`}
+      className={`flex flex-col gap-0 p-0 h-full transition-background ${
+        (currentWallpaper && !state.display.useWindowBackgroundMaterial) ||
+        (state.display.useWindowBackgroundMaterial && windowFocused)
+          ? ''
+          : 'bg-neutral-100 dark:bg-neutral-800'
+      }`}
       style={{
         fontSize: fontSize + 'em',
       }}>
       {/* Toolbar */}
       <div className='flex gap-2 items-center bg-white/40 dark:bg-black/20'>
-        {!hiddenCloseWindow && (
+        {!state.display.hiddenCloseWindow && (
           <Button
             isIconOnly
             variant='light'
@@ -392,12 +409,11 @@ function FloatWindow({ onShutdownModalOpen }) {
 
       {/* Main Content */}
       <div className='flex flex-col gap-2 py-0 grow overflow-y-auto scrollbar-hide'>
-        <div id='mainContentHeadPosition'></div>
         <ClassList
-          schedule={classSchedule}
-          slidingPosition={slidingPosition}
-          timeDisplay={timeDisplay}
-          progressDisplay={progressDisplay}></ClassList>
+          schedule={state.classSchedule}
+          slidingPosition={state.display.slidingPosition}
+          timeDisplay={state.display.timeDisplay}
+          progressDisplay={state.display.progressDisplay}></ClassList>
         {/* Background Picture List */}
         <div className='w-full flex justify-center px-2'>
           <div
@@ -420,7 +436,7 @@ function FloatWindow({ onShutdownModalOpen }) {
                     onClick={handleClick}>
                     {type === 'mixed' ? (
                       <>
-                        {playingMixed ? (
+                        {state.playingMixed ? (
                           <video
                             src={video_url}
                             className='w-full h-full rounded-lg object-contain'
@@ -438,10 +454,13 @@ function FloatWindow({ onShutdownModalOpen }) {
                         )}
                         <button
                           onClick={() => {
-                            setPlayingMixed(!playingMixed);
+                            dispatch({
+                              type: 'SET_PLAYING_MIXED',
+                              payload: !state.playingMixed,
+                            });
                           }}
                           className='z-20 absolute bottom-1 left-1 bg-black/30 text-white/60 text-sm p-1 rounded-full hover:bg-black/40 hover:text-white/80 transition-colors'>
-                          {playingMixed ? (
+                          {state.playingMixed ? (
                             <PauseIcon className='w-4 h-4'></PauseIcon>
                           ) : (
                             <PlayIcon className='w-4 h-4'></PlayIcon>
@@ -490,7 +509,7 @@ function FloatWindow({ onShutdownModalOpen }) {
           aria-label='Settings'>
           <Cog6ToothIcon className='w-5 h-5' />
         </Button>
-        {!hiddenRefreshWindow && (
+        {!state.display.hiddenRefreshWindow && (
           <Button
             isIconOnly
             onPress={() => {
@@ -507,9 +526,12 @@ function FloatWindow({ onShutdownModalOpen }) {
         <Weather />
       </div>
       {/* Background */}
-      <div className='absolute top-0 z-[-1] w-full h-full'>
+      <div
+        className={
+          'absolute top-0 z-[-1] w-full h-full ' + (state.display.useWindowBackgroundMaterial ? 'hidden' : '')
+        }>
         <Image
-          className='object-cover select-none opacity-50 h-full blur-[30px] dis-Experimental-blur-filter'
+          className={`object-cover select-none h-full svg-blur-filter`}
           radius='none'
           removeWrapper={true}
           referrerPolicy='no-referrer'
