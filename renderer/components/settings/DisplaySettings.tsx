@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Switch, Slider, Autocomplete, AutocompleteItem, Tooltip } from '@heroui/react';
-import { SettingsGroup, SettingsItem, SettingsSection } from './SettingsGroup';
+import { SettingsGroup, SettingsItem } from './SettingsGroup';
 import { getConfigSync } from '@renderer/features/p_function';
 import { WindowIcon, PaintBrushIcon, CloudIcon, EyeIcon } from '@heroicons/react/24/outline';
 

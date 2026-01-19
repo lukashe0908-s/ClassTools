@@ -17,7 +17,7 @@ import { CalendarDate, parseDate } from '@internationalized/date';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import { SettingsGroup, SettingsItem, SettingsSection } from '@renderer/components/settings/SettingsGroup';
+import { SettingsGroup, SettingsPage } from '@renderer/components/settings/SettingsGroup';
 
 interface DayChange {
   from: string;
@@ -66,8 +66,8 @@ export default function App() {
   const [newFrom, setNewFrom] = useState(
     `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(
       2,
-      '0'
-    )}`
+      '0',
+    )}`,
   );
   const [newTo, setNewTo] = useState('');
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
@@ -89,65 +89,63 @@ export default function App() {
   };
 
   return (
-    <div className='p-4'>
-      <SettingsSection>
-        <SettingsGroup title='添加替换规则'>
-          <div className='flex flex-wrap gap-5 justify-center'>
-            <div className='flex flex-col items-center'>
-              <span>原始日期</span>
-              <Calendar
-                value={newFrom ? parseDate(newFrom.replaceAll('/', '-')) : undefined}
-                onChange={(date: CalendarDate) =>
-                  setNewFrom(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
-                }
-                className='rounded-md border scrollbar-hide'
-              />
-            </div>
-            <div className='flex flex-col items-center'>
-              <span>替换日期</span>
-              <Calendar
-                value={newTo ? parseDate(newTo.replaceAll('/', '-')) : undefined}
-                onChange={(date: CalendarDate) =>
-                  setNewTo(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
-                }
-                className='rounded-md border scrollbar-hide'
-              />
-            </div>
+    <SettingsPage>
+      <SettingsGroup title='添加替换规则'>
+        <div className='flex flex-wrap gap-5 justify-center'>
+          <div className='flex flex-col items-center'>
+            <span>原始日期</span>
+            <Calendar
+              value={newFrom ? parseDate(newFrom.replaceAll('/', '-')) : undefined}
+              onChange={(date: CalendarDate) =>
+                setNewFrom(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
+              }
+              className='rounded-md border scrollbar-hide'
+            />
           </div>
-          <div className='flex justify-center'>
-            <Button onPress={handleAdd} disabled={!newFrom || !newTo}>
-              <AddOutlinedIcon></AddOutlinedIcon>
-            </Button>
+          <div className='flex flex-col items-center'>
+            <span>替换日期</span>
+            <Calendar
+              value={newTo ? parseDate(newTo.replaceAll('/', '-')) : undefined}
+              onChange={(date: CalendarDate) =>
+                setNewTo(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
+              }
+              className='rounded-md border scrollbar-hide'
+            />
           </div>
-        </SettingsGroup>
+        </div>
+        <div className='flex justify-center'>
+          <Button onPress={handleAdd} disabled={!newFrom || !newTo}>
+            <AddOutlinedIcon></AddOutlinedIcon>
+          </Button>
+        </div>
+      </SettingsGroup>
 
-        <SettingsGroup title='当前替换规则'>
-          <div className='grid gap-2 lg:grid-cols-2'>
-            {rules.length === 0 ? (
-              <p className='text-content3-foreground'>暂无替换规则</p>
-            ) : (
-              rules.map((rule, index) => (
-                <div key={index} className='flex items-center gap-2 w-full'>
-                  <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-md'>{rule.from}</span>
-                  <ArrowForwardIosOutlinedIcon></ArrowForwardIosOutlinedIcon>
-                  <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-md'>{rule.to}</span>
-                  <Button
-                    variant='flat'
-                    isIconOnly
-                    size='sm'
-                    className='text-red-600'
-                    onPress={() => {
-                      // confirmDelete(index);
-                      deleteRule(index);
-                    }}>
-                    <DeleteOutlineOutlinedIcon />
-                  </Button>
-                </div>
-              ))
-            )}
-          </div>
-        </SettingsGroup>
-      </SettingsSection>
+      <SettingsGroup title='当前替换规则'>
+        <div className='grid gap-2 lg:grid-cols-2'>
+          {rules.length === 0 ? (
+            <p className='text-content3-foreground'>暂无替换规则</p>
+          ) : (
+            rules.map((rule, index) => (
+              <div key={index} className='flex items-center gap-2 w-full'>
+                <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-md'>{rule.from}</span>
+                <ArrowForwardIosOutlinedIcon></ArrowForwardIosOutlinedIcon>
+                <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-md'>{rule.to}</span>
+                <Button
+                  variant='flat'
+                  isIconOnly
+                  size='sm'
+                  className='text-red-600'
+                  onPress={() => {
+                    // confirmDelete(index);
+                    deleteRule(index);
+                  }}>
+                  <DeleteOutlineOutlinedIcon />
+                </Button>
+              </div>
+            ))
+          )}
+        </div>
+      </SettingsGroup>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
           <ModalHeader>确认删除</ModalHeader>
@@ -162,6 +160,6 @@ export default function App() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </SettingsPage>
   );
 }
