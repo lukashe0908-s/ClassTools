@@ -8,7 +8,7 @@ export default function App() {
 export function Loading() {
   return (
     <div className='h-full flex justify-center items-center'>
-      <Spinner className='pb-4' label='Loading...' size='lg' color='primary' labelColor='primary' />
+      <Spinner className='pb-4' size='lg' color='primary' labelColor='primary' />
     </div>
   );
 }

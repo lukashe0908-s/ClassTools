@@ -19,7 +19,7 @@ import {
   PowerIcon,
   PlayIcon,
   PauseIcon,
-} from '@heroicons/react/24/solid';
+} from '@heroicons/react/24/outline';
 import UpdateModal from './updateModal';
 import ClassList from './classList';
 import { Weather } from '@renderer/components/weather';
@@ -402,7 +402,7 @@ function MainContent({ onShutdownModalOpen }) {
               window.ipc?.send('close-window');
             }}
             className='ml-auto h-6 w-6 flex items-center justify-center hover:bg-red-600/80! focus:bg-red-600/80! focus:outline-0! '>
-            <XMarkIcon className='w-4 h-4 text-gray-900 dark:text-gray-100' />
+            <XMarkIcon className='w-4 h-4 text-gray-900 dark:text-gray-100'></XMarkIcon>
           </Button>
         )}
       </div>
@@ -507,7 +507,7 @@ function MainContent({ onShutdownModalOpen }) {
             }
           }}
           aria-label='Settings'>
-          <Cog6ToothIcon className='w-5 h-5' />
+          <Cog6ToothIcon className='w-5 h-5'></Cog6ToothIcon>
         </Button>
         {!state.display.hiddenRefreshWindow && (
           <Button
@@ -516,7 +516,7 @@ function MainContent({ onShutdownModalOpen }) {
               window.location.reload();
             }}
             aria-label='Refresh'>
-            <ArrowPathIcon className='w-5 h-5' />
+            <ArrowPathIcon className='w-5 h-5'></ArrowPathIcon>
           </Button>
         )}
         <div className='flex-1'></div>

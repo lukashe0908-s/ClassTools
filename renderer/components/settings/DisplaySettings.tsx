@@ -3,12 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Switch, Slider, Autocomplete, AutocompleteItem, Tooltip } from '@heroui/react';
 import { SettingsGroup, SettingsItem, SettingsSection } from './SettingsGroup';
 import { getConfigSync } from '@renderer/features/p_function';
-import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import CloudIcon from '@mui/icons-material/Cloud';
-import InfoIcon from '@mui/icons-material/Info';
+import { WindowIcon, PaintBrushIcon, CloudIcon, EyeIcon } from '@heroicons/react/24/outline';
 
 export function WindowSettings() {
   const [windowWidth, setWindowWidth] = useState(0.2);
@@ -25,7 +20,7 @@ export function WindowSettings() {
   }, []);
 
   return (
-    <SettingsGroup title='窗口设置' description='调整应用窗口的大小和显示属性' icon={<DesktopWindowsIcon />}>
+    <SettingsGroup title='窗口设置' icon={<WindowIcon className='w-6 h-6'></WindowIcon>}>
       <SettingsItem title='窗口宽度' description={`当前值: ${(windowWidth * 100).toFixed(0)}%`}>
         <div className='w-80'>
           <Slider
@@ -93,7 +88,7 @@ export function AppearanceSettings() {
   }, []);
 
   return (
-    <SettingsGroup title='外观设置' description='自定义应用的视觉显示效果' icon={<TextFieldsIcon />}>
+    <SettingsGroup title='外观设置' icon={<PaintBrushIcon className='w-6 h-6'></PaintBrushIcon>}>
       <SettingsItem title='字体大小' description={`当前值: ${fontSize.toFixed(1)}x`}>
         <div className='w-80'>
           <Slider
@@ -172,7 +167,7 @@ export function AppearanceSettings() {
   );
 }
 
-export function SystemSettings() {
+export function UpgradeSettings() {
   const [online, setOnline] = useState(false);
 
   useEffect(() => {
@@ -183,7 +178,7 @@ export function SystemSettings() {
   }, []);
 
   return (
-    <SettingsGroup title='系统设置' description='配置应用的系统级功能' icon={<CloudIcon />}>
+    <SettingsGroup title='更新设置' icon={<CloudIcon className='w-6 h-6'></CloudIcon>}>
       <SettingsItem
         title='在线模式'
         description={
@@ -222,7 +217,7 @@ export function InterfaceSettings() {
   }, []);
 
   return (
-    <SettingsGroup title='界面元素' description='控制界面按钮和元素的显示' icon={<VisibilityIcon />}>
+    <SettingsGroup title='界面元素' icon={<EyeIcon className='w-6 h-6'></EyeIcon>}>
       <SettingsItem title='隐藏关闭按钮' description='隐藏窗口的关闭按钮'>
         <Switch
           isSelected={hiddenCloseWindow}

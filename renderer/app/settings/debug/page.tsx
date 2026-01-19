@@ -2,7 +2,7 @@
 import { Button, Divider } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { getVersionSync, formatSize, getSysInfoSync } from '@renderer/features/p_function';
-import { SettingsSection, SettingsGroup, SettingsItem } from '@renderer/components/settings/SettingsGroup';
+import { SettingsPage, SettingsGroup, SettingsItem } from '@renderer/components/settings/SettingsGroup';
 import dayjs from 'dayjs';
 
 export default function App() {
@@ -73,121 +73,111 @@ export default function App() {
   }, []);
 
   return (
-    <div className='min-h-screen'>
-      <div className='max-w-4xl mx-auto py-6 px-4'>
-        <div className='mb-8'>
-          <h1 className='text-3xl font-bold mb-2'>调试</h1>
-          <p className='text-content3-foreground'>用于开发与排除错误</p>
-        </div>
-        <SettingsSection>
-          <SettingsGroup title='测试工具'>
-            <SettingsItem title='存储' alignRight={false}>
-              <div className='flex gap-2 flex-wrap'>
-                <Button
-                  color='primary'
-                  variant='bordered'
-                  onPress={() => {
-                    const sw = navigator.serviceWorker;
-                    sw.getRegistrations
-                      ? sw.getRegistrations().then(sws => {
-                          sws.forEach(sw => sw.unregister());
-                        })
-                      : sw.getRegistration?.().then(sw => sw?.unregister());
-                  }}>
-                  移除Service Worker
-                </Button>
-                <Button
-                  color='primary'
-                  variant='bordered'
-                  onPress={() => {
-                    caches.delete('class-tools');
-                    indexedDB.deleteDatabase('workbox-expiration');
-                  }}>
-                  删除Workbox缓存
-                </Button>
-                <Button
-                  color='primary'
-                  variant='bordered'
-                  onPress={async () => {
-                    const allow = await navigator.storage.persist();
-                    alert(`Persist Storage: ${allow ? 'Success' : 'Failed'}`);
-                  }}>
-                  Apply Persist Storage
-                </Button>
-              </div>
-            </SettingsItem>
-            <Divider></Divider>
-            <SettingsItem title='热点' alignRight={false} alignCenter={false}>
-              <div className='flex gap-2 flex-wrap'>
-                <Button
-                  color='primary'
-                  variant='bordered'
-                  onPress={async () => {
-                    const foo = await window.ipc.invoke('runHotspotScript');
-                    setRunHotspotScriptInfo(foo);
-                  }}>
-                  尝试打开
-                </Button>
-                <Button
-                  color='primary'
-                  variant='bordered'
-                  onPress={async () => {
-                    setRunHotspotScriptInfo('');
-                  }}>
-                  清除下方日志
-                </Button>
-              </div>
-              <pre className='whitespace-pre-wrap text-sm pt-2'>{runHotspotScriptInfo}</pre>
-            </SettingsItem>
-            <Divider></Divider>
-            <SettingsItem title='其他' alignRight={false}>
-              <div className='flex gap-2 flex-wrap'>
-                <Button
-                  color='primary'
-                  variant='bordered'
-                  onPress={async () => {
-                    const options = {
-                      enableHighAccuracy: true,
-                      timeout: 5000,
-                      maximumAge: 0,
-                    };
+    <SettingsPage>
+      <SettingsGroup title='测试工具'>
+        <SettingsItem title='存储' justifyBetween={false}>
+          <div className='flex gap-2 flex-wrap'>
+            <Button
+              color='primary'
+              variant='bordered'
+              onPress={() => {
+                const sw = navigator.serviceWorker;
+                sw.getRegistrations
+                  ? sw.getRegistrations().then(sws => {
+                      sws.forEach(sw => sw.unregister());
+                    })
+                  : sw.getRegistration?.().then(sw => sw?.unregister());
+              }}>
+              移除Service Worker
+            </Button>
+            <Button
+              color='primary'
+              variant='bordered'
+              onPress={() => {
+                caches.delete('class-tools');
+                indexedDB.deleteDatabase('workbox-expiration');
+              }}>
+              删除Workbox缓存
+            </Button>
+            <Button
+              color='primary'
+              variant='bordered'
+              onPress={async () => {
+                const allow = await navigator.storage.persist();
+                alert(`Persist Storage: ${allow ? 'Success' : 'Failed'}`);
+              }}>
+              Apply Persist Storage
+            </Button>
+          </div>
+        </SettingsItem>
+        <Divider></Divider>
+        <SettingsItem title='热点' justifyBetween={false} alignCenter={false}>
+          <div className='flex gap-2 flex-wrap'>
+            <Button
+              color='primary'
+              variant='bordered'
+              onPress={async () => {
+                const foo = await window.ipc.invoke('runHotspotScript');
+                setRunHotspotScriptInfo(foo);
+              }}>
+              尝试打开
+            </Button>
+            <Button
+              color='primary'
+              variant='bordered'
+              onPress={async () => {
+                setRunHotspotScriptInfo('');
+              }}>
+              清除下方日志
+            </Button>
+          </div>
+          <pre className='whitespace-pre-wrap text-sm pt-2'>{runHotspotScriptInfo}</pre>
+        </SettingsItem>
+        <Divider></Divider>
+        <SettingsItem title='其他' justifyBetween={false}>
+          <div className='flex gap-2 flex-wrap'>
+            <Button
+              color='primary'
+              variant='bordered'
+              onPress={async () => {
+                const options = {
+                  enableHighAccuracy: true,
+                  timeout: 5000,
+                  maximumAge: 0,
+                };
 
-                    function success(pos) {
-                      const crd = pos.coords;
-                      alert(
-                        `你当前的位置是：\n纬度：${crd.latitude}\n经度：${crd.longitude}\n海拔约 ${crd.accuracy} 米。`
-                      );
-                    }
+                function success(pos) {
+                  const crd = pos.coords;
+                  alert(`你当前的位置是：\n纬度：${crd.latitude}\n经度：${crd.longitude}\n海拔约 ${crd.accuracy} 米。`);
+                }
 
-                    function error(err) {
-                      alert(`错误（${err.code}）：${err.message}`);
-                    }
+                function error(err) {
+                  alert(`错误（${err.code}）：${err.message}`);
+                }
 
-                    navigator.geolocation.getCurrentPosition(success, error, options);
-                  }}>
-                  定位
-                </Button>
-              </div>
-            </SettingsItem>
-          </SettingsGroup>
+                navigator.geolocation.getCurrentPosition(success, error, options);
+              }}>
+              定位
+            </Button>
+          </div>
+        </SettingsItem>
+      </SettingsGroup>
 
-          <SettingsGroup title='系统信息'>
-            <SettingsItem title='版本' alignRight={false}>
-              <pre className='whitespace-pre-wrap text-sm'>{versionInfo}</pre>
-            </SettingsItem>
-            <SettingsItem title='存储使用' alignRight={false}>
-              <pre className='whitespace-pre-wrap text-sm'>{storageInfo}</pre>
-            </SettingsItem>
-            <Divider></Divider>
-            <SettingsItem title='Navigator' alignRight={false} alignCenter={false}>
-              <pre className='whitespace-pre-wrap text-sm'>{navigatorInfo}</pre>
-            </SettingsItem>
-            <SettingsItem title='系统信息' alignRight={false} alignCenter={false}>
-              <pre className='whitespace-pre-wrap text-sm'>{sysInfo}</pre>
-            </SettingsItem>
-          </SettingsGroup>
-        </SettingsSection>
-      </div>
-    </div>
+      <SettingsGroup title='系统信息'>
+        <SettingsItem title='版本' justifyBetween={false}>
+          <pre className='whitespace-pre-wrap text-sm'>{versionInfo}</pre>
+        </SettingsItem>
+        <SettingsItem title='存储使用' justifyBetween={false}>
+          <pre className='whitespace-pre-wrap text-sm'>{storageInfo}</pre>
+        </SettingsItem>
+        <Divider></Divider>
+        <SettingsItem title='Navigator' justifyBetween={false} alignCenter={false}>
+          <pre className='whitespace-pre-wrap text-sm'>{navigatorInfo}</pre>
+        </SettingsItem>
+        <SettingsItem title='系统信息' justifyBetween={false} alignCenter={false}>
+          <pre className='whitespace-pre-wrap text-sm'>{sysInfo}</pre>
+        </SettingsItem>
+      </SettingsGroup>
+    </SettingsPage>
   );
 }

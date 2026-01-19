@@ -4,7 +4,7 @@ import { Switch, Autocomplete, AutocompleteItem } from '@heroui/react';
 import { SettingsGroup, SettingsItem } from '@renderer/components/settings/SettingsGroup';
 import { getConfigSync } from '@renderer/features/p_function';
 import { fetchCityList } from '@renderer/features/weather/xiaomiWeather';
-import { MapPinIcon } from '@heroicons/react/24/outline'; // Heroicons
+import { MapPinIcon } from '@heroicons/react/24/outline';
 
 export default function App() {
   const [useWeather, setUseWeather] = useState(false);
@@ -47,7 +47,7 @@ export default function App() {
   };
 
   return (
-    <SettingsGroup title='天气' icon={<MapPinIcon className='w-6 h-6' />}>
+    <SettingsGroup title='天气' icon={<MapPinIcon className='w-6 h-6'></MapPinIcon>}>
       <SettingsItem title='启用天气' description='开启显示天气功能'>
         <Switch
           isSelected={useWeather}

@@ -1,11 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import { Switch, Button } from '@heroui/react';
-import { SettingsGroup, SettingsItem, SettingsSection } from './SettingsGroup';
+import { SettingsGroup, SettingsItem } from './SettingsGroup';
 import { getConfigSync } from '@renderer/features/p_function';
-import SecurityIcon from '@mui/icons-material/Security';
-import CloudSyncIcon from '@mui/icons-material/CloudSync';
-import BackupIcon from '@mui/icons-material/Backup';
+import { ShieldCheckIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 
 export function DataPrivacySettings() {
@@ -13,7 +11,10 @@ export function DataPrivacySettings() {
   const [cloudBackup, setCloudBackup] = useState(false);
 
   return (
-    <SettingsGroup title='数据隐私' description='管理您的数据收集和隐私设置' icon={<SecurityIcon />}>
+    <SettingsGroup
+      title='数据隐私'
+      description='管理您的数据收集和隐私设置'
+      icon={<ShieldCheckIcon className='w-6 h-6'></ShieldCheckIcon>}>
       <div className='bg-blue-50 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4'>
         <h4 className='font-medium mb-2'>必需诊断数据</h4>
         <p className='text-sm text-content3-foreground'>
@@ -52,7 +53,10 @@ export function BackupSettings() {
   };
 
   return (
-    <SettingsGroup title='数据备份' description='备份和恢复您的应用配置' icon={<BackupIcon />}>
+    <SettingsGroup
+      title='数据备份'
+      description='备份和恢复您的应用配置'
+      icon={<CloudArrowUpIcon className='w-6 h-6'></CloudArrowUpIcon>}>
       <div className='bg-yellow-50 dark:bg-yellow-900/60 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4'>
         <h4 className='font-medium  mb-2'>备份说明</h4>
         <p className='text-sm text-content3-foreground'>

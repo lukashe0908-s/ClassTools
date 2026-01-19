@@ -1,19 +1,13 @@
 'use client';
 import {
-  EditOutlined,
-  BugReportOutlined,
-  ShieldOutlined,
-  SettingsOutlined,
-  DateRangeOutlined,
-  AccessTimeOutlined,
-  FormatColorTextOutlined,
-  AssessmentOutlined,
-  ScienceOutlined,
-  InfoOutlined,
-} from '@mui/icons-material';
+  PencilSquareIcon,
+  CodeBracketIcon,
+  BeakerIcon,
+  InformationCircleIcon,
+  Cog6ToothIcon,
+} from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { Divider } from '@heroui/react';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { SidebarNav, NavNode } from '@renderer/components/SidebarNav';
@@ -22,7 +16,7 @@ const settingsNavNodes: NavNode[] = [
     type: 'group',
     label: '课程管理',
     defaultOpen: true,
-    icon: <EditOutlined fontSize='small'></EditOutlined>,
+    icon: <PencilSquareIcon className='w-5 h-5'></PencilSquareIcon>,
     children: [
       {
         type: 'item',
@@ -62,7 +56,7 @@ const settingsNavNodes: NavNode[] = [
     type: 'group',
     label: '应用配置',
     defaultOpen: true,
-    icon: <SettingsOutlined fontSize='small'></SettingsOutlined>,
+    icon: <CodeBracketIcon className='w-5 h-5'></CodeBracketIcon>,
     children: [
       {
         type: 'item',
@@ -80,7 +74,7 @@ const settingsNavNodes: NavNode[] = [
     type: 'group',
     label: '开发者选项',
     defaultOpen: true,
-    icon: <ScienceOutlined fontSize='small'></ScienceOutlined>,
+    icon: <BeakerIcon className='w-5 h-5'></BeakerIcon>,
     children: [
       {
         type: 'item',
@@ -98,7 +92,7 @@ const settingsNavNodes: NavNode[] = [
     type: 'item',
     label: '关于',
     href: '/settings/about',
-    icon: <InfoOutlined fontSize='small'></InfoOutlined>,
+    icon: <InformationCircleIcon className='w-5 h-5'></InformationCircleIcon>,
   },
 ];
 
@@ -119,7 +113,7 @@ export function SettingsSidebar() {
       options={{ scrollbars: { autoHide: 'move', theme: isDark ? 'os-theme-light' : 'os-theme-dark' } }}>
       <div className='p-2'>
         <div className='flex items-center justify-center gap-2 mb-2'>
-          <SettingsOutlinedIcon className=' text-xl' />
+          <Cog6ToothIcon className='w-6 h-6'></Cog6ToothIcon>
           <span className='font-bold text-2xl'>设置</span>
         </div>
         <Divider className='mb-2' />

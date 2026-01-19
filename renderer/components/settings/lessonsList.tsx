@@ -228,6 +228,7 @@ export function LessonsListTime() {
       <div className='*:mb-4'>
         <Input
           label='学期开始日期'
+          labelPlacement='outside-left'
           className='max-w-xs'
           value={weekStart}
           onChange={e => {

@@ -1,13 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { SettingsGroup, SettingsItem } from './SettingsGroup';
-import InfoIcon from '@mui/icons-material/Info';
-import PersonIcon from '@mui/icons-material/Person';
-import CodeIcon from '@mui/icons-material/Code';
+import { CodeBracketIcon, InformationCircleIcon, UserIcon } from '@heroicons/react/24/outline';
 import { getVersionSync } from '@renderer/features/p_function';
 import dayjs from 'dayjs';
-import { Button } from '@heroui/react';
-import UpdateIcon from '@mui/icons-material/Update';
 
 export function AboutSettings() {
   const [version, setVersion] = useState('1.0.0');
@@ -32,11 +28,11 @@ export function AboutSettings() {
     })();
   }, []);
   return (
-    <SettingsGroup title='关于应用' description='查看应用信息和开发者详情' icon={<InfoIcon />}>
+    <SettingsGroup title='关于应用' icon={<InformationCircleIcon className='w-6 h-6'></InformationCircleIcon>}>
       <div className='bg-blue-50 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-4'>
         <div className='flex items-center gap-4'>
           <div className='w-16 h-16 bg-linear-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center'>
-            <CodeIcon className='text-white text-2xl' />
+            <CodeBracketIcon className='w-10 h-10 text-white'></CodeBracketIcon>
           </div>
           <div>
             <h3 className='text-xl font-bold'>Class Tools</h3>
@@ -45,11 +41,9 @@ export function AboutSettings() {
         </div>
       </div>
 
-      <SettingsItem title='开发者' description='应用开发者信息'>
+      <SettingsItem title='开发者'>
         <div className='flex items-center gap-3'>
-          <div className='w-10 h-10 bg-linear-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center'>
-            <PersonIcon className='text-white' />
-          </div>
+          <UserIcon className='w-10 h-10'></UserIcon>
           <div>
             <div className='font-semibold'>Lukas</div>
             <div className='text-sm text-content3-foreground'>主要开发者</div>
@@ -57,22 +51,14 @@ export function AboutSettings() {
         </div>
       </SettingsItem>
 
-      <SettingsItem title='版本信息' description='当前应用版本和构建信息'>
+      <SettingsItem title='版本'>
         <div className='text-right'>
           <div className='font-mono text-sm'>{version}</div>
           <div className='text-xs text-content3-foreground'>Build {buildVersion}</div>
         </div>
       </SettingsItem>
 
-      <div className='bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 mt-4'>
-        <h4 className='font-medium mb-2'>技术信息</h4>
-        <div className='grid grid-cols-[repeat(auto-fit,minmax(10em,1fr))] gap-4 text-sm'>
-          <div>
-            <span className='text-content3-foreground'>开源:</span>
-            <span className='ml-2 font-mono'>https://github.com/lukashe0908-s/ClassTools</span>
-          </div>
-        </div>
-      </div>
+      <SettingsItem></SettingsItem>
     </SettingsGroup>
   );
 }
