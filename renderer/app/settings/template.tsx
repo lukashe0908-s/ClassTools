@@ -22,8 +22,7 @@ export default function Template({ children }) {
         {/* Sidebar */}
         <aside
           className={`
-            h-full w-64 bg-neutral-100 dark:bg-neutral-900
-            transition-transform duration-300
+            h-full transition-transform duration-300
 
             /* 小屏：抽屉 */
             fixed z-50
