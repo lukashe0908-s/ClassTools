@@ -15,6 +15,11 @@ export function Weather() {
   useEffect(() => {
     let timer: any;
     (async () => {
+      
+      fetchWeather();
+      timer = setInterval(() => fetchWeather(), 10 * 1000);
+
+      
       const useWeather = (await getConfigSync('features.weather.enable')) || false;
       setEnabled(Boolean(useWeather));
 
@@ -64,8 +69,6 @@ export function Weather() {
         }
       };
 
-      fetchWeather();
-      timer = setInterval(() => fetchWeather(), 10 * 1000);
     })();
 
     return () => timer && clearInterval(timer);
