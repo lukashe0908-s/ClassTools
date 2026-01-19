@@ -15,18 +15,6 @@ export function Weather() {
   useEffect(() => {
     let timer: any;
     (async () => {
-      
-      fetchWeather();
-      timer = setInterval(() => fetchWeather(), 10 * 1000);
-
-      
-      const useWeather = (await getConfigSync('features.weather.enable')) || false;
-      setEnabled(Boolean(useWeather));
-
-      const showWeatherFeellike = (await getConfigSync('features.weather.showFeellike')) || true;
-      setShowFeellike(Boolean(showWeatherFeellike));
-
-      if (!Boolean(useWeather)) return;
 
       const fetchWeather = async (force = false) => {
         let requestLocation = (await getConfigSync('features.weather.locationKey')) || 'weathercn:101010100';
@@ -68,6 +56,10 @@ export function Weather() {
           setLoading(false);
         }
       };
+      
+
+      fetchWeather();
+      timer = setInterval(() => fetchWeather(), 10 * 1000);
 
     })();
 
