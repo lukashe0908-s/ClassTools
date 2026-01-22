@@ -8,7 +8,7 @@ import { MapPinIcon } from '@heroicons/react/24/outline';
 
 export default function App() {
   const [useWeather, setUseWeather] = useState(false);
-  const [showWeatherFeelslike, setShowWeatherFeelslike] = useState(true);
+  const [showWeatherFeelslike, setShowWeatherFeelslike] = useState(false);
   const [location, setLocation] = useState<{ key: string; label: string } | null>(null);
   const [cityList, setCityList] = useState<{ key: string; label: string }[]>([]);
   const isFirstRender = useRef(true);
