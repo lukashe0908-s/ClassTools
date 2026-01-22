@@ -10,7 +10,7 @@ export function Weather() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [enabled, setEnabled] = useState(true);
-  const [showFeellike, setShowFeellike] = useState(true);
+  const [showFeelslike, setShowFeelslike] = useState(true);
 
   useEffect(() => {
     let timer: any;
@@ -18,8 +18,8 @@ export function Weather() {
       const useWeather = (await getConfigSync('features.weather.enable')) || false;
       setEnabled(Boolean(useWeather));
 
-      const showWeatherFeellike = (await getConfigSync('features.weather.showFeellike')) || true;
-      setShowFeellike(Boolean(showWeatherFeellike));
+      const showWeatherFeelslike = (await getConfigSync('features.weather.showFeelslike')) || true;
+      setShowFeelslike(Boolean(showWeatherFeelslike));
 
       if (!Boolean(useWeather)) return;
 
@@ -102,7 +102,7 @@ export function Weather() {
       <span className='whitespace-nowrap'>
         {`${weatherName ? `${weatherName} ` : ''}${weather.current.temperature.value}°`}
       </span>
-      {showFeellike && (
+      {showFeelslike && (
         <span className='text-[0.875em] text-gray-300 hidden min-[20em]:inline whitespace-nowrap'>
           体感 {weather.current.feelsLike.value}°
         </span>
