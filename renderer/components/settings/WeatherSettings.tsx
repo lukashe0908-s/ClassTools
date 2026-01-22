@@ -8,7 +8,7 @@ import { MapPinIcon } from '@heroicons/react/24/outline';
 
 export default function App() {
   const [useWeather, setUseWeather] = useState(false);
-  const [showWeatherFeellike, setShowWeatherFeellike] = useState(true);
+  const [showWeatherFeelslike, setShowWeatherFeelslike] = useState(true);
   const [location, setLocation] = useState<{ key: string; label: string } | null>(null);
   const [cityList, setCityList] = useState<{ key: string; label: string }[]>([]);
   const isFirstRender = useRef(true);
@@ -18,8 +18,8 @@ export default function App() {
     (async () => {
       const weatherEnabled = await getConfigSync('features.weather.enable');
       weatherEnabled && setUseWeather(Boolean(weatherEnabled));
-      const showWeatherFeellike = await getConfigSync('features.weather.showFeellike');
-      showWeatherFeellike && setShowWeatherFeellike(Boolean(showWeatherFeellike));
+      const showWeatherFeelslike = await getConfigSync('features.weather.showFeelslike');
+      showWeatherFeelslike && setShowWeatherFeelslike(Boolean(showWeatherFeelslike));
 
       const savedLocationKey = await getConfigSync('features.weather.locationKey');
       const savedLocationLabel = await getConfigSync('features.weather.locationLabel');
@@ -86,11 +86,11 @@ export default function App() {
           </SettingsItem>
           <SettingsItem title='显示体感温度'>
             <Switch
-              isSelected={showWeatherFeellike}
+              isSelected={showWeatherFeelslike}
               onChange={() => {
-                const newValue = !showWeatherFeellike;
-                setShowWeatherFeellike(newValue);
-                window.ipc?.send('set-config', 'features.weather.showFeellike', showWeatherFeellike);
+                const newValue = !showWeatherFeelslike;
+                setShowWeatherFeelslike(newValue);
+                window.ipc?.send('set-config', 'features.weather.showFeelslike', newValue);
               }}
             />
           </SettingsItem>
