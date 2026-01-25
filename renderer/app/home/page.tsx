@@ -19,6 +19,7 @@ import {
   PowerIcon,
   PlayIcon,
   PauseIcon,
+  ArrowUturnLeftIcon,
 } from '@heroicons/react/24/outline';
 import UpdateModal from './updateModal';
 import ClassList from './classList';
@@ -352,7 +353,7 @@ function MainContent({ onShutdownModalOpen }) {
         slidingPosition: ((await getConfigSync('display.slidingPosition')) as any) ?? 'center',
         timeDisplay: ((await getConfigSync('display.timeDisplay')) as any) ?? 'always',
         progressDisplay: ((await getConfigSync('display.progressDisplay')) as any) ?? 'always',
-        hiddenCloseWindow: ((await getConfigSync('display.hidden.closeWindow')) as any) ?? false,
+        hiddenControlBar: ((await getConfigSync('display.hidden.controlBar')) as any) ?? false,
         hiddenRefreshWindow: ((await getConfigSync('display.hidden.refreshWindow')) as any) ?? false,
         useWindowBackgroundMaterial: ((await getConfigSync('display.useWindowBackgroundMaterial')) as any) ?? false,
       };
@@ -392,19 +393,18 @@ function MainContent({ onShutdownModalOpen }) {
         fontSize: fontSize + 'em',
       }}>
       {/* Toolbar */}
-      <div className='flex gap-2 items-center bg-white/40 dark:bg-black/20'>
-        {!state.display.hiddenCloseWindow && (
-          <Button
-            isIconOnly
-            variant='light'
-            radius='none'
-            onPress={() => {
-              window.ipc?.send('close-window');
-            }}
-            className='ml-auto h-6 w-6 flex items-center justify-center hover:bg-red-600/80! focus:bg-red-600/80! focus:outline-0! '>
-            <XMarkIcon className='w-4 h-4 text-gray-900 dark:text-gray-100'></XMarkIcon>
-          </Button>
-        )}
+      <div className={`flex gap-2 items-center bg-white/40 dark:bg-black/20 h-6`}>
+        <Button
+          isIconOnly
+          variant='light'
+          radius='none'
+          onPress={() => {
+            window.ipc?.send('resize-window');
+          }}
+          className='h-6 w-6 flex items-center justify-center'>
+          <ArrowUturnLeftIcon className='w-4 h-4 text-gray-900 dark:text-gray-100'></ArrowUturnLeftIcon>
+        </Button>
+        <span className={`text-sm w-full select-none ${state.display.hiddenControlBar || '[app-region:drag]'}`}>Class Tools</span>
       </div>
 
       {/* Main Content */}
@@ -481,7 +481,7 @@ function MainContent({ onShutdownModalOpen }) {
                     ) : (
                       <Image
                         key={key}
-                        src={image_url ?? null}
+                        src={image_url || null}
                         className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
                         onClick={handleClick}
                         referrerPolicy='no-referrer'
@@ -531,7 +531,7 @@ function MainContent({ onShutdownModalOpen }) {
           'absolute top-0 z-[-1] w-full h-full ' + (state.display.useWindowBackgroundMaterial ? 'hidden' : '')
         }>
         <Image
-          className={`object-cover select-none h-full svg-blur-filter`}
+          className={`object-cover select-none w-full h-full svg-blur-filter`}
           radius='none'
           removeWrapper={true}
           referrerPolicy='no-referrer'

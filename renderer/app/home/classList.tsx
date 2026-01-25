@@ -89,7 +89,7 @@ export default function ClassList({
   }
 
   return (
-    <div className='class-list' ref={containerRef}>
+    <div className='class-list pt-2' ref={containerRef}>
       {!groupedClasses || groupedClasses.length === 0 ? (
         <Card className='mx-2 mb-2 shadow-md bg-white/60 dark:black/40'>
           <div className='text-center py-6 text-neutral-900 font-bold' style={{ fontSize: `min(1.8em,5rem)` }}>

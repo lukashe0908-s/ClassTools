@@ -2,7 +2,7 @@ export type DisplayState = {
   slidingPosition: 'left' | 'center' | 'right';
   timeDisplay: 'always' | 'hover' | 'never';
   progressDisplay: 'always' | 'hover' | 'never';
-  hiddenCloseWindow: boolean;
+  hiddenControlBar: boolean;
   hiddenRefreshWindow: boolean;
   useWindowBackgroundMaterial: boolean; // 新增
 };
@@ -19,7 +19,7 @@ export const initialState: AppState = {
     slidingPosition: 'center',
     timeDisplay: 'always',
     progressDisplay: 'always',
-    hiddenCloseWindow: false,
+    hiddenControlBar: false,
     hiddenRefreshWindow: false,
     useWindowBackgroundMaterial: false,
   },

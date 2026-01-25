@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, ipcMain, screen, BrowserWindow, Menu } from 'electron';
+import { app, ipcMain, screen, BrowserWindow, Menu, nativeTheme } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 import Store from 'electron-store';
@@ -72,7 +72,14 @@ function getProviderPath(params: string) {
     return `http://localhost:${port}${params}`;
   }
 }
-
+function getOverlayStyle() {
+  const isDark = nativeTheme.shouldUseDarkColors;
+  return {
+    color: '#0000',
+    symbolColor: isDark ? '#fff' : '#000',
+    height: 24,
+  };
+}
 function isWindows11() {
   const platform = os.platform();
   const release = os.release();
@@ -100,25 +107,14 @@ function isWindows11() {
     return base;
   })();
 
-  const usebackgroundMaterial = (() => {
-    if (!isWindows11()) return false;
-    if (store.get('display.useWindowBackgroundMaterial') !== true) return false;
-    return true;
-  })();
-  let extendbBckgroundMaterial = {};
-  if (usebackgroundMaterial) {
-    extendbBckgroundMaterial = {
-      backgroundMaterial: 'acrylic',
-    };
-  }
-
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: false,
     },
-    ...extendbBckgroundMaterial,
-    frame: false,
+    title: 'Class Tools',
+    titleBarStyle: 'hidden',
+    titleBarOverlay: getOverlayStyle(),
     width: mainWindowWidth,
     height: mainWindowHeight,
     x: screen.getPrimaryDisplay().workArea.width - mainWindowWidth,
@@ -127,13 +123,22 @@ function isWindows11() {
     resizable: !isProd,
     minimizable: false,
   });
+  mainWindow_g = mainWindow;
+  if (isWindows11() && store.get('display.useWindowBackgroundMaterial') == true) {
+    mainWindow.setBackgroundMaterial('acrylic');
+  }
+  setControlBarHidden();
+  nativeTheme.on('updated', () => {
+    mainWindow?.setTitleBarOverlay(getOverlayStyle());
+  });
   mainWindow.on('close', () => {
     mainWindow_g = undefined;
+    app.exit();
   });
-  mainWindow_g = mainWindow;
   resizeWindow();
   ipcMain.on('set-config', async (event, name, ...arg) => {
     if (name === 'display.windowWidth' || name === 'display.windowHeight') resizeWindow();
+    if (name === 'display.hidden.controlBar') setControlBarHidden();
   });
   screen.addListener('display-metrics-changed', () => {
     resizeWindow();
@@ -158,9 +163,20 @@ function isWindows11() {
         mainWindow.setSize(mainWindowWidth, mainWindowHeight);
         isProd && mainWindow.setResizable(false);
         mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - mainWindowWidth, 0);
+        mainWindow.unmaximize();
       } catch (error) {
         console.error(error);
       }
+    }
+  }
+  function setControlBarHidden(value: boolean | undefined = undefined) {
+    if (typeof value === 'undefined') {
+      const hidden = store.get('display.hidden.controlBar');
+      mainWindow_g.setMaximizable(Boolean(!hidden));
+      mainWindow_g.setClosable(Boolean(!hidden));
+    } else {
+      mainWindow_g.setMaximizable(value);
+      mainWindow_g.setClosable(value);
     }
   }
 
@@ -171,8 +187,10 @@ function isWindows11() {
     await mainWindow.loadURL(getProviderPath('/home'));
   }
   ipcMain.on('close-window', async (event, arg) => {
-    // mainWindow.close();
     app.exit();
+  });
+  ipcMain.on('resize-window', async (event, arg) => {
+    resizeWindow();
   });
 
   // App Custom Start Action
@@ -297,6 +315,7 @@ ipcMain.on('settings-window', async (event, arg) => {
     return;
   }
   const settingsWindow = createWindow('settingsWindow', {
+    title: 'Class Tools',
     width: 1000,
     height: 600,
     webPreferences: {

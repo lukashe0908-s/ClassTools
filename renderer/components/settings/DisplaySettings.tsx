@@ -203,13 +203,13 @@ export function UpgradeSettings() {
 }
 
 export function InterfaceSettings() {
-  const [hiddenCloseWindow, setHiddenCloseWindow] = useState(false);
+  const [hiddenControlBar, setHiddenControlBar] = useState(false);
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const closeData = await getConfigSync('display.hidden.closeWindow');
-      closeData && setHiddenCloseWindow(Boolean(closeData));
+      const closeData = await getConfigSync('display.hidden.controlBar');
+      closeData && setHiddenControlBar(Boolean(closeData));
 
       const refreshData = await getConfigSync('display.hidden.refreshWindow');
       refreshData && setHiddenRefreshWindow(Boolean(refreshData));
@@ -217,18 +217,18 @@ export function InterfaceSettings() {
   }, []);
 
   return (
-    <SettingsGroup title='界面元素' icon={<EyeIcon className='w-6 h-6'></EyeIcon>}>
-      <SettingsItem title='隐藏关闭按钮' description='隐藏窗口的关闭按钮'>
+    <SettingsGroup title='交互设置' icon={<EyeIcon className='w-6 h-6'></EyeIcon>}>
+      <SettingsItem title='禁用控制栏操作'>
         <Switch
-          isSelected={hiddenCloseWindow}
+          isSelected={hiddenControlBar}
           onChange={() => {
-            setHiddenCloseWindow(!hiddenCloseWindow);
-            window.ipc?.send('set-config', 'display.hidden.closeWindow', !hiddenCloseWindow);
+            setHiddenControlBar(!hiddenControlBar);
+            window.ipc?.send('set-config', 'display.hidden.controlBar', !hiddenControlBar);
           }}
         />
       </SettingsItem>
 
-      <SettingsItem title='隐藏刷新按钮' description='隐藏窗口的刷新按钮'>
+      <SettingsItem title='隐藏刷新按钮'>
         <Switch
           isSelected={hiddenRefreshWindow}
           onChange={() => {
