@@ -14,9 +14,7 @@ import {
 import { useEffect, useState } from 'react';
 import { getConfigSync, getAutoLaunchSync } from '@renderer/features/p_function';
 import { SettingsPage, SettingsGroup, SettingsItem } from '@renderer/components/settings/SettingsGroup';
-import AutoModeIcon from '@mui/icons-material/AutoMode';
-import WallpaperIcon from '@mui/icons-material/Wallpaper';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import { ClockIcon, PhotoIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import WeatherSettings from '@renderer/components/settings/WeatherSettings';
 
 export default function App() {
@@ -77,7 +75,7 @@ export default function App() {
 
   return (
     <SettingsPage description={<span className='text-red-400'>这些功能可能不稳定</span>}>
-      <SettingsGroup title='自动化' icon={<AutoModeIcon></AutoModeIcon>}>
+      <SettingsGroup title='自动化' icon={<ClockIcon className='w-6 h-6'></ClockIcon>}>
         <SettingsItem title='开机启动' description={`跟随系统启动此应用${autoLaunchE ? ', ' + autoLaunchE : ''}`}>
           <Switch
             isSelected={autoLaunch}
@@ -115,7 +113,7 @@ export default function App() {
         </SettingsItem>
       </SettingsGroup>
 
-      <SettingsGroup title='背景' icon={<WallpaperIcon></WallpaperIcon>}>
+      <SettingsGroup title='背景' icon={<PhotoIcon className='w-6 h-6'></PhotoIcon>}>
         <SettingsItem title='使用 米哈游 游戏背景' description='从 米哈游启动器API 获取背景'>
           <Switch
             isSelected={useGameBgs}
@@ -152,7 +150,7 @@ export default function App() {
                   </DropdownMenu>
                 </Dropdown>
                 <Button isIconOnly variant='light' isLoading={loadingGames} onPress={fetchGameList} title='刷新列表'>
-                  <RefreshIcon></RefreshIcon>
+                  <ArrowPathIcon className='w-6 h-6'></ArrowPathIcon>
                 </Button>
               </div>
             </SettingsItem>

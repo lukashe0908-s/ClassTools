@@ -14,10 +14,9 @@ import { useEffect, useState } from 'react';
 import * as lodash from 'lodash';
 import { getConfigSync } from '@renderer/features/p_function';
 import { CalendarDate, parseDate } from '@internationalized/date';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { PlusIcon, ArrowRightIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { SettingsGroup, SettingsPage } from '@renderer/components/settings/SettingsGroup';
+import { I18nProvider } from '@react-aria/i18n';
 
 interface DayChange {
   from: string;
@@ -92,30 +91,36 @@ export default function App() {
     <SettingsPage>
       <SettingsGroup title='添加替换规则'>
         <div className='flex flex-wrap gap-5 justify-center'>
-          <div className='flex flex-col items-center'>
-            <span>原始日期</span>
-            <Calendar
-              value={newFrom ? parseDate(newFrom.replaceAll('/', '-')) : undefined}
-              onChange={(date: CalendarDate) =>
-                setNewFrom(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
-              }
-              className='rounded-md border scrollbar-hide'
-            />
-          </div>
-          <div className='flex flex-col items-center'>
-            <span>替换日期</span>
-            <Calendar
-              value={newTo ? parseDate(newTo.replaceAll('/', '-')) : undefined}
-              onChange={(date: CalendarDate) =>
-                setNewTo(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
-              }
-              className='rounded-md border scrollbar-hide'
-            />
-          </div>
+          <I18nProvider locale='zh-CN-u-ca-chinese'>
+            <div className='flex flex-col items-center'>
+              <span>原始日期</span>
+              <Calendar
+                value={newFrom ? parseDate(newFrom.replaceAll('/', '-')) : undefined}
+                onChange={(date: CalendarDate) =>
+                  setNewFrom(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
+                }
+                className='rounded-md border scrollbar-hide'
+                showMonthAndYearPickers={true}
+                firstDayOfWeek='sun'
+              />
+            </div>
+            <div className='flex flex-col items-center'>
+              <span>替换日期</span>
+              <Calendar
+                value={newTo ? parseDate(newTo.replaceAll('/', '-')) : undefined}
+                onChange={(date: CalendarDate) =>
+                  setNewTo(`${date.year}/${String(date.month).padStart(2, '0')}/${String(date.day).padStart(2, '0')}`)
+                }
+                className='rounded-md border scrollbar-hide'
+                showMonthAndYearPickers={true}
+                firstDayOfWeek='sun'
+              />
+            </div>
+          </I18nProvider>
         </div>
         <div className='flex justify-center'>
           <Button onPress={handleAdd} disabled={!newFrom || !newTo}>
-            <AddOutlinedIcon></AddOutlinedIcon>
+            <PlusIcon className='w-6 h-6'></PlusIcon>
           </Button>
         </div>
       </SettingsGroup>
@@ -128,7 +133,7 @@ export default function App() {
             rules.map((rule, index) => (
               <div key={index} className='flex items-center gap-2 w-full'>
                 <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-md'>{rule.from}</span>
-                <ArrowForwardIosOutlinedIcon></ArrowForwardIosOutlinedIcon>
+                <ArrowRightIcon className='w-6 h-6'></ArrowRightIcon>
                 <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-md'>{rule.to}</span>
                 <Button
                   variant='flat'
@@ -139,7 +144,7 @@ export default function App() {
                     // confirmDelete(index);
                     deleteRule(index);
                   }}>
-                  <DeleteOutlineOutlinedIcon />
+                  <TrashIcon className='w-6 h-6'></TrashIcon>
                 </Button>
               </div>
             ))
