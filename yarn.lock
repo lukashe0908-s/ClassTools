@@ -7476,6 +7476,7 @@ __metadata:
     styled-components: "npm:^6.2.0"
     systeminformation: "npm:^5.30.2"
     tailwindcss: "npm:^4.1.18"
+    tree-kill: "npm:^1.2.2"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.9.3"
     workbox-build: "npm:^7.4.0"
@@ -12879,6 +12880,15 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.0"
   checksum: 10c0/41525c2ccce86e3ef30af6fa5e1464e6d8bb4286a58ea8db09228f598889581ef62347153f6636cd41553dc41685bdfad0a9d032ef58df9fbb0792b3447d0f04
+  languageName: node
+  linkType: hard
+
+"tree-kill@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "tree-kill@npm:1.2.2"
+  bin:
+    tree-kill: cli.js
+  checksum: 10c0/7b1b7c7f17608a8f8d20a162e7957ac1ef6cd1636db1aba92f4e072dc31818c2ff0efac1e3d91064ede67ed5dc57c565420531a8134090a12ac10cf792ab14d2
   languageName: node
   linkType: hard
 

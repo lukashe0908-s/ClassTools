@@ -6,6 +6,7 @@ import { getNextronConfig } from './configs/getNextronConfig';
 import { config } from './configs/webpack.config.development';
 import { waitForPort } from 'get-port-please';
 import type { ChildProcess } from 'child_process';
+import treeKill from 'tree-kill';
 
 const args = arg({
   '--renderer-port': Number,
@@ -26,14 +27,14 @@ if (args['--port']) {
 
 if (args['--remote-debugging-port']) {
   logger.error(
-    `The option \`--remote-debugging-port\` has been removed. Please use \`--electron-options="--remote-debugging-port=${args['--remote-debugging-port']}"\` instead.`
+    `The option \`--remote-debugging-port\` has been removed. Please use \`--electron-options="--remote-debugging-port=${args['--remote-debugging-port']}"\` instead.`,
   );
   process.exit(1);
 }
 
 if (args['--inspect']) {
   logger.error(
-    `The option \`--inspect\` has been removed. Please use \`--electron-options="--inspect=${args['--inspect']}"\` instead.`
+    `The option \`--inspect\` has been removed. Please use \`--electron-options="--inspect=${args['--inspect']}"\` instead.`,
   );
   process.exit(1);
 }
@@ -87,16 +88,22 @@ const execaOptions: execa.Options = {
     return child;
   };
 
+  const killProcess = (proc?: ChildProcess) => {
+    if (!proc || !proc.pid) return;
+
+    treeKill(proc.pid, 'SIGTERM', err => {
+      if (err) {
+        console.error('Failed to kill process tree:', err);
+      }
+    });
+  };
   const killWholeProcess = () => {
     if (watching) {
       watching.close(() => {});
     }
-    if (mainProcess) {
-      mainProcess.kill();
-    }
-    if (rendererProcess) {
-      rendererProcess.kill();
-    }
+
+    killProcess(mainProcess);
+    killProcess(rendererProcess);
   };
 
   process.on('SIGINT', killWholeProcess);
