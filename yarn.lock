@@ -7623,6 +7623,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@heroicons/react": "npm:^2.2.0"
     "@heroui/react": "npm:^2.8.7"
+    "@internationalized/date": "npm:^3.10.1"
     "@mui/icons-material": "npm:^7.3.7"
     "@mui/material": "npm:^7.3.7"
     "@sentry/electron": "npm:^7.5.0"
@@ -7643,7 +7644,6 @@ __metadata:
     electron: "npm:^39.2.7"
     electron-builder: "npm:26.4.0"
     electron-context-menu: "npm:^4.1.1"
-    electron-log: "npm:^5.4.3"
     electron-serve: "npm:^3.0.0"
     electron-store: "npm:^11.0.2"
     electron-updater: "npm:6.7.3"
@@ -8623,13 +8623,6 @@ __metadata:
   version: 3.0.1
   resolution: "electron-is-dev@npm:3.0.1"
   checksum: 10c0/80d37d61d44b8b7af0af90eab622b09e0f165afbc2560297c760356efa93fcb54dbbd13d4d6522da6474e261d630b76b804c86385564a1f3062d28fc59c340bd
-  languageName: node
-  linkType: hard
-
-"electron-log@npm:^5.4.3":
-  version: 5.4.3
-  resolution: "electron-log@npm:5.4.3"
-  checksum: 10c0/84d398d2a53cd73fdd1118f7b376b08d74938c79cb4aa3454aa176b61ebf1522f5cc92179355e69e0053301df7a19fbe6cf302319e5fbe5fc6a1600f282a2646
   languageName: node
   linkType: hard
 

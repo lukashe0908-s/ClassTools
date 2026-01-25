@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { SettingsGroup, SettingsItem } from './SettingsGroup';
-import { CodeBracketIcon, InformationCircleIcon, UserIcon } from '@heroicons/react/24/outline';
+import { CodeBracketIcon, InformationCircleIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { getVersionSync } from '@renderer/features/p_function';
 import dayjs from 'dayjs';
 
@@ -43,7 +43,7 @@ export function AboutSettings() {
 
       <SettingsItem title='开发者'>
         <div className='flex items-center gap-3'>
-          <UserIcon className='w-10 h-10'></UserIcon>
+          <UserCircleIcon className='w-10 h-10'></UserCircleIcon>
           <div>
             <div className='font-semibold'>Lukas</div>
             <div className='text-sm text-content3-foreground'>主要开发者</div>

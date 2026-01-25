@@ -1,6 +1,6 @@
 appId: org.eu.lukass.class-tools
 productName: Class Tools
-copyright: Copyright © 2025 Lukas
+copyright: Copyright © 2026 Lukas
 directories:
   output: build/dist
   buildResources: resources

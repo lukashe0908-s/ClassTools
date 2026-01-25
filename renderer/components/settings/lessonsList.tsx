@@ -8,17 +8,20 @@ import {
   TableRow,
   TableCell,
   Input,
-  Textarea,
   Button,
   Divider,
-  CircularProgress,
+  Spinner,
   getKeyValue,
-  Checkbox,
   Accordion,
   AccordionItem,
-  Switch,
+  Dropdown,
+  DropdownItem,
+  DropdownTrigger,
+  DropdownMenu,
+  TimeInput,
 } from '@heroui/react';
-import dayjs from 'dayjs';
+import { Time } from '@internationalized/date';
+
 import { OverlayScrollbars } from 'overlayscrollbars';
 import { getConfigSync } from '@renderer/features/p_function';
 
@@ -72,7 +75,7 @@ const formattedColumns = columns.map(column => ({
   editable: true,
 }));
 
-function List({ rows, setRows, children, isEditMode = false }) {
+function List({ rows, setRows, children, isStriped = true }) {
   const refTable = useRef(null);
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
@@ -87,7 +90,7 @@ function List({ rows, setRows, children, isEditMode = false }) {
     <>
       <div className='*:mb-4'>
         <Table
-          isStriped
+          isStriped={isStriped}
           isHeaderSticky
           aria-label=' '
           ref={refTable}
@@ -96,7 +99,7 @@ function List({ rows, setRows, children, isEditMode = false }) {
             wrapper: 'rounded-none !p-0 scrollbar-hide',
             thead: 'z-[11]',
           }}
-          isKeyboardNavigationDisabled={isEditMode}>
+          isKeyboardNavigationDisabled={true}>
           <TableHeader>
             {columns.map(column => (
               <TableColumn key={column.id}>{column.label}</TableColumn>
@@ -158,7 +161,7 @@ export function LessonsListName() {
 
   return (
     <>
-      <List rows={rows} setRows={setRows} isEditMode={true}>
+      <List rows={rows} setRows={setRows}>
         {(row, rowIndex, columnKey) => {
           return (
             <CustomTextarea
@@ -198,6 +201,28 @@ export function LessonsListTime() {
   const [isLoading2, setIsLoading2] = useState(true);
   const [rows, setRows] = useState([{}]) as any;
   const [weekStart, setWeekStart] = useState('') as any;
+  const [contextMenu, setContextMenu] = useState<{
+    open: boolean;
+    rowIndex: number | null;
+    columnKey: string | null;
+    addDivide?: boolean;
+  }>({
+    open: false,
+    rowIndex: null,
+    columnKey: null,
+  });
+
+  const stringToTime = (value?: string) => {
+    if (!value) return null;
+    const [h, m] = value.split(':').map(Number);
+    return new Time(h, m);
+  };
+
+  const timeToString = (value: any) => {
+    if (!value) return null;
+    return `${value.hour.toString().padStart(2, '0')}:${value.minute.toString().padStart(2, '0')}`;
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -216,16 +241,16 @@ export function LessonsListTime() {
   }, []);
   return (
     <>
-      {(() => {
-        if (isLoading || isLoading2) {
-          return (
-            <div className='fixed w-full h-full bg-white z-50 flex justify-center items-center'>
-              <CircularProgress size='lg' label='Loading...' className='-translate-x-unit-20' />
-            </div>
-          );
-        }
-      })()}
-      <div className='*:mb-4'>
+      <div className='*:mb-4 relative min-h-full'>
+        {(() => {
+          if (isLoading || isLoading2) {
+            return (
+              <div className='absolute w-full bg-background h-full z-50 flex justify-center items-center'>
+                <Spinner size='lg' />
+              </div>
+            );
+          }
+        })()}
         <Input
           label='学期开始日期'
           labelPlacement='outside-left'
@@ -236,110 +261,134 @@ export function LessonsListTime() {
             setWeekStart(e.target.value);
           }}></Input>
         <div>
-          <List rows={rows} setRows={setRows} isEditMode={true}>
+          <List rows={rows} setRows={setRows} isStriped={false}>
             {(row, rowIndex, columnKey) => {
-              let context: { [key: string]: string } | undefined = getKeyValue(row, columnKey);
+              const context = getKeyValue(row, columnKey);
               const startTime = context?.start;
               const endTime = context?.end;
               const addDivide = context?.divide;
+
               return (
                 <div
                   className='flex flex-col gap-1'
-                  onContextMenu={event => {
-                    event.preventDefault();
-                    window.ipc?.send('showContextMenu_listTime', addDivide);
-                    window.ipc?.once('showContextMenu_listTime', (action, ...args) => {
-                      switch (action) {
-                        case 'divide':
-                          let checked = args[0];
-                          if (checked) {
-                            let new_rows = [...rows];
-                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
-                            new_rows[rowIndex][columnKey].divide = checked;
-                            window.ipc?.send('set-config', 'lessonsList.time', new_rows);
-                            setRows(new_rows);
-                          } else {
-                            if (rows[rowIndex][columnKey] && rows[rowIndex][columnKey].divide) {
-                              let new_rows = [...rows];
-                              delete new_rows[rowIndex][columnKey].divide;
-                              window.ipc?.send('set-config', 'lessonsList.time', new_rows);
-                              setRows(new_rows);
-                            }
-                          }
-                          break;
-                        case 'clear':
-                          let new_rows = [...rows];
-                          delete new_rows[rowIndex][columnKey];
-                          window.ipc?.send('set-config', 'lessonsList.time', new_rows);
-                          setRows(new_rows);
-                          break;
-
-                        default:
-                          break;
-                      }
+                  onContextMenu={e => {
+                    e.preventDefault();
+                    setContextMenu({
+                      open: true,
+                      rowIndex,
+                      columnKey,
+                      addDivide,
                     });
                   }}>
-                  <LessonsListTime_TimeDisplayer
-                    time={startTime}
-                    onChange={e => {
-                      const time = dayjs('1970-1-1 ' + e.target.value).format('HH:mm');
-                      if (time == 'Invalid Date') return;
+                  <TimeInput
+                    hourCycle={24}
+                    label='开始'
+                    value={stringToTime(startTime)}
+                    onChange={value => {
+                      const time = timeToString(value);
+
                       let new_rows = [...rows];
-                      if (time && e.target.value !== '') {
+
+                      if (time) {
                         if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
                         new_rows[rowIndex][columnKey].start = time;
                       } else {
-                        delete new_rows[rowIndex][columnKey];
+                        delete new_rows[rowIndex][columnKey]?.start;
                       }
+
+                      // ===== 你原本的尾部清理逻辑 =====
                       let finished_delete = false;
                       for (let i = 0; i < new_rows.length; i++) {
                         const element = new_rows[new_rows.length - 1 - i];
                         if (!finished_delete) {
-                          if (Object.keys(element).length == 0) {
+                          if (Object.keys(element).length === 0) {
                             new_rows[new_rows.length - 1 - i] = undefined;
                           } else {
                             finished_delete = true;
                           }
                         }
                       }
-                      new_rows = new_rows.filter(value => value != undefined);
+                      new_rows = new_rows.filter(v => v != undefined);
                       new_rows.push({});
+
                       window.ipc?.send('set-config', 'lessonsList.time', new_rows);
                       setRows(new_rows);
-                    }}>
-                    Start Time
-                  </LessonsListTime_TimeDisplayer>
-                  <LessonsListTime_TimeDisplayer
-                    time={endTime}
-                    onChange={e => {
-                      const time = dayjs('1970-1-1 ' + e.target.value).format('HH:mm');
-                      if (time == 'Invalid Date') return;
+                    }}
+                  />
+
+                  <TimeInput
+                    hourCycle={24}
+                    label='结束'
+                    value={stringToTime(endTime)}
+                    onChange={value => {
+                      const time = timeToString(value);
+
                       let new_rows = [...rows];
-                      if (time && e.target.value !== '') {
+
+                      if (time) {
                         if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
-                        new_rows[rowIndex][columnKey]['end'] = time;
+                        new_rows[rowIndex][columnKey].end = time;
                       } else {
-                        delete new_rows[rowIndex][columnKey]['end'];
+                        delete new_rows[rowIndex][columnKey]?.end;
                       }
+
+                      // ===== 同样的尾部清理 =====
                       let finished_delete = false;
                       for (let i = 0; i < new_rows.length; i++) {
                         const element = new_rows[new_rows.length - 1 - i];
                         if (!finished_delete) {
-                          if (Object.keys(element).length == 0) {
+                          if (Object.keys(element).length === 0) {
                             new_rows[new_rows.length - 1 - i] = undefined;
                           } else {
                             finished_delete = true;
                           }
                         }
                       }
-                      new_rows = new_rows.filter(value => value != undefined);
+                      new_rows = new_rows.filter(v => v != undefined);
                       new_rows.push({});
+
                       window.ipc?.send('set-config', 'lessonsList.time', new_rows);
                       setRows(new_rows);
-                    }}>
-                    End Time
-                  </LessonsListTime_TimeDisplayer>
-                  {addDivide ? <Divider></Divider> : <></>}
+                    }}
+                  />
+
+                  {addDivide && <Divider />}
+                  <Dropdown
+                    isOpen={
+                      contextMenu.open && contextMenu.rowIndex === rowIndex && contextMenu.columnKey === columnKey
+                    }
+                    onOpenChange={open => setContextMenu(prev => ({ ...prev, open }))}>
+                    <DropdownTrigger>
+                      <div></div>
+                    </DropdownTrigger>
+
+                    {/* ===== 右键菜单 ===== */}
+                    <DropdownMenu
+                      aria-label='Time Context Menu'
+                      onAction={key => {
+                        let new_rows = [...rows];
+
+                        switch (key) {
+                          case 'divide':
+                            if (!new_rows[rowIndex][columnKey]) new_rows[rowIndex][columnKey] = {};
+                            new_rows[rowIndex][columnKey].divide = !new_rows[rowIndex][columnKey].divide;
+                            break;
+
+                          case 'clear':
+                            delete new_rows[rowIndex][columnKey];
+                            break;
+                        }
+
+                        window.ipc?.send('set-config', 'lessonsList.time', new_rows);
+                        setRows(new_rows);
+                        setContextMenu(prev => ({ ...prev, open: false }));
+                      }}>
+                      <DropdownItem key='divide'>{addDivide ? '取消分割线' : '添加分割线'}</DropdownItem>
+                      <DropdownItem key='clear' className='text-danger'>
+                        清空
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               );
             }}
@@ -380,7 +429,7 @@ export function LessonsListTime() {
                 <Button
                   color='danger'
                   variant='faded'
-                  onClick={() => {
+                  onPress={() => {
                     const rows_ = [];
                     for (const key in rows) {
                       const element = rows[key];

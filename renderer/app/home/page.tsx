@@ -481,7 +481,7 @@ function MainContent({ onShutdownModalOpen }) {
                     ) : (
                       <Image
                         key={key}
-                        src={image_url ?? ''}
+                        src={image_url ?? null}
                         className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
                         onClick={handleClick}
                         referrerPolicy='no-referrer'
