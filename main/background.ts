@@ -259,7 +259,7 @@ ipcMain.on('autoUpdater/quitAndInstall', () => {
 ipcMain.handle('get-config', async (event, name: string) => {
   return store.get(name);
 });
-ipcMain.on('set-config', async (event, name: string, value: any) => {
+ipcMain.handle('set-config', async (event, name: string, value: any) => {
   store.set(name, value);
   mainWindow_g.webContents.send('sync-config', name);
 
