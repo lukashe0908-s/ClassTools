@@ -1,6 +1,6 @@
 'use client';
 import React, { ReactNode } from 'react';
-import { Card, CardBody, CardHeader, Divider } from '@heroui/react';
+import { Card, Separator } from '@heroui/react';
 
 export function SettingsGroup({
   title,
@@ -17,7 +17,7 @@ export function SettingsGroup({
     <Card className='w-full shadow-sm border border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-100 dark:bg-neutral-950'>
       {title ? (
         <>
-          <CardHeader className='flex gap-3 px-6 py-4'>
+          <Card.Header className='flex gap-3 px-6 py-4'>
             <div className='flex items-center gap-3'>
               {icon && <div className='shrink-0'>{icon}</div>}
               <div className='flex flex-col'>
@@ -25,15 +25,15 @@ export function SettingsGroup({
                 {description && <p className='text-sm text-content3-foreground whitespace-pre-wrap'>{description}</p>}
               </div>
             </div>
-          </CardHeader>
-          <Divider className='mx-6' />
+          </Card.Header>
+          <Separator className='mx-6' />
         </>
       ) : (
         ''
       )}
-      <CardBody className='px-6 py-5'>
+      <Card.Content className='px-6 py-5'>
         <div className='space-y-4'>{children}</div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 }

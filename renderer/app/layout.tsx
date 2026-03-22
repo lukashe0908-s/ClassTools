@@ -1,11 +1,11 @@
 'use client';
+
 import { useEffect } from 'react';
 // @ts-ignore
 import '@renderer/styles/globals.css';
 // @ts-ignore
 import 'overlayscrollbars/overlayscrollbars.css';
-import { addToast } from '@heroui/react';
-import { ToastProvider } from '@heroui/toast';
+import { Toast, toast } from '@heroui/react';
 import * as Sentry from '@sentry/electron/renderer';
 import * as SentryReact from '@sentry/react';
 import { Providers } from './providers';
@@ -38,13 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     window.alert = function (...args: any[1]) {
       console.log('[Alert]', args[0]);
-      addToast({
-        hideIcon: false,
-        color: 'primary',
+      toast('', {
+        variant: 'default',
         description: args[0],
-        classNames: {
-          description: 'whitespace-pre-wrap',
-        },
       });
       return true;
     };
@@ -59,8 +55,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <meta name='viewport' content='width=device-width, initial-scale=1.0' />
         </head>
         <body className='h-full'>
-          <ToastProvider />
-          <Providers>{children}</Providers>
+          <Toast.Provider className={'whitespace-pre-wrap'} />
+          {/* <Providers>{children}</Providers> */}
+          {children}
         </body>
       </html>
     </>

@@ -1,16 +1,7 @@
 'use client';
+
 import { useEffect, useState, useRef, useLayoutEffect, useReducer } from 'react';
-import {
-  Button,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-  Image,
-  Skeleton,
-} from '@heroui/react';
+import { Button, Modal, Skeleton } from '@heroui/react';
 import {
   Cog6ToothIcon,
   ArrowPathIcon,
@@ -29,8 +20,6 @@ import { generateConfig } from '@renderer/features/p_function';
 import { reducer, initialState as reducerInitialState } from './reducer';
 
 export default function HomePage() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
   useEffect(() => {
     const serviceWorkerScope = `/workbox-sw.js`;
     navigator.serviceWorker &&
@@ -48,45 +37,12 @@ export default function HomePage() {
   return (
     <>
       <title>Class Tools</title>
-      <Modal isOpen={isOpen} placement={'bottom'} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {onClose => (
-            <>
-              <ModalHeader className='flex flex-col gap-1'>确认关机</ModalHeader>
-              <ModalBody>
-                <p className='text-content3-foreground text-sm'>关闭所有应用，然后关闭电脑。</p>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  color='default'
-                  variant='light'
-                  onPress={onClose}
-                  className='min-w-1'
-                  radius='full'
-                  fullWidth={true}>
-                  <XMarkIcon className='w-5 h-5'></XMarkIcon>取消
-                </Button>
-                <Button
-                  color='danger'
-                  className='min-w-1'
-                  radius='full'
-                  fullWidth={true}
-                  onPress={() => {
-                    window.ipc?.send('sys-shutdown');
-                  }}>
-                  <CheckIcon className='w-5 h-5'></CheckIcon>确认
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-      <MainContent onShutdownModalOpen={onOpen}></MainContent>
-      <UpdateModal></UpdateModal>
+      <MainContent></MainContent>
+      {/* <UpdateModal></UpdateModal> */}
     </>
   );
 }
-function MainContent({ onShutdownModalOpen }) {
+function MainContent() {
   const [wallpapers, setWallpapers] = useState([]);
   const [wallpapersLoading, setWallpapersLoading] = useState(true);
   const [currentWallpaper, setCurrentWallpaper] = useState<string | null>(null);
@@ -397,13 +353,12 @@ function MainContent({ onShutdownModalOpen }) {
       <div className={`flex gap-2 items-center bg-white/40 dark:bg-black/20 h-6`}>
         <Button
           isIconOnly
-          variant='light'
-          radius='none'
+          variant='ghost'
           onPress={() => {
             window.ipc?.send('resize-window');
           }}
           className='h-6 w-6 flex items-center justify-center'>
-          <ArrowUturnLeftIcon className='w-4 h-4 text-gray-900 dark:text-gray-100'></ArrowUturnLeftIcon>
+          <ArrowUturnLeftIcon className='w-4 h-4 text-neutral-900 dark:text-neutral-100'></ArrowUturnLeftIcon>
         </Button>
         <span className={`text-sm w-full select-none ${state.display.hiddenControlBar || '[app-region:drag]'}`}>
           Class Tools
@@ -449,7 +404,7 @@ function MainContent({ onShutdownModalOpen }) {
                             playsInline
                           />
                         ) : (
-                          <Image
+                          <img
                             src={image_url}
                             className='w-full h-full rounded-lg object-contain'
                             referrerPolicy='no-referrer'
@@ -482,7 +437,7 @@ function MainContent({ onShutdownModalOpen }) {
                         playsInline
                       />
                     ) : (
-                      <Image
+                      <img
                         key={key}
                         src={image_url || null}
                         className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
@@ -501,6 +456,8 @@ function MainContent({ onShutdownModalOpen }) {
       {/* Footer */}
       <div className='flex gap-1 items-center bg-white/40 dark:bg-black/10 p-1 rounded-lg shrink-0 overflow-x-auto'>
         <Button
+          variant='tertiary'
+          className='rounded-xl'
           isIconOnly
           onPress={() => {
             if (window.ipc) {
@@ -514,6 +471,8 @@ function MainContent({ onShutdownModalOpen }) {
         </Button>
         {!state.display.hiddenRefreshWindow && (
           <Button
+            variant='tertiary'
+            className='rounded-xl'
             isIconOnly
             onPress={() => {
               window.location.reload();
@@ -523,9 +482,36 @@ function MainContent({ onShutdownModalOpen }) {
           </Button>
         )}
         <div className='flex-1'></div>
-        <Button className='font-bold' onPress={onShutdownModalOpen} isIconOnly={true}>
-          <PowerIcon className='w-5 h-5'></PowerIcon>
-        </Button>
+        <Modal>
+          <Button variant='tertiary' className='rounded-xl' isIconOnly={true}>
+            <PowerIcon className='w-5 h-5'></PowerIcon>
+          </Button>
+          <Modal.Backdrop>
+            <Modal.Container placement='bottom'>
+              <Modal.Dialog>
+                <Modal.Header>
+                  <Modal.Heading>确认关机</Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>关闭所有应用，然后关闭电脑。</Modal.Body>
+                <Modal.Footer>
+                  <Button className='min-w-1' fullWidth={true} slot='close'>
+                    <XMarkIcon className='w-5 h-5'></XMarkIcon>取消
+                  </Button>
+                  <Button
+                    variant='danger'
+                    className='min-w-1'
+                    fullWidth={true}
+                    slot='close'
+                    onPress={() => {
+                      window.ipc?.send('sys-shutdown');
+                    }}>
+                    <CheckIcon className='w-5 h-5'></CheckIcon>确认
+                  </Button>
+                </Modal.Footer>
+              </Modal.Dialog>
+            </Modal.Container>
+          </Modal.Backdrop>
+        </Modal>
         <Weather />
       </div>
       {/* Background */}
@@ -533,10 +519,8 @@ function MainContent({ onShutdownModalOpen }) {
         className={
           'absolute top-0 z-[-1] w-full h-full ' + (state.display.useWindowBackgroundMaterial ? 'hidden' : '')
         }>
-        <Image
+        <img
           className={`object-cover select-none w-full h-full svg-blur-filter`}
-          radius='none'
-          removeWrapper={true}
           referrerPolicy='no-referrer'
           draggable='false'
           src={currentWallpaper || null}

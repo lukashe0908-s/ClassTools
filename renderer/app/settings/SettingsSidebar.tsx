@@ -7,7 +7,7 @@ import {
   Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
-import { Divider } from '@heroui/react';
+import { Separator } from '@heroui/react';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { SidebarNav, NavNode } from '@renderer/components/SidebarNav';
@@ -109,14 +109,14 @@ export function SettingsSidebar() {
   return (
     <OverlayScrollbarsComponent
       defer
-      className='overflow-auto scrollbar-hide border-r border-[hsl(var(--heroui-divider)/.15)] min-w-50 bg-white dark:bg-[#0a0a0a]'
+      className='overflow-auto scrollbar-hide border-r min-w-50 bg-white dark:bg-[#0a0a0a]'
       options={{ scrollbars: { autoHide: 'move', theme: isDark ? 'os-theme-light' : 'os-theme-dark' } }}>
       <div className='p-2'>
         <div className='flex items-center justify-center gap-2 mb-2'>
           <Cog6ToothIcon className='w-6 h-6'></Cog6ToothIcon>
           <span className='font-bold text-2xl'>设置</span>
         </div>
-        <Divider className='mb-2' />
+        <Separator className='mb-2' />
 
         <SidebarNav nodes={settingsNavNodes} className='min-w-50 pr-1' />
       </div>

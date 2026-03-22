@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  addToast,
+  toast,
   Button,
   Modal,
   ModalContent,
@@ -10,7 +10,6 @@ import {
   ModalBody,
   ModalFooter,
   Progress,
-  useDisclosure,
 } from '@heroui/react';
 import { getConfigSync } from '@renderer/features/ipc/config';
 

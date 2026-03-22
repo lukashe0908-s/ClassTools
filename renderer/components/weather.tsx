@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Skeleton, Image } from '@heroui/react';
+import { Skeleton } from '@heroui/react';
 import { getConfigSync } from '@renderer/features/ipc/config';
 import { getXiaomiWeatherName, getXiaomiWeatherIcon, timeIsNight } from '@renderer/features/weather/convertor';
 import { fetchTotalWeather } from '@renderer/features/weather/xiaomiWeather';
@@ -91,21 +91,16 @@ export function Weather() {
 
   return (
     <div
-      className='flex gap-1 items-center bg-primary-400 text-primary-foreground px-3 py-2 rounded-lg cursor-pointer select-none'
+      className='flex gap-1 items-center bg-accent text-accent-foreground px-3 py-2 rounded-lg cursor-pointer select-none'
       onClick={handleClick}>
       {weatherIcon && (
-        <Image
-          src={`/static/weatherIcons/${weatherIcon}.webp`}
-          radius='none'
-          className='w-[1.5em] shrink-0'
-          removeWrapper={true}
-          draggable={false}></Image>
+        <img src={`/static/weatherIcons/${weatherIcon}.webp`} className='w-[1.5em] shrink-0' draggable={false}></img>
       )}
       <span className='whitespace-nowrap'>
         {`${weatherName ? `${weatherName} ` : ''}${weather.current.temperature.value}°`}
       </span>
       {showFeelslike && (
-        <span className='text-[0.875em] text-gray-300 hidden min-[20em]:inline whitespace-nowrap'>
+        <span className='text-[0.875em] text-neutral-300 hidden min-[20em]:inline whitespace-nowrap'>
           体感 {weather.current.feelsLike.value}°
         </span>
       )}

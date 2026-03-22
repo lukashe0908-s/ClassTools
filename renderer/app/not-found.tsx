@@ -8,7 +8,7 @@ export default function NotFound() {
       <title>Not Found</title>
       <div className='h-full flex items-center justify-center px-4'>
         <main className='flex flex-col items-center max-w-xl'>
-          <SearchXIcon className='text-[3rem] mb-4 w-[1em] h-[1em] text-primary-600'></SearchXIcon>
+          <SearchXIcon className='text-[3rem] mb-4 w-[1em] h-[1em] text-accent'></SearchXIcon>
           <h1 className='text-[3rem] font-semibold mb-3 leading-[1.1] tracking-[-0.15rem]'>404 Not Found</h1>
           <p className='text-left mb-9 leading-6 whitespace-pre-line'>
             {`The requested URL was not found on this server.\nThat's all we know.`}
@@ -18,21 +18,13 @@ export default function NotFound() {
               onPress={() => {
                 location.href = '/home';
               }}
-              radius='full'
               size='lg'
-              variant='solid'
-              color='primary'
+              variant='primary'
               className='text-lg'>
               <HouseIcon className='w-[1em] h-[1em]'></HouseIcon>
               Home
             </Button>
-            <Button
-              onPress={() => history.back()}
-              radius='full'
-              size='lg'
-              variant='light'
-              color='primary'
-              className='border-3 text-lg'>
+            <Button onPress={() => history.back()} size='lg' variant='ghost' className='border-3 text-lg'>
               <ArrowLeftIcon className='w-[1em] h-[1em]'></ArrowLeftIcon>
               Back
             </Button>

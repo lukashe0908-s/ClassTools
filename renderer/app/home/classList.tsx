@@ -1,13 +1,8 @@
 import { useEffect, useRef, useState, Fragment } from 'react';
-import { Card, CardBody, CardHeader, Divider, Progress } from '@heroui/react';
+import { Card, Separator, ProgressBar } from '@heroui/react';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import {
-  getChangeDay,
-  getWeekNumber,
-  getWeekDate,
-  listClassesForDay,
-} from '@renderer/features/p_function';
+import { getChangeDay, getWeekNumber, getWeekDate, listClassesForDay } from '@renderer/features/p_function';
 
 export default function ClassList({
   schedule,
@@ -89,18 +84,18 @@ export default function ClassList({
 
   return (
     <div className='class-list pt-2' ref={containerRef}>
-      {!groupedClasses || groupedClasses.length === 0 ? (
-        <Card className='mx-2 mb-2 shadow-md bg-white/60 dark:black/40'>
+      {!groupedClasses || groupedClasses.length == 0 ? (
+        <div className='mx-2 mb-2 rounded-2xl shadow-md bg-white/60 dark:black/40'>
           <div className='text-center py-6 text-neutral-900 font-bold' style={{ fontSize: `min(1.8em,5rem)` }}>
             暂无课程
           </div>
-        </Card>
+        </div>
       ) : (
         groupedClasses
           .filter(group => group.length > 0)
           .map((group, groupIdx) => (
-            <div key={groupIdx} className='mb-2'>
-              <Card className='mx-2 shadow-md bg-transparent'>
+            <div key={groupIdx} className='mb-2 '>
+              <div className='mx-2 shadow-md bg-transparent'>
                 {group.map((cls, idx) => {
                   const refIndex = groupIdx * 100 + idx; // 避免冲突
 
@@ -139,7 +134,7 @@ export default function ClassList({
 
                   return (
                     <Fragment key={refIndex}>
-                      {idx !== 0 && <Divider className='bg-neutral-400/60' />}
+                      {idx !== 0 && <Separator className='bg-neutral-400/60' />}
                       <div
                         ref={el => {
                           refList.current[groupIdx * 100 + idx] = el;
@@ -148,32 +143,34 @@ export default function ClassList({
                         className={`px-4 py-2 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
                         {(timeDisplay === 'always' || (timeDisplay === 'active' && state === 'active')) && (
                           <div
-                            className={`mb-0 whitespace-pre text-[0.875em]  ${
+                            className={`mb-0 whitespace-pre text-[0.875em]/[1]  ${
                               state === 'before' ? 'text-neutral-600' : 'text-neutral-800'
                             }`}>
                             {`${cls.startTime} - ${cls.endTime}`}
                           </div>
                         )}
                         <div
-                          className={`font-semibold mb-0 whitespace-pre-wrap text-[1.5em] ${
+                          className={`font-semibold mb-0 whitespace-pre-wrap text-[1.5em]/[1.3] ${
                             state === 'before' ? 'text-neutral-800' : 'text-black'
                           }`}>
                           {`${cls.subject.replace('\\n', '\n')}`}
                         </div>
                         {(progressDisplay === 'always' || (progressDisplay === 'active' && state === 'active')) && (
-                          <Progress
-                            aria-label='progress'
+                          <ProgressBar
                             size='sm'
                             value={Math.min(Math.max(percent, 0), 100)}
-                            color='primary'
-                            className='mt-1 w-full'
-                          />
+                            color='accent'
+                            className='w-full'>
+                            <ProgressBar.Track className='bg-white/40 dark:black/40'>
+                              <ProgressBar.Fill />
+                            </ProgressBar.Track>
+                          </ProgressBar>
                         )}
                       </div>
                     </Fragment>
                   );
                 })}
-              </Card>
+              </div>
             </div>
           ))
       )}
