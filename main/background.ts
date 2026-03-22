@@ -102,10 +102,47 @@ function isWindows11() {
   return false;
 }
 
+function setControlBarHidden(value: boolean | undefined = undefined) {
+  if (typeof value === 'undefined') {
+    const hidden = store.get('display.hidden.controlBar');
+    mainWindow_g.setMaximizable(Boolean(!hidden));
+    mainWindow_g.setClosable(Boolean(!hidden));
+  } else {
+    mainWindow_g.setMaximizable(value);
+    mainWindow_g.setClosable(value);
+  }
+}
+const mainWindowDefaultWidthPercent = 0.2;
+const mainWindowDefaultHeightPercent = 1;
+function resizeWindow() {
+  const widthP = store.get('display.windowWidth');
+  const heightP = store.get('display.windowHeight');
+  if (widthP || heightP) {
+    try {
+      let mainWindowWidth = (() => {
+        let base = screen.getPrimaryDisplay().size.width * Number(widthP || mainWindowDefaultWidthPercent);
+        if (base < 300) base = 300;
+        base = Math.floor(base);
+        return base;
+      })();
+      let mainWindowHeight = (() => {
+        let base = screen.getPrimaryDisplay().workArea.height * Number(heightP || mainWindowDefaultHeightPercent);
+        base = Math.floor(base);
+        return base;
+      })();
+      mainWindow_g.setResizable(true);
+      mainWindow_g.setSize(mainWindowWidth, mainWindowHeight);
+      isProd && mainWindow_g.setResizable(false);
+      mainWindow_g.setPosition(screen.getPrimaryDisplay().workArea.width - mainWindowWidth, 0);
+      mainWindow_g.unmaximize();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
+
 (async () => {
   await app.whenReady();
-  const mainWindowDefaultWidthPercent = 0.2;
-  const mainWindowDefaultHeightPercent = 1;
   let mainWindowWidth = (() => {
     let base = screen.getPrimaryDisplay().size.width * mainWindowDefaultWidthPercent;
     if (base < 200) base = 200;
@@ -138,7 +175,6 @@ function isWindows11() {
   if (isWindows11() && store.get('display.useWindowBackgroundMaterial') == true) {
     mainWindow.setBackgroundMaterial('acrylic');
   }
-  setControlBarHidden();
   nativeTheme.on('updated', () => {
     mainWindow?.setTitleBarOverlay(getOverlayStyle());
   });
@@ -146,50 +182,13 @@ function isWindows11() {
     mainWindow_g = undefined;
     app.exit();
   });
+
+  // 设置窗口样式
+  setControlBarHidden();
   resizeWindow();
-  ipcMain.on('set-config', async (event, name, ...arg) => {
-    if (name === 'display.windowWidth' || name === 'display.windowHeight') resizeWindow();
-    if (name === 'display.hidden.controlBar') setControlBarHidden();
-  });
   screen.addListener('display-metrics-changed', () => {
     resizeWindow();
   });
-  function resizeWindow() {
-    const widthP = store.get('display.windowWidth');
-    const heightP = store.get('display.windowHeight');
-    if (widthP || heightP) {
-      try {
-        mainWindowWidth = (() => {
-          let base = screen.getPrimaryDisplay().size.width * Number(widthP || mainWindowDefaultWidthPercent);
-          if (base < 300) base = 300;
-          base = Math.floor(base);
-          return base;
-        })();
-        mainWindowHeight = (() => {
-          let base = screen.getPrimaryDisplay().workArea.height * Number(heightP || mainWindowDefaultHeightPercent);
-          base = Math.floor(base);
-          return base;
-        })();
-        mainWindow.setResizable(true);
-        mainWindow.setSize(mainWindowWidth, mainWindowHeight);
-        isProd && mainWindow.setResizable(false);
-        mainWindow.setPosition(screen.getPrimaryDisplay().workArea.width - mainWindowWidth, 0);
-        mainWindow.unmaximize();
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
-  function setControlBarHidden(value: boolean | undefined = undefined) {
-    if (typeof value === 'undefined') {
-      const hidden = store.get('display.hidden.controlBar');
-      mainWindow_g.setMaximizable(Boolean(!hidden));
-      mainWindow_g.setClosable(Boolean(!hidden));
-    } else {
-      mainWindow_g.setMaximizable(value);
-      mainWindow_g.setClosable(value);
-    }
-  }
 
   if (isProd) {
     await mainWindow.loadURL(getProviderPath('/home'));
@@ -264,13 +263,22 @@ ipcMain.handle('set-config', async (event, name: string, value: any) => {
   mainWindow_g.webContents.send('sync-config', name);
 
   switch (name) {
-    case 'upgrade.autoCheckUpdate':
+    case 'display.windowWidth': {
+      resizeWindow();
+    }
+    case 'display.windowHeight': {
+      resizeWindow();
+    }
+    case 'display.hidden.controlBar': {
+      setControlBarHidden();
+    }
+    case 'upgrade.autoCheckUpdate': {
       if (isProd && value === true) {
         autoUpdater.checkForUpdates();
       }
       break;
-
-    case 'display.useWindowBackgroundMaterial':
+    }
+    case 'display.useWindowBackgroundMaterial': {
       if (!isWindows11()) return;
       if (value === true) {
         mainWindow_g.setBackgroundMaterial('acrylic');
@@ -278,6 +286,7 @@ ipcMain.handle('set-config', async (event, name: string, value: any) => {
         mainWindow_g.setBackgroundMaterial('none');
       }
       break;
+    }
 
     default:
       break;

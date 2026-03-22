@@ -21,7 +21,7 @@ if (commands.has(cmd)) {
 }
 
 const defaultEnv = cmd === 'dev' ? 'development' : 'production';
-process.env.NODE_ENV = process.env.NODE_ENV || defaultEnv;
+process.env = { ...process.env, NODE_ENV: process.env.NODE_ENV || defaultEnv };
 
 const cli = path.join(__dirname, `nextron-${cmd}`);
 

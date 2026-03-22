@@ -1,28 +1,18 @@
 'use client';
-import {
-  Switch,
-  Button,
-  Divider,
-  Input,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Autocomplete,
-  AutocompleteItem,
-} from '@heroui/react';
-import { useEffect, useState } from 'react';
+import { Button, Separator } from '@heroui/react';
+import { useEffect, useMemo, useState } from 'react';
 import { getConfigSync, setConfigSync } from '@renderer/features/ipc/config';
 import { getAutoLaunchSync } from '@renderer/features/ipc/functions';
 import { SettingsPage, SettingsGroup, SettingsItem } from '@renderer/components/settings/SettingsGroup';
+import { SettingInput, SettingSelect, SettingSwitch } from '@renderer/components/settings/SettingFields';
 import { ClockIcon, PhotoIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import WeatherSettings from '@renderer/components/settings/WeatherSettings';
 
-export default function App() {
+export default function LabsSettingsPage() {
   const [autoLaunch, setAutoLaunch] = useState(false);
-  const [autoLaunchE, setAutoLaunchE] = useState('Finding');
-  const [startAction_openHotspot, setStartAction_openHotspot] = useState(false);
-  const [startAction_openHotspotDelay, setStartAction_openHotspotDelay] = useState('0');
+  const [autoLaunchState, setAutoLaunchState] = useState('Finding');
+  const [startActionOpenHotspot, setStartActionOpenHotspot] = useState(false);
+  const [startActionOpenHotspotDelay, setStartActionOpenHotspotDelay] = useState('0');
 
   const [useGameBgs, setUseGameBgs] = useState(false);
   const [gameList, setGameList] = useState<{ id: string; name: string }[]>([]);
@@ -34,31 +24,18 @@ export default function App() {
     (async () => {
       try {
         setAutoLaunch(await getAutoLaunchSync());
-        setAutoLaunchE(null);
-      } catch (error) {
-        setAutoLaunchE('Failed Found');
+        setAutoLaunchState('');
+      } catch {
+        setAutoLaunchState('Failed Found');
       }
-      const openHotspot = await getConfigSync('features.startActions.openHotspot');
-      openHotspot && setStartAction_openHotspot(Boolean(openHotspot));
-      const openHotspotDelay = await getConfigSync('features.startActions.openHotspotDelay');
-      openHotspotDelay && setStartAction_openHotspotDelay(openHotspotDelay);
-    })();
-  }, []);
-  useEffect(() => {
-    (async () => {
-      const useBg = await getConfigSync('display.background.useGameBgs');
-      setUseGameBgs(Boolean(useBg));
 
       const gameListRaw = await getConfigSync('display.background.gameList');
-      gameListRaw && setGameList(gameListRaw);
-
-      const selected = await getConfigSync('display.background.useGame');
-      selected && setSelectedGame(selected);
-
-      const allowTypeValue = await getConfigSync('display.background.useGameBgsAllowType');
-      if (allowTypeValue) setAllowGameBgsType(allowTypeValue);
+      if (gameListRaw) setGameList(gameListRaw);
     })();
   }, []);
+
+  const gameOptions = useMemo(() => gameList.map(game => ({ value: game.id, label: game.name })), [gameList]);
+
   const fetchGameList = async () => {
     try {
       setLoadingGames(true);
@@ -75,106 +52,95 @@ export default function App() {
   };
 
   return (
-    <SettingsPage description={<span className='text-red-400'>这些功能可能不稳定</span>}>
-      <SettingsGroup title='自动化' icon={<ClockIcon className='w-6 h-6'></ClockIcon>}>
-        <SettingsItem title='开机启动' description={`跟随系统启动此应用${autoLaunchE ? ', ' + autoLaunchE : ''}`}>
-          <Switch
-            isSelected={autoLaunch}
-            onChange={async () => {
-              window.ipc?.invoke('autoLaunch', 'set', !autoLaunch);
+    <SettingsPage description={<span className='text-red-400'>这些功能处于实验阶段</span>}>
+      <SettingsGroup title='自动化' icon={<ClockIcon className='w-6 h-6' />}>
+        <SettingsItem title='开机启动' description={`跟随系统启动${autoLaunchState ? `, ${autoLaunchState}` : ''}`}>
+          <SettingSwitch
+            checked={autoLaunch}
+            onChange={async next => {
+              await window.ipc?.invoke('autoLaunch', 'set', next);
               setAutoLaunch(await getAutoLaunchSync());
             }}
           />
         </SettingsItem>
-        <Divider></Divider>
-        <SettingsItem title='自动开启热点' description={`在应用启动时开启 Windows 的移动热点`}>
-          <Switch
-            isSelected={startAction_openHotspot}
-            onChange={() => {
-              setStartAction_openHotspot(!startAction_openHotspot);
-              setConfigSync('features.startActions.openHotspot', !startAction_openHotspot);
-            }}
+
+        <Separator />
+
+        <SettingsItem title='启动后自动开启热点' description='应用启动时尝试开启 Windows 移动热点'>
+          <SettingSwitch
+            configName='features.startActions.openHotspot'
+            checked={startActionOpenHotspot}
+            onLoaded={setStartActionOpenHotspot}
+            onChange={setStartActionOpenHotspot}
           />
         </SettingsItem>
-        <SettingsItem title='开启热点延迟' description='应用启动后延迟开启热点（单位：秒）'>
-          <Input
+
+        <SettingsItem title='开启热点延迟' description='单位：秒'>
+          <SettingInput
+            configName='features.startActions.openHotspotDelay'
             type='number'
             min={0}
             max={600}
+            value={startActionOpenHotspotDelay}
             className='w-24'
-            value={startAction_openHotspotDelay}
-            onChange={e => {
-              setStartAction_openHotspotDelay(e.target.value);
-              const value = parseInt(e.target.value, 10) || 0;
-              if (value >= Number(e.target.min) && value <= Number(e.target.max)) {
-                setConfigSync('features.startActions.openHotspotDelay', value);
-              }
+            onLoaded={setStartActionOpenHotspotDelay}
+            onChange={setStartActionOpenHotspotDelay}
+            serialize={value => {
+              const parsed = parseInt(value, 10) || 0;
+              return Math.max(0, Math.min(600, parsed));
             }}
           />
         </SettingsItem>
       </SettingsGroup>
 
-      <SettingsGroup title='背景' icon={<PhotoIcon className='w-6 h-6'></PhotoIcon>}>
-        <SettingsItem title='使用 米哈游 游戏背景' description='从 米哈游启动器API 获取背景'>
-          <Switch
-            isSelected={useGameBgs}
-            onChange={() => {
-              const newValue = !useGameBgs;
-              setUseGameBgs(newValue);
-              setConfigSync('display.background.useGameBgs', newValue);
-            }}
+      <SettingsGroup title='背景' icon={<PhotoIcon className='w-6 h-6' />}>
+        <SettingsItem title='使用米哈游游戏背景' description='从米哈游启动器 API 获取背景素材'>
+          <SettingSwitch
+            configName='display.background.useGameBgs'
+            checked={useGameBgs}
+            onLoaded={setUseGameBgs}
+            onChange={setUseGameBgs}
           />
         </SettingsItem>
 
         {useGameBgs && (
           <>
-            <SettingsItem title='选择游戏' description='选择作为背景的游戏'>
+            <SettingsItem title='选择游戏'>
               <div className='flex items-center space-x-2'>
-                <Dropdown>
-                  <DropdownTrigger>
-                    <Button variant='flat' className='min-w-40 justify-start'>
-                      {selectedGame ? gameList.find(g => g.id === selectedGame)?.name || '已选择未知游戏' : '选择游戏'}
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu
-                    disallowEmptySelection
-                    selectionMode='single'
-                    onAction={key => {
-                      setSelectedGame(String(key));
-                      setConfigSync('display.background.useGame', String(key));
-                    }}>
-                    {gameList.length > 0 ? (
-                      gameList.map(game => <DropdownItem key={game.id}>{game.name}</DropdownItem>)
-                    ) : (
-                      <DropdownItem key=''>请点击右侧按钮获取列表</DropdownItem>
-                    )}
-                  </DropdownMenu>
-                </Dropdown>
-                <Button isIconOnly variant='light' isLoading={loadingGames} onPress={fetchGameList} title='刷新列表'>
-                  <ArrowPathIcon className='w-6 h-6'></ArrowPathIcon>
+                <SettingSelect
+                  configName='display.background.useGame'
+                  value={selectedGame ?? ''}
+                  placeholder='请选择游戏'
+                  className='min-w-40'
+                  options={gameOptions}
+                  onLoaded={value => setSelectedGame(value || null)}
+                  onChange={value => setSelectedGame(value || null)}
+                />
+                <Button isIconOnly variant='tertiary' isPending={loadingGames} onPress={fetchGameList}>
+                  <ArrowPathIcon className='w-4 h-4' />
                 </Button>
               </div>
             </SettingsItem>
-            <SettingsItem title='允许类型' description='选择背景允许的展示形式，仅限于游戏背景'>
-              <Autocomplete
-                defaultItems={[
-                  { key: 'video-image', label: '视频与图片' },
-                  { key: 'mixed-video-image', label: '可停止的视频与图片' },
-                  { key: 'image-only', label: '仅图片' },
+
+            <SettingsItem title='允许类型'>
+              <SettingSelect
+                configName='display.background.useGameBgsAllowType'
+                value={allowGameBgsType}
+                className='min-w-52'
+                options={[
+                  { value: 'video-image', label: '视频与图片' },
+                  { value: 'mixed-video-image', label: '可暂停视频与图片' },
+                  { value: 'image-only', label: '仅图片' },
                 ]}
-                selectedKey={allowGameBgsType}
-                onSelectionChange={(value: string) => {
-                  setAllowGameBgsType(value);
-                  setConfigSync('display.background.useGameBgsAllowType', value);
-                }}>
-                {item => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
-              </Autocomplete>
+                onLoaded={setAllowGameBgsType}
+                onChange={setAllowGameBgsType}
+              />
             </SettingsItem>
           </>
         )}
       </SettingsGroup>
 
-      <WeatherSettings></WeatherSettings>
+      <WeatherSettings />
     </SettingsPage>
   );
 }

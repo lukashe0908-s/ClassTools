@@ -39,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     window.alert = function (...args: any[1]) {
       console.log('[Alert]', args[0]);
       toast('', {
+      
         variant: 'default',
         description: args[0],
       });
@@ -55,9 +56,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <meta name='viewport' content='width=device-width, initial-scale=1.0' />
         </head>
         <body className='h-full'>
-          <Toast.Provider className={'whitespace-pre-wrap'} />
-          {/* <Providers>{children}</Providers> */}
-          {children}
+          <Toast.Provider className={'whitespace-pre-wrap'} placement='bottom end'/>
+          <Providers>{children}</Providers>
         </body>
       </html>
     </>

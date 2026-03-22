@@ -1,5 +1,5 @@
 'use client';
-import { Button, Divider } from '@heroui/react';
+import { Button, Separator } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { formatSize } from '@renderer/features/p_function';
 import { getVersionSync, getSysInfoSync } from '@renderer/features/ipc/functions';
@@ -79,8 +79,7 @@ export default function App() {
         <SettingsItem title='存储' justifyBetween={false}>
           <div className='flex gap-2 flex-wrap'>
             <Button
-              color='primary'
-              variant='bordered'
+              variant='outline'
               onPress={() => {
                 const sw = navigator.serviceWorker;
                 sw.getRegistrations
@@ -92,8 +91,7 @@ export default function App() {
               移除Service Worker
             </Button>
             <Button
-              color='primary'
-              variant='bordered'
+              variant='outline'
               onPress={() => {
                 caches.delete('class-tools');
                 indexedDB.deleteDatabase('workbox-expiration');
@@ -101,8 +99,7 @@ export default function App() {
               删除Workbox缓存
             </Button>
             <Button
-              color='primary'
-              variant='bordered'
+              variant='outline'
               onPress={async () => {
                 const allow = await navigator.storage.persist();
                 alert(`Persist Storage: ${allow ? 'Success' : 'Failed'}`);
@@ -111,12 +108,11 @@ export default function App() {
             </Button>
           </div>
         </SettingsItem>
-        <Divider></Divider>
+        <Separator></Separator>
         <SettingsItem title='热点' justifyBetween={false} alignCenter={false}>
           <div className='flex gap-2 flex-wrap'>
             <Button
-              color='primary'
-              variant='bordered'
+              variant='outline'
               onPress={async () => {
                 const foo = await window.ipc.invoke('runHotspotScript');
                 setRunHotspotScriptInfo(foo);
@@ -124,8 +120,7 @@ export default function App() {
               尝试打开
             </Button>
             <Button
-              color='primary'
-              variant='bordered'
+              variant='outline'
               onPress={async () => {
                 setRunHotspotScriptInfo('');
               }}>
@@ -134,20 +129,18 @@ export default function App() {
           </div>
           <pre className='whitespace-pre-wrap text-sm pt-2'>{runHotspotScriptInfo}</pre>
         </SettingsItem>
-        <Divider></Divider>
+        <Separator></Separator>
         <SettingsItem title='其他' justifyBetween={false}>
           <div className='flex gap-2 flex-wrap'>
             <Button
-              color='primary'
-              variant='bordered'
+              variant='outline'
               onPress={() => {
                 window.ipc?.send('autoUpdater/debugMockUpdate');
               }}>
               测试更新（模拟）
             </Button>
             <Button
-              color='primary'
-              variant='bordered'
+              variant='outline'
               onPress={async () => {
                 const options = {
                   enableHighAccuracy: true,
@@ -179,7 +172,7 @@ export default function App() {
         <SettingsItem title='存储使用' justifyBetween={false}>
           <pre className='whitespace-pre-wrap text-sm'>{storageInfo}</pre>
         </SettingsItem>
-        <Divider></Divider>
+        <Separator></Separator>
         <SettingsItem title='Navigator' justifyBetween={false} alignCenter={false}>
           <pre className='whitespace-pre-wrap text-sm'>{navigatorInfo}</pre>
         </SettingsItem>
