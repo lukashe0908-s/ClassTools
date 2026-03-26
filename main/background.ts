@@ -385,9 +385,17 @@ ipcMain.handle('systeminformation', async (event, action: any) => {
   });
 });
 
-ipcMain.on('sys-shutdown', async (event, arg) => {
+ipcMain.on('sys-shutdown', async (event, action: 'shutdown' | 'restart' | 'lock' = 'shutdown') => {
   if (!isProd) return;
   const cp = require('child_process');
+  if (action === 'restart') {
+    cp.execSync('shutdown -r -t 0');
+    return;
+  }
+  if (action === 'lock') {
+    cp.execSync('rundll32.exe user32.dll,LockWorkStation');
+    return;
+  }
   cp.execSync('shutdown -s -t 0');
 });
 

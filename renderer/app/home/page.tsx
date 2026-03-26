@@ -6,7 +6,7 @@ import {
   Cog6ToothIcon,
   ArrowPathIcon,
   XMarkIcon,
-  CheckIcon,
+  LockClosedIcon,
   PowerIcon,
   PlayIcon,
   PauseIcon,
@@ -406,22 +406,42 @@ function MainContent() {
             <Modal.Container placement='bottom'>
               <Modal.Dialog>
                 <Modal.Header>
-                  <Modal.Heading>Confirm Shutdown</Modal.Heading>
+                  <Modal.Heading>电源操作</Modal.Heading>
                 </Modal.Header>
-                <Modal.Body>Close all applications, then shut down the computer.</Modal.Body>
-                <Modal.Footer>
-                  <Button className='min-w-1' fullWidth={true} slot='close'>
-                    <XMarkIcon className='w-5 h-5'></XMarkIcon>闂佸憡鐟﹂悧妤冪矓?
-                  </Button>
-                  <Button
-                    variant='danger'
-                    className='min-w-1'
-                    fullWidth={true}
-                    slot='close'
-                    onPress={() => {
-                      window.ipc?.send('sys-shutdown');
-                    }}>
-                    <CheckIcon className='w-5 h-5'></CheckIcon>缂佺虎鍙庨崰娑㈩敇?
+                <Modal.Footer className='flex-col'>
+                  <div className='flex w-full gap-2'>
+                    <Button
+                      variant='danger'
+                      className='min-w-1'
+                      fullWidth={true}
+                      slot='close'
+                      onPress={() => {
+                        window.ipc?.send('sys-shutdown', 'shutdown');
+                      }}>
+                      <PowerIcon className='w-5 h-5'></PowerIcon>关机
+                    </Button>
+                    <Button
+                      variant='secondary'
+                      className='min-w-1'
+                      fullWidth={true}
+                      slot='close'
+                      onPress={() => {
+                        window.ipc?.send('sys-shutdown', 'restart');
+                      }}>
+                      <ArrowPathIcon className='w-5 h-5'></ArrowPathIcon>重启
+                    </Button>
+                    <Button
+                      className='min-w-1'
+                      fullWidth={true}
+                      slot='close'
+                      onPress={() => {
+                        window.ipc?.send('sys-shutdown', 'lock');
+                      }}>
+                      <LockClosedIcon className='w-5 h-5'></LockClosedIcon>锁定
+                    </Button>
+                  </div>
+                  <Button variant='outline' className='min-w-1' fullWidth={true} slot='close'>
+                    <XMarkIcon className='w-5 h-5'></XMarkIcon>取消
                   </Button>
                 </Modal.Footer>
               </Modal.Dialog>
