@@ -96,12 +96,16 @@ const settingsNavNodes: NavNode[] = [
   },
 ];
 
-export function SettingsSidebar() {
+interface SettingsSidebarProps {
+  className?: string;
+}
+
+export function SettingsSidebar({ className = '' }: SettingsSidebarProps) {
   const [isDark, setIsDark] = useState(false);
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDark(media.matches);
-    const listener = e => setIsDark(e.matches);
+    const listener = (e: MediaQueryListEvent) => setIsDark(e.matches);
     media.addEventListener('change', listener);
     return () => media.removeEventListener('change', listener);
   }, []);
@@ -109,7 +113,7 @@ export function SettingsSidebar() {
   return (
     <OverlayScrollbarsComponent
       defer
-      className='overflow-auto scrollbar-hide border-r min-w-50 bg-white dark:bg-[#0a0a0a]'
+      className={`overflow-auto scrollbar-hide border-r min-w-50 bg-white dark:bg-[#0a0a0a] ${className}`}
       options={{ scrollbars: { autoHide: 'move', theme: isDark ? 'os-theme-light' : 'os-theme-dark' } }}>
       <div className='p-2'>
         <div className='flex items-center justify-center gap-2 mb-2'>

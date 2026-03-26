@@ -14,10 +14,10 @@ export function SettingsGroup({
   icon?: React.ReactNode;
 }) {
   return (
-    <Card className='w-full shadow-sm border border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-100 dark:bg-neutral-950'>
+    <Card className='w-full shadow-sm border border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-100 dark:bg-neutral-950 px-0'>
       {title ? (
         <>
-          <Card.Header className='flex gap-3 px-6 py-4'>
+          <Card.Header className='flex gap-3 px-6 py-2'>
             <div className='flex items-center gap-3'>
               {icon && <div className='shrink-0'>{icon}</div>}
               <div className='flex flex-col'>
@@ -26,14 +26,12 @@ export function SettingsGroup({
               </div>
             </div>
           </Card.Header>
-          <Separator className='mx-6' />
+          <Separator />
         </>
       ) : (
         ''
       )}
-      <Card.Content className='px-6 py-5'>
-        <div className='space-y-4'>{children}</div>
-      </Card.Content>
+      <Card.Content className='p-6 overflow-auto'>{children}</Card.Content>
     </Card>
   );
 }
@@ -55,11 +53,11 @@ export function SettingsItem({
 }) {
   return (
     <div
-      className={`flex ${alignCenter ? 'items-center' : ''} ${
+      className={`flex flex-wrap py-3 ${alignCenter ? 'md:items-center' : ''} ${
         justifyBetween ? 'justify-between' : 'justify-baseline'
-      } py-3 ${disabled ? 'opacity-50' : ''}`}>
+      } ${disabled ? 'opacity-50' : ''}`}>
       {(title || description) && (
-        <div className='pr-4'>
+        <div className='pb-4 md:pr-4'>
           <div className='font-medium  whitespace-pre-line'>{title}</div>
           {description && (
             <div className='text-sm text-content3-foreground mt-1 whitespace-pre-wrap'>{description}</div>
@@ -89,7 +87,7 @@ export function SettingsPage({
   titleClassName?: string;
 }) {
   return (
-    <div className={'max-w-4xl mx-auto py-6 px-4 ' + className}>
+    <div className={'max-w-4xl mx-auto p-3 ' + className}>
       {(title || description) && (
         <div className={titleClassName}>
           <h1 className='text-3xl font-bold mb-2'>{title}</h1>
