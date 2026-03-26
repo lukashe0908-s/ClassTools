@@ -45,7 +45,7 @@ export function AboutSettings() {
         <div className='flex items-center gap-3'>
           <UserCircleIcon className='w-10 h-10'></UserCircleIcon>
           <div>
-            <div className='font-semibold'>Lukas</div>
+            <div className='font-semibold'>LukasHim</div>
             <div className='text-sm text-content3-foreground'>主要开发者</div>
           </div>
         </div>

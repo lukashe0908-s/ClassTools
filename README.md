@@ -32,7 +32,7 @@ Class Tools 是一款基于 Electron 与 Next‑React 的班级课表管理工
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/lukashe0908-s/ClassTools.git
+git clone https://github.com/Him150/ClassTools.git
 cd ClassTools
 ```
 

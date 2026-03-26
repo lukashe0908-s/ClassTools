@@ -157,7 +157,7 @@ function MainContent() {
       const useBingBgsRaw = await getConfigSync('display.background.useBingBgs');
       const useBingBgs = typeof useBingBgsRaw === 'boolean' ? useBingBgsRaw : true;
       const useNormalBgsRaw = await getConfigSync('display.background.useNormalBgs');
-      const useNormalBgs = typeof useNormalBgsRaw === 'boolean' ? useNormalBgsRaw : false;
+      const useNormalBgs = typeof useNormalBgsRaw === 'boolean' ? useNormalBgsRaw : true;
       const bingResolutionRaw = String((await getConfigSync('display.background.bingResolution')) ?? 'UHD');
       const bingResolution = isBingResolution(bingResolutionRaw) ? bingResolutionRaw : 'UHD';
 
