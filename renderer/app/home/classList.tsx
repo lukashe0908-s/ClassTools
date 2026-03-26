@@ -95,7 +95,7 @@ export default function ClassList({
           .filter(group => group.length > 0)
           .map((group, groupIdx) => (
             <div key={groupIdx} className='mb-2 '>
-              <div className='mx-2 shadow-md bg-transparent'>
+              <div className='mx-2 shadow-md rounded-2xl bg-transparent'>
                 {group.map((cls, idx) => {
                   const refIndex = groupIdx * 100 + idx; // 避免冲突
 
