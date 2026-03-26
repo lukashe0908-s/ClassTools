@@ -88,7 +88,7 @@ const NavNodeItem: React.FC<NavNodeItemProps> = ({ node, pathname, depth = 0 }) 
         </button>
 
         <div
-          className={`grid transition-[grid-template-rows] duration-200 ease-[cubic-bezier(0.77,0,0.175,1)] ${
+          className={`grid transition-[grid-template-rows] duration-200 ease-in-out-quart ${
             open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
           }`}>
           <div className='overflow-hidden'>

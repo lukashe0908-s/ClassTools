@@ -85,8 +85,10 @@ export default function ClassList({
   return (
     <div className='class-list pt-2' ref={containerRef}>
       {!groupedClasses || groupedClasses.length == 0 ? (
-        <div className='mx-2 mb-2 rounded-2xl shadow-md bg-white/60 dark:black/40'>
-          <div className='text-center py-6 text-neutral-900 font-bold' style={{ fontSize: `min(1.8em,5rem)` }}>
+        <div className='mx-2 mb-2 rounded-2xl shadow-md bg-white/60 dark:bg-black/60'>
+          <div
+            className='text-center py-6 text-black dark:text-white font-bold'
+            style={{ fontSize: `min(1.8em,5rem)` }}>
             暂无课程
           </div>
         </div>
@@ -126,15 +128,15 @@ export default function ClassList({
                   const percent = ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * 100;
                   const baseClass = `transition-all duration-300 ease ${
                     state === 'active'
-                      ? 'bg-blue-200/60 dark:bg-blue-800/70'
+                      ? 'bg-blue-200/60 dark:bg-blue-800/60'
                       : state === 'before'
-                        ? 'bg-neutral-300/60 dark:bg-neutral-700/70'
-                        : 'bg-white/60 dark:bg-black/70'
+                        ? 'bg-neutral-300/60 dark:bg-neutral-700/60'
+                        : 'bg-white/60 dark:bg-black/60'
                   }`;
 
                   return (
                     <Fragment key={refIndex}>
-                      {idx !== 0 && <Separator className='bg-neutral-400/60' />}
+                      {idx !== 0 && <Separator className='bg-neutral-400/60 dark:bg-neutral-600/60' />}
                       <div
                         ref={el => {
                           refList.current[groupIdx * 100 + idx] = el;
@@ -144,7 +146,9 @@ export default function ClassList({
                         {(timeDisplay === 'always' || (timeDisplay === 'active' && state === 'active')) && (
                           <div
                             className={`mb-0 whitespace-pre text-[0.875em]/[1]  ${
-                              state === 'before' ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-800 dark:text-neutral-200'
+                              state === 'before'
+                                ? 'text-neutral-600 dark:text-neutral-300'
+                                : 'text-neutral-800 dark:text-neutral-200'
                             }`}>
                             {`${cls.startTime} - ${cls.endTime}`}
                           </div>
@@ -175,7 +179,9 @@ export default function ClassList({
           ))
       )}
       <div className='p-2'>
-        <span id='weekNumber' className={`text-neutral-800 dark:text-neutral-200 bg-neutral-100/50 dark:bg-neutral-800 p-2 rounded-md shadow-md`}>
+        <span
+          id='weekNumber'
+          className={`text-neutral-800 dark:text-neutral-200 bg-neutral-100/50 dark:bg-neutral-800 p-2 rounded-md shadow-md`}>
           {weekInfo.now}周/年{weekInfo.total}周
         </span>
       </div>

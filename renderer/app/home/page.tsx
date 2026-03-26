@@ -18,6 +18,13 @@ import { Weather } from '@renderer/components/weather';
 import { getConfigSync } from '@renderer/features/ipc/config';
 import { generateConfig } from '@renderer/features/p_function';
 import { reducer, initialState as reducerInitialState } from './reducer';
+import {
+  fetchBingBackground,
+  fetchDefaultWallpapersFromDns,
+  fetchGameBackground,
+  isBingResolution,
+  type WallpaperItem,
+} from '@renderer/features/background';
 
 export default function HomePage() {
   useEffect(() => {
@@ -43,13 +50,14 @@ export default function HomePage() {
   );
 }
 function MainContent() {
-  const [wallpapers, setWallpapers] = useState([]);
+  const [wallpapers, setWallpapers] = useState<WallpaperItem[]>([]);
   const [wallpapersLoading, setWallpapersLoading] = useState(true);
   const [currentWallpaper, setCurrentWallpaper] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const wallpaperListRef = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState(1);
   const [windowFocused, setWindowFocused] = useState(true);
+  const [wallpaperReloadTick, setWallpaperReloadTick] = useState(0);
 
   useLayoutEffect(() => {
     const loadFontSize = async () => {
@@ -84,12 +92,12 @@ function MainContent() {
       window.removeEventListener('blur', handleBlur);
     };
   }, []);
-  const updateWallpaper = (newWallpaper: string, index: number) => {
+  const updateWallpaper = (newWallpaper: string | null | undefined, index: number) => {
     localStorage.setItem('default_wallpaper_select', index.toString());
     setSelectedIndex(index);
-    setCurrentWallpaper(newWallpaper ?? '');
+    setCurrentWallpaper(newWallpaper ?? null);
 
-    // 使用 requestAnimationFrame 确保在 DOM 更新后再滚动
+    // Use requestAnimationFrame to scroll after DOM update.
     requestAnimationFrame(() => {
       const container = wallpaperListRef.current;
       if (container) {
@@ -102,192 +110,100 @@ function MainContent() {
   };
 
   useEffect(() => {
+    const handler = (name: string) => {
+      if (name.startsWith('display.background.')) {
+        setWallpaperReloadTick(prev => prev + 1);
+      }
+    };
+
+    window.ipc?.on('sync-config', handler);
+    return () => {
+      window.ipc?.removeListener?.('sync-config', handler);
+    };
+  }, []);
+
+  useEffect(() => {
     const CACHE_KEY = 'default_wallpaper';
     const EXPIRES_KEY = 'default_wallpaper_expires';
-    const CACHE_DURATION = 5 * 60 * 1000; // 5 mins
-    const DISABLE_CACHE = false;
-
+    const CACHE_DURATION = 5 * 60 * 1000;
     const now = Date.now();
-    const cached = localStorage.getItem(CACHE_KEY);
-    const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
 
-    interface WallpaperItem {
-      type: 'image' | 'video' | 'mixed';
-      video_url?: string;
-      image_url?: string;
-    }
+    const applyWallpaperList = (wallpaperList: WallpaperItem[]) => {
+      setWallpapers(wallpaperList);
+      setWallpapersLoading(false);
+
+      if (wallpaperList.length === 0) {
+        setCurrentWallpaper(null);
+        setSelectedIndex(0);
+        localStorage.removeItem('default_wallpaper_select');
+        return;
+      }
+
+      const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
+      const validIndex =
+        Number.isFinite(savedIndex) && savedIndex >= 0 && savedIndex < wallpaperList.length ? savedIndex : 0;
+      updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
+    };
 
     (async () => {
       setWallpapersLoading(true);
-      const useGameBgs = await getConfigSync('display.background.useGameBgs');
-      const useGame = await getConfigSync('display.background.useGame');
-      const useAllowType = await getConfigSync('display.background.useGameBgsAllowType');
-      let gameBg_object: any = { type: 'image' };
-      // 尝试拉取游戏背景，如果失败则回退为不使用游戏背景（不把 gameBg_object 加到列表前置）
-      let useGameBgsEffective = useGameBgs && useGame;
+
+      const useGameBgsRaw = await getConfigSync('display.background.useGameBgs');
+      const useGameBgs = typeof useGameBgsRaw === 'boolean' ? useGameBgsRaw : false;
+      const useGame = String((await getConfigSync('display.background.useGame')) ?? '');
+      const useAllowType = String(
+        (await getConfigSync('display.background.useGameBgsAllowType')) ?? 'mixed-video-image',
+      );
+      const useBingBgsRaw = await getConfigSync('display.background.useBingBgs');
+      const useBingBgs = typeof useBingBgsRaw === 'boolean' ? useBingBgsRaw : true;
+      const useNormalBgsRaw = await getConfigSync('display.background.useNormalBgs');
+      const useNormalBgs = typeof useNormalBgsRaw === 'boolean' ? useNormalBgsRaw : false;
+      const bingResolutionRaw = String((await getConfigSync('display.background.bingResolution')) ?? 'UHD');
+      const bingResolution = isBingResolution(bingResolutionRaw) ? bingResolutionRaw : 'UHD';
+
+      const prefixes: WallpaperItem[] = [];
+
       if (useGameBgs && useGame) {
-        try {
-          const res = await fetch(
-            `https://hyp-api.mihoyo.com/hyp/hyp-connect/api/getAllGameBasicInfo?launcher_id=jGHBHlcOq1&game_id=${useGame}`,
-          );
-          const data = await res.json();
-          const info = data?.data?.game_info_list?.[0];
-          if (info && info.backgrounds?.length > 0) {
-            const bg = info.backgrounds[0];
-            if (bg.video?.url) {
-              gameBg_object.video_url = bg.video.url;
-              if (useAllowType === 'video-image') {
-                gameBg_object.type = 'video';
-              } else if (useAllowType !== 'image-only') {
-                gameBg_object.type = 'mixed';
-              }
+        const gameBg = await fetchGameBackground(useGame, useAllowType);
+        if (gameBg) prefixes.push(gameBg);
+      }
+
+      if (useBingBgs) {
+        const bingBg = await fetchBingBackground(bingResolution);
+        if (bingBg) prefixes.push(bingBg);
+      }
+
+      let normalWallpapers: WallpaperItem[] = [];
+      if (useNormalBgs) {
+        const cached = localStorage.getItem(CACHE_KEY);
+        const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
+
+        if (cached && now < expires) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed)) {
+              normalWallpapers = parsed as WallpaperItem[];
             }
-            if (bg.background?.url) gameBg_object.image_url = bg.background.url;
+          } catch (error) {
+            console.error('Failed to parse cached wallpapers:', error);
           }
-          // 如果没有拿到有效的 image/video，则认为拉取无效
-          if (!gameBg_object.video_url && !gameBg_object.image_url) {
-            useGameBgsEffective = false;
-          }
-        } catch (err) {
-          console.error('Failed to fetch game backgrounds, disabling useGameBgs:', err);
-          // 拉取失败则不使用游戏背景
-          useGameBgsEffective = false;
+        }
+
+        if (normalWallpapers.length === 0) {
+          normalWallpapers = await fetchDefaultWallpapersFromDns();
+          localStorage.setItem(CACHE_KEY, JSON.stringify(normalWallpapers));
+          localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
         }
       }
 
-      // 缓存读取
-      if (!DISABLE_CACHE && cached && now < expires) {
-        try {
-          const cachedData: WallpaperItem[] = JSON.parse(cached);
-          let wallpaperList: WallpaperItem[] = useGameBgsEffective ? [gameBg_object, ...cachedData] : cachedData;
-          setWallpapers(wallpaperList);
-          setWallpapersLoading(false);
-          const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
-          const validIndex = savedIndex < wallpaperList.length ? savedIndex : 0;
-          updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
-        } catch (err) {
-          console.error('Failed to parse json for wallpaper:', err);
-        }
-        return;
-      }
+      applyWallpaperList([...prefixes, ...normalWallpapers]);
+    })().catch(error => {
+      console.error('Failed to load wallpapers:', error);
+      setWallpapersLoading(false);
+    });
+  }, [wallpaperReloadTick]);
 
-      fetchDnsWallpaper(useGameBgsEffective ? [gameBg_object] : []);
-    })();
-
-    // 优先使用 alidns，再回退到 cloudflare DoH，最后回退到原有的 window.ipc 解析方式
-    async function fetchDnsWallpaper(addBefore?: WallpaperItem[]) {
-      const domain = 'default-bgs.class-tools.app.lukas1.eu.org';
-
-      // 封装：尝试通过一个 DoH 提供者获取 TXT 记录，返回字符串数组或 null
-      async function tryDoH(url: string, headers?: Record<string, string>) {
-        try {
-          const res = await fetch(url, { headers: headers || {}, cache: 'no-store' });
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status} from ${url}`);
-          }
-          const json = await res.json();
-          // 常见 JSON 结构：{ Answer: [ { data: "..." }, ... ] }
-          if (json && Array.isArray(json.Answer) && json.Answer.length > 0) {
-            const joined = json.Answer.map((a: any) => {
-              // TXT 记录通常以引号包裹，如: "\"BASE64...\"" 或 "BASE64..."
-              let d = a.data;
-              if (typeof d === 'string') {
-                // 移除外层引号
-                d = d.replace(/"| /g, '');
-              }
-              return d;
-            });
-            return joined;
-          }
-          // 某些服务可能返回 { Answer: "..." } 或其他形式，尝试宽松处理
-          if (json && json.Answer && typeof json.Answer === 'string') {
-            return [json.Answer.replace(/"| /g, '')];
-          }
-          return null;
-        } catch (err) {
-          console.warn('tryDoH failed for', url, err);
-          return null;
-        }
-      }
-
-      let base64String = '';
-
-      // 1) alidns
-      if (!base64String) {
-        try {
-          const url = `https://dns.alidns.com/resolve?name=${encodeURIComponent(domain)}&type=TXT`;
-          const ans = await tryDoH(url);
-          if (ans && ans.length > 0) {
-            base64String = ans[0].replace(/^"|"$/g, '');
-          }
-        } catch (err) {
-          console.warn('alidns attempt failed', err);
-        }
-      }
-
-      // 2) cloudflare DoH (application/dns-json)
-      if (!base64String) {
-        try {
-          const url = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=TXT`;
-          const ans = await tryDoH(url, { Accept: 'application/dns-json' });
-          if (ans && ans.length > 0) {
-            base64String = ans[0].replace(/"| /g, '');
-          }
-        } catch (err) {
-          console.warn('cloudflare doh attempt failed', err);
-        }
-      }
-
-      // 3) 最后回退到 window.ipc 原有解析方式
-      if (!base64String) {
-        try {
-          const txtRecords: string[][] = await window.ipc?.invoke('resolveDns', domain, 'TXT');
-          base64String = Array.isArray(txtRecords) ? txtRecords[0].join('') : '';
-        } catch (err) {
-          console.error('ipc resolveDns fallback failed', err);
-        }
-      }
-
-      if (!base64String) {
-        console.error('No valid TXT record found from any DNS provider');
-        return;
-      }
-
-      try {
-        const decodedUrls_json = atob(base64String);
-        const rawList = JSON.parse(decodedUrls_json);
-
-        // 清洗列表，兼容旧列表格式
-        const normalizedList = rawList.map((data: string | any) => {
-          if (typeof data === 'object') {
-            if (
-              (data.type === 'image' || data.type === 'video' || data.type === 'mixed') &&
-              (data.video_url || data.image_url)
-            ) {
-              return data;
-            }
-          }
-          return { type: 'image', image_url: data };
-        });
-
-        localStorage.setItem(CACHE_KEY, JSON.stringify(normalizedList));
-        localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
-
-        let wallpaperList: WallpaperItem[] = [...(addBefore || []), ...normalizedList];
-
-        setWallpapers(wallpaperList);
-        const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
-        const validIndex = savedIndex < wallpaperList.length ? savedIndex : 0;
-        updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
-      } catch (err) {
-        console.error('Failed to decode/parse wallpaper TXT record payload:', err);
-      } finally {
-        setWallpapersLoading(false);
-      }
-    }
-  }, []);
-
-  // 处理初始滚动到选中的壁纸
+  // Scroll to selected wallpaper after list is rendered.
   useEffect(() => {
     if (wallpapers.length > 0) {
       const container = wallpaperListRef.current;
@@ -490,12 +406,12 @@ function MainContent() {
             <Modal.Container placement='bottom'>
               <Modal.Dialog>
                 <Modal.Header>
-                  <Modal.Heading>确认关机</Modal.Heading>
+                  <Modal.Heading>Confirm Shutdown</Modal.Heading>
                 </Modal.Header>
-                <Modal.Body>关闭所有应用，然后关闭电脑。</Modal.Body>
+                <Modal.Body>Close all applications, then shut down the computer.</Modal.Body>
                 <Modal.Footer>
                   <Button className='min-w-1' fullWidth={true} slot='close'>
-                    <XMarkIcon className='w-5 h-5'></XMarkIcon>取消
+                    <XMarkIcon className='w-5 h-5'></XMarkIcon>闂佸憡鐟﹂悧妤冪矓?
                   </Button>
                   <Button
                     variant='danger'
@@ -505,7 +421,7 @@ function MainContent() {
                     onPress={() => {
                       window.ipc?.send('sys-shutdown');
                     }}>
-                    <CheckIcon className='w-5 h-5'></CheckIcon>确认
+                    <CheckIcon className='w-5 h-5'></CheckIcon>缂佺虎鍙庨崰娑㈩敇?
                   </Button>
                 </Modal.Footer>
               </Modal.Dialog>
