@@ -59,7 +59,9 @@ function List({
             {rows.map((row, rowIndex) => (
               <Table.Row key={rowIndex} id={rowIndex}>
                 {columns.map(column => (
-                  <Table.Cell key={column.id} className={column.id === 'id' ? 'sticky left-0 bg-white dark:bg-neutral-900 z-10' : 'min-w-[14ch]'}>
+                  <Table.Cell
+                    key={column.id}
+                    className={column.id === 'id' ? 'sticky left-0 bg-white dark:bg-neutral-900 z-10' : 'min-w-[14ch]'}>
                     {column.id === 'id' ? rowIndex + 1 : children(row, rowIndex, column.id)}
                   </Table.Cell>
                 ))}
@@ -144,7 +146,6 @@ function TimeEditor({ value, onChange, label }: { value?: string; onChange: (val
 
 export function LessonsListTime() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoading2, setIsLoading2] = useState(true);
   const [rows, setRows] = useState<Record<string, any>[]>([{}]);
   const [weekStart, setWeekStart] = useState('');
 
@@ -162,7 +163,6 @@ export function LessonsListTime() {
         const data = await getConfigSync('lessonsList.weekStart');
         if (data) setWeekStart(String(data));
       } catch {}
-      setIsLoading2(false);
     })();
   }, []);
 
@@ -184,12 +184,6 @@ export function LessonsListTime() {
 
   return (
     <div className='h-full flex flex-col'>
-      {(isLoading || isLoading2) && (
-        <div className='absolute w-full bg-background h-full z-50 flex justify-center items-center'>
-          <Spinner size='lg' />
-        </div>
-      )}
-
       <div className='mb-2 max-w-xs'>
         <label className='text-sm mb-1 block'>学期开始日期</label>
         <SettingDatePicker
@@ -202,68 +196,74 @@ export function LessonsListTime() {
         />
       </div>
 
-      <List rows={rows} className='min-h-0 flex-1'>
-        {(row, rowIndex, columnKey) => {
-          const context = getKeyValue(row, columnKey);
-          const startTime = context?.start;
-          const endTime = context?.end;
-          const addDivide = context?.divide;
+      {isLoading ? (
+        <div className='h-full flex justify-center items-center'>
+          <Spinner size='lg' />
+        </div>
+      ) : (
+        <List rows={rows} className='h-full min-h-0 flex-1'>
+          {(row, rowIndex, columnKey) => {
+            const context = getKeyValue(row, columnKey);
+            const startTime = context?.start;
+            const endTime = context?.end;
+            const addDivide = context?.divide;
 
-          return (
-            <div className='flex flex-col gap-2'>
-              <TimeEditor
-                label='开始'
-                value={startTime}
-                onChange={value => {
-                  updateCell(rowIndex, columnKey, cell => {
-                    if (value) cell.start = value;
-                    else delete cell.start;
-                  });
-                }}
-              />
-
-              <TimeEditor
-                label='结束'
-                value={endTime}
-                onChange={value => {
-                  updateCell(rowIndex, columnKey, cell => {
-                    if (value) cell.end = value;
-                    else delete cell.end;
-                  });
-                }}
-              />
-
-              <div className='flex gap-2'>
-                <Button
-                  size='sm'
-                  variant='tertiary'
-                  onPress={() => {
+            return (
+              <div className='flex flex-col gap-2'>
+                <TimeEditor
+                  label='开始'
+                  value={startTime}
+                  onChange={value => {
                     updateCell(rowIndex, columnKey, cell => {
-                      cell.divide = !cell.divide;
+                      if (value) cell.start = value;
+                      else delete cell.start;
                     });
-                  }}>
-                  {addDivide ? '取消分割线' : '添加分割线'}
-                </Button>
-                <Button
-                  size='sm'
-                  variant='danger-soft'
-                  onPress={() => {
-                    let newRows = [...rows];
-                    if (newRows[rowIndex]) {
-                      delete newRows[rowIndex][columnKey];
-                    }
-                    newRows = trimTailRows(newRows);
-                    newRows.push({});
-                    setConfigSync('lessonsList.time', newRows);
-                    setRows(newRows);
-                  }}>
-                  清空
-                </Button>
+                  }}
+                />
+
+                <TimeEditor
+                  label='结束'
+                  value={endTime}
+                  onChange={value => {
+                    updateCell(rowIndex, columnKey, cell => {
+                      if (value) cell.end = value;
+                      else delete cell.end;
+                    });
+                  }}
+                />
+
+                <div className='flex gap-2'>
+                  <Button
+                    size='sm'
+                    variant='tertiary'
+                    onPress={() => {
+                      updateCell(rowIndex, columnKey, cell => {
+                        cell.divide = !cell.divide;
+                      });
+                    }}>
+                    {addDivide ? '取消分割线' : '添加分割线'}
+                  </Button>
+                  <Button
+                    size='sm'
+                    variant='danger-soft'
+                    onPress={() => {
+                      let newRows = [...rows];
+                      if (newRows[rowIndex]) {
+                        delete newRows[rowIndex][columnKey];
+                      }
+                      newRows = trimTailRows(newRows);
+                      newRows.push({});
+                      setConfigSync('lessonsList.time', newRows);
+                      setRows(newRows);
+                    }}>
+                    清空
+                  </Button>
+                </div>
               </div>
-            </div>
-          );
-        }}
-      </List>
+            );
+          }}
+        </List>
+      )}
     </div>
   );
 }

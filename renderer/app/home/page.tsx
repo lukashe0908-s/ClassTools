@@ -38,7 +38,7 @@ export default function HomePage() {
     <>
       <title>Class Tools</title>
       <MainContent></MainContent>
-      {/* <UpdateModal></UpdateModal> */}
+      <UpdateModal></UpdateModal>
     </>
   );
 }
@@ -520,7 +520,7 @@ function MainContent() {
           'absolute top-0 z-[-1] w-full h-full ' + (state.display.useWindowBackgroundMaterial ? 'hidden' : '')
         }>
         <img
-          className={`object-cover select-none w-full h-full svg-blur-filter`}
+          className={`object-cover select-none w-full h-full svg-blur-filter dark:opacity-90`}
           referrerPolicy='no-referrer'
           draggable='false'
           src={currentWallpaper || null}

@@ -124,12 +124,12 @@ export default function ClassList({
                   else state = 'after';
 
                   const percent = ((currentTime.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * 100;
-                  const baseClass = `transition-all duration-300 ease-in-out ${
+                  const baseClass = `transition-all duration-300 ease ${
                     state === 'active'
-                      ? 'bg-blue-200/60 shadow-inner'
+                      ? 'bg-blue-200/60 dark:bg-blue-800/70'
                       : state === 'before'
-                        ? 'bg-neutral-300/60'
-                        : 'bg-white/60 dark:black/40'
+                        ? 'bg-neutral-300/60 dark:bg-neutral-700/70'
+                        : 'bg-white/60 dark:bg-black/70'
                   }`;
 
                   return (
@@ -144,14 +144,14 @@ export default function ClassList({
                         {(timeDisplay === 'always' || (timeDisplay === 'active' && state === 'active')) && (
                           <div
                             className={`mb-0 whitespace-pre text-[0.875em]/[1]  ${
-                              state === 'before' ? 'text-neutral-600' : 'text-neutral-800'
+                              state === 'before' ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-800 dark:text-neutral-200'
                             }`}>
                             {`${cls.startTime} - ${cls.endTime}`}
                           </div>
                         )}
                         <div
                           className={`font-semibold mb-0 whitespace-pre-wrap text-[1.5em]/[1.3] ${
-                            state === 'before' ? 'text-neutral-800' : 'text-black'
+                            state === 'before' ? 'text-neutral-800 dark:text-neutral-200' : 'text-black dark:text-white'
                           }`}>
                           {`${cls.subject.replace('\\n', '\n')}`}
                         </div>
@@ -161,7 +161,7 @@ export default function ClassList({
                             value={Math.min(Math.max(percent, 0), 100)}
                             color='accent'
                             className='w-full'>
-                            <ProgressBar.Track className='bg-white/40 dark:black/40'>
+                            <ProgressBar.Track className='bg-white/40 dark:bg-black/40'>
                               <ProgressBar.Fill />
                             </ProgressBar.Track>
                           </ProgressBar>
@@ -175,7 +175,7 @@ export default function ClassList({
           ))
       )}
       <div className='p-2'>
-        <span id='weekNumber' className={`text-neutral-800 bg-neutral-100/50 p-2 rounded-md shadow-md`}>
+        <span id='weekNumber' className={`text-neutral-800 dark:text-neutral-200 bg-neutral-100/50 dark:bg-neutral-800 p-2 rounded-md shadow-md`}>
           {weekInfo.now}周/年{weekInfo.total}周
         </span>
       </div>

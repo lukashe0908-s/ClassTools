@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Calendar,
   DateField,
@@ -36,6 +36,27 @@ function normalizeToIsoDate(value: string): string {
   return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
 }
 
+function isValidTimeString(value: string): boolean {
+  if (!/^\d{2}:\d{2}$/.test(value)) return false;
+  try {
+    parseTime(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isValidIsoDateString(value: string): boolean {
+  const normalized = normalizeToIsoDate(value);
+  if (!normalized) return false;
+  try {
+    parseDate(normalized);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function SettingSwitch({
   checked,
   onChange,
@@ -47,24 +68,19 @@ export function SettingSwitch({
   onChange?: (next: boolean) => void;
   isDisabled?: boolean;
 } & BaseConfigProps<boolean>) {
-  const [innerValue, setInnerValue] = useState(false);
-  const value = checked ?? innerValue;
+  const value = checked ?? false;
 
   useEffect(() => {
     if (!configName) return;
     (async () => {
       const raw = await getConfigSync(configName);
       if (typeof raw === 'boolean') {
-        setInnerValue(raw);
         onLoaded?.(raw);
       }
     })();
-  }, [checked, configName, onLoaded]);
+  }, [configName, onLoaded]);
 
   const handleChange = (next: boolean) => {
-    if (checked === undefined) {
-      setInnerValue(next);
-    }
     onChange?.(next);
     if (configName) {
       setConfigSync(configName, next);
@@ -97,26 +113,20 @@ export function SettingSlider({
   step?: number;
   widthClassName?: string;
 } & BaseConfigProps<number>) {
-  const [innerValue, setInnerValue] = useState(min);
-  const currentValue = value ?? innerValue;
+  const currentValue = value ?? min;
 
   useEffect(() => {
     if (!configName) return;
     (async () => {
       const raw = await getConfigSync(configName);
       const parsed = Number(raw);
-      const next = Number.isFinite(parsed) ? parsed : min;
-      if (value === undefined) {
-        setInnerValue(next);
-      }
-      onLoaded?.(next);
+      if (!Number.isFinite(parsed)) return;
+      if (parsed < min || parsed > max) return;
+      onLoaded?.(parsed);
     })();
-  }, [configName, min, onLoaded, value]);
+  }, [configName, max, min, onLoaded]);
 
   const handleChange = (next: number) => {
-    if (value === undefined) {
-      setInnerValue(next);
-    }
     onChange?.(next);
     if (configName) {
       setConfigSync(configName, next);
@@ -161,25 +171,19 @@ export function SettingInput({
   className?: string;
   serialize?: (value: string) => unknown;
 } & BaseConfigProps<string>) {
-  const [innerValue, setInnerValue] = useState('');
-  const currentValue = value ?? innerValue;
+  const currentValue = value ?? '';
 
   useEffect(() => {
     if (!configName) return;
     (async () => {
       const raw = await getConfigSync(configName);
-      const next = raw === undefined || raw === null ? '' : String(raw);
-      if (value === undefined) {
-        setInnerValue(next);
-      }
+      if (raw === undefined || raw === null) return;
+      const next = String(raw);
       onLoaded?.(next);
     })();
-  }, [configName, onLoaded, value]);
+  }, [configName, onLoaded]);
 
   const handleChange = (next: string) => {
-    if (value === undefined) {
-      setInnerValue(next);
-    }
     onChange?.(next);
     if (configName) {
       setConfigSync(configName, serialize ? serialize(next) : next);
@@ -212,20 +216,18 @@ export function SettingTimeField({
   className?: string;
   label?: string | React.JSX.Element;
 } & BaseConfigProps<string>) {
-  const [innerValue, setInnerValue] = useState('');
-  const currentValue = value ?? innerValue;
+  const currentValue = value ?? '';
 
   useEffect(() => {
     if (!configName) return;
     (async () => {
       const raw = await getConfigSync(configName);
-      const next = raw === undefined || raw === null ? '' : String(raw);
-      if (value === undefined) {
-        setInnerValue(next);
-      }
+      if (raw === undefined || raw === null) return;
+      const next = String(raw);
+      if (!next || !isValidTimeString(next)) return;
       onLoaded?.(next);
     })();
-  }, [configName, onLoaded, value]);
+  }, [configName, onLoaded]);
 
   const parsedValue = currentValue ? parseTime(currentValue) : null;
 
@@ -235,9 +237,6 @@ export function SettingTimeField({
       value={parsedValue}
       onChange={next => {
         const nextString = next ? `${String(next.hour).padStart(2, '0')}:${String(next.minute).padStart(2, '0')}` : '';
-        if (value === undefined) {
-          setInnerValue(nextString);
-        }
         onChange?.(nextString);
         if (configName) {
           setConfigSync(configName, nextString);
@@ -262,24 +261,26 @@ export function SettingDatePicker({
   onChange?: (value: string) => void;
   className?: string;
 } & BaseConfigProps<string>) {
-  const [innerValue, setInnerValue] = useState('');
-  const currentValue = value ?? innerValue;
+  const currentValue = value ?? '';
 
   useEffect(() => {
     if (!configName) return;
     (async () => {
       const raw = await getConfigSync(configName);
-      const nextRaw = raw === undefined || raw === null ? '' : String(raw);
-      const next = normalizeToIsoDate(nextRaw);
-      if (value === undefined) {
-        setInnerValue(next);
+      if (raw === undefined || raw === null) return;
+      const nextRaw = String(raw).trim();
+      if (!nextRaw) {
+        onLoaded?.('');
+        return;
       }
+      if (!isValidIsoDateString(nextRaw)) return;
+      const next = normalizeToIsoDate(nextRaw);
       onLoaded?.(next);
       if (next && next !== nextRaw) {
         setConfigSync(configName, next);
       }
     })();
-  }, [configName, onLoaded, value]);
+  }, [configName, onLoaded]);
 
   const safeValue = normalizeToIsoDate(currentValue);
   const parsedDate = safeValue ? parseDate(safeValue) : null;
@@ -290,9 +291,6 @@ export function SettingDatePicker({
       value={parsedDate}
       onChange={next => {
         const nextString = next ? next.toString() : '';
-        if (value === undefined) {
-          setInnerValue(nextString);
-        }
         onChange?.(nextString);
         if (configName) {
           setConfigSync(configName, nextString);
@@ -348,25 +346,20 @@ export function SettingSelect({
   placeholder?: string;
   label?: string;
 } & BaseConfigProps<string>) {
-  const [innerValue, setInnerValue] = useState('');
-  const currentValue = value ?? innerValue;
+  const currentValue = value ?? '';
 
   useEffect(() => {
     if (!configName) return;
     (async () => {
       const raw = await getConfigSync(configName);
-      const next = raw === undefined || raw === null ? '' : String(raw);
-      if (value === undefined) {
-        setInnerValue(next);
-      }
+      if (raw === undefined || raw === null) return;
+      const next = String(raw);
+      if (next && !options.some(option => option.value === next)) return;
       onLoaded?.(next);
     })();
-  }, [configName, onLoaded, value]);
+  }, [configName, onLoaded, options]);
 
   const handleChange = (next: string) => {
-    if (value === undefined) {
-      setInnerValue(next);
-    }
     onChange?.(next);
     if (configName) {
       setConfigSync(configName, next);

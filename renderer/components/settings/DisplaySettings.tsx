@@ -3,14 +3,16 @@ import React, { useState } from 'react';
 import { SettingsGroup, SettingsItem } from './SettingsGroup';
 import { SettingSelect, SettingSlider, SettingSwitch } from './SettingFields';
 import { WindowIcon, PaintBrushIcon, CloudIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { useTheme } from 'next-themes';
+import { Separator } from '@heroui/react';
 
 export function WindowSettings() {
   const [windowWidth, setWindowWidth] = useState(0.2);
   const [windowHeight, setWindowHeight] = useState(1);
 
   return (
-    <SettingsGroup title='窗口设置' icon={<WindowIcon className='w-6 h-6' />}>
-      <SettingsItem title='窗口宽度' description={`当前值 ${Math.round(windowWidth * 100)}%`}>
+    <SettingsGroup title='窗口' icon={<WindowIcon className='w-6 h-6' />}>
+      <SettingsItem title='宽度' description={`当前: ${Math.round(windowWidth * 100)}%`}>
         <SettingSlider
           configName='display.windowWidth'
           step={0.01}
@@ -22,7 +24,7 @@ export function WindowSettings() {
         />
       </SettingsItem>
 
-      <SettingsItem title='窗口高度' description={`当前值 ${Math.round(windowHeight * 100)}%`}>
+      <SettingsItem title='高度' description={`当前: ${Math.round(windowHeight * 100)}%`}>
         <SettingSlider
           configName='display.windowHeight'
           step={0.01}
@@ -38,15 +40,37 @@ export function WindowSettings() {
 }
 
 export function AppearanceSettings() {
+  const { setTheme } = useTheme();
   const [fontSize, setFontSize] = useState(1);
+  const [theme, setThemeValue] = useState<'system' | 'light' | 'dark'>('system');
   const [slidingPosition, setSlidingPosition] = useState('center');
   const [timeDisplay, setTimeDisplay] = useState('always');
   const [progressDisplay, setProgressDisplay] = useState('always');
   const [useWindowBackgroundMaterial, setUseWindowBackgroundMaterial] = useState(false);
 
+  const handleThemeChange = (value: string) => {
+    if (value !== 'system' && value !== 'light' && value !== 'dark') return;
+    setThemeValue(value);
+    setTheme(value);
+  };
+
   return (
-    <SettingsGroup title='外观设置' icon={<PaintBrushIcon className='w-6 h-6' />}>
-      <SettingsItem title='字体大小' description={`当前值 ${fontSize.toFixed(1)}x`}>
+    <SettingsGroup title='个性化' icon={<PaintBrushIcon className='w-6 h-6' />}>
+      <SettingsItem title='外观'>
+        <SettingSelect
+          configName='display.theme'
+          value={theme}
+          onLoaded={handleThemeChange}
+          onChange={handleThemeChange}
+          options={[
+            { value: 'system', label: '使用系统设置' },
+            { value: 'light', label: '浅色' },
+            { value: 'dark', label: '深色' },
+          ]}
+        />
+      </SettingsItem>
+
+      <SettingsItem title='字体大小' description={`当前: ${fontSize.toFixed(1)}x`}>
         <SettingSlider
           configName='display.fontSize'
           step={0.1}
@@ -58,7 +82,18 @@ export function AppearanceSettings() {
         />
       </SettingsItem>
 
-      <SettingsItem title='滚动位置' description='设置滚动时的对齐方式'>
+      <SettingsItem title='使用窗口背景材质' description='在支持的 Windows 11 版本上启用亚克力材质'>
+        <SettingSwitch
+          configName='display.useWindowBackgroundMaterial'
+          checked={useWindowBackgroundMaterial}
+          onLoaded={setUseWindowBackgroundMaterial}
+          onChange={setUseWindowBackgroundMaterial}
+        />
+      </SettingsItem>
+
+      <Separator></Separator>
+
+      <SettingsItem title='滚动位置' description='滚动时的对齐方式'>
         <SettingSelect
           configName='display.slidingPosition'
           value={slidingPosition}
@@ -73,40 +108,31 @@ export function AppearanceSettings() {
         />
       </SettingsItem>
 
-      <SettingsItem title='时间显示' description='设置课程时间的显示时机'>
+      <SettingsItem title='时间显示' description='课程时间的显示时机'>
         <SettingSelect
           configName='display.timeDisplay'
           value={timeDisplay}
           onLoaded={setTimeDisplay}
           onChange={setTimeDisplay}
           options={[
-            { value: 'always', label: '始终显示' },
-            { value: 'active', label: '活动时显示' },
-            { value: 'never', label: '从不显示' },
+            { value: 'always', label: '始终' },
+            { value: 'active', label: '活动时' },
+            { value: 'never', label: '从不' },
           ]}
         />
       </SettingsItem>
 
-      <SettingsItem title='进度条显示' description='设置进度条的显示时机'>
+      <SettingsItem title='进度条显示' description='进度条的显示时机'>
         <SettingSelect
           configName='display.progressDisplay'
           value={progressDisplay}
           onLoaded={setProgressDisplay}
           onChange={setProgressDisplay}
           options={[
-            { value: 'always', label: '始终显示' },
-            { value: 'active', label: '活动时显示' },
-            { value: 'never', label: '从不显示' },
+            { value: 'always', label: '始终' },
+            { value: 'active', label: '活动时' },
+            { value: 'never', label: '从不' },
           ]}
-        />
-      </SettingsItem>
-
-      <SettingsItem title='使用窗口级背景材质' description='在 Windows 11 22H2 及更高版本中可启用窗口材质背景'>
-        <SettingSwitch
-          configName='display.useWindowBackgroundMaterial'
-          checked={useWindowBackgroundMaterial}
-          onLoaded={setUseWindowBackgroundMaterial}
-          onChange={setUseWindowBackgroundMaterial}
         />
       </SettingsItem>
     </SettingsGroup>
@@ -119,12 +145,8 @@ export function UpgradeSettings() {
   const [autoDownloadUpdate, setAutoDownloadUpdate] = useState(true);
 
   return (
-    <SettingsGroup title='更新设置' icon={<CloudIcon className='w-6 h-6' />}>
-      <SettingsItem title='在线模式' description='启用后优先使用最新 UI 版本'>
-        <SettingSwitch configName='useOnlineVersion' checked={online} onLoaded={setOnline} onChange={setOnline} />
-      </SettingsItem>
-
-      <SettingsItem title='检查更新' description='自动检查并通知可用的新版本'>
+    <SettingsGroup title='更新' icon={<CloudIcon className='w-6 h-6' />}>
+      <SettingsItem title='检查更新'>
         <SettingSwitch
           configName='upgrade.autoCheckUpdate'
           checked={autoCheckUpdate}
@@ -133,13 +155,19 @@ export function UpgradeSettings() {
         />
       </SettingsItem>
 
-      <SettingsItem title='自动下载更新' description='检测到新版本后在后台自动下载更新包'>
+      <SettingsItem title='自动下载更新' description='检测到更新后自动下载更新'>
         <SettingSwitch
           configName='upgrade.autoDownloadUpdate'
           checked={autoDownloadUpdate}
           onLoaded={setAutoDownloadUpdate}
           onChange={setAutoDownloadUpdate}
         />
+      </SettingsItem>
+
+      <Separator></Separator>
+
+      <SettingsItem title='在线模式' description='优先在线加载最新的用户界面'>
+        <SettingSwitch configName='useOnlineVersion' checked={online} onLoaded={setOnline} onChange={setOnline} />
       </SettingsItem>
     </SettingsGroup>
   );
@@ -150,7 +178,7 @@ export function InterfaceSettings() {
   const [hiddenRefreshWindow, setHiddenRefreshWindow] = useState(false);
 
   return (
-    <SettingsGroup title='交互设置' icon={<EyeIcon className='w-6 h-6' />}>
+    <SettingsGroup title='交互' icon={<EyeIcon className='w-6 h-6' />}>
       <SettingsItem title='禁用控制栏操作'>
         <SettingSwitch
           configName='display.hidden.controlBar'

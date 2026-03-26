@@ -170,7 +170,7 @@ export function BackupSettings() {
   }, [deleteTarget, refreshList]);
 
   return (
-    <SettingsGroup title='数据备份' description='备份和恢复应用配置' icon={<CloudArrowUpIcon className='w-6 h-6' />}>
+    <SettingsGroup title='数据备份' icon={<CloudArrowUpIcon className='w-6 h-6' />}>
       <div className='flex gap-2'>
         <SettingInput
           className='w-full rounded-md border border-divider bg-transparent px-3 py-2'
