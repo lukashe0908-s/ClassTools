@@ -12,6 +12,9 @@ import { Providers } from './providers';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    const isProd = process.env.NODE_ENV === 'production';
+    if (!isProd) return;
+
     let sentryConfig = {
       dsn: 'https://6dca168d15f311911a41313d88e9ecd7@o4509214755782657.ingest.us.sentry.io/4510573802291200',
       sendDefaultPii: true,
@@ -39,7 +42,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     window.alert = function (...args: any[1]) {
       console.log('[Alert]', args[0]);
       toast('', {
-      
         variant: 'default',
         description: args[0],
       });
@@ -56,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <meta name='viewport' content='width=device-width, initial-scale=1.0' />
         </head>
         <body className='h-full'>
-          <Toast.Provider className={'whitespace-pre-wrap'} placement='bottom end'/>
+          <Toast.Provider className={'whitespace-pre-wrap'} placement='bottom end' />
           <Providers>{children}</Providers>
         </body>
       </html>

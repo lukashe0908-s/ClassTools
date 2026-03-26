@@ -27,17 +27,14 @@ export default function Template({ children }: { children: ReactNode }) {
     <>
       <title>设置 - Class Tools</title>
       <div className='flex h-full select-auto bg-neutral-50 dark:bg-black text-neutral-800 dark:text-neutral-200 flex-col md:flex-row'>
-        <div className='hidden md:flex h-full select-none'>
+        <div className='hidden md:flex h-full'>
           <SettingsSidebar />
         </div>
 
         {/* 小屏菜单行*/}
         {isMobile && (
-          <div className='md:hidden w-full border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-black p-2'>
-            <Button
-              size='sm'
-              onClick={() => setIsSidebarOpen(true)}
-              className='inline-flex items-center gap-1 rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium shadow-sm dark:border-neutral-700 dark:bg-neutral-900'>
+          <div className='md:hidden w-full border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#0a0a0a] p-2'>
+            <Button size='sm' onClick={() => setIsSidebarOpen(true)} className='rounded-xl' variant='outline'>
               <Bars3Icon className='h-5 w-5' />
               菜单
             </Button>

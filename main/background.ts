@@ -17,13 +17,12 @@ if (!isProd) {
   app.setPath('userData', path.join(process.cwd(), '.data'));
 }
 
-Sentry.init({
-  dsn: 'https://6dca168d15f311911a41313d88e9ecd7@o4509214755782657.ingest.us.sentry.io/4510573802291200',
-  // Enable logs to be sent to Sentry
-  enableLogs: true,
-});
-
 if (isProd) {
+  Sentry.init({
+    dsn: 'https://6dca168d15f311911a41313d88e9ecd7@o4509214755782657.ingest.us.sentry.io/4510573802291200',
+    // Enable logs to be sent to Sentry
+    enableLogs: true,
+  });
   serve({ directory: 'build/app' });
 }
 
