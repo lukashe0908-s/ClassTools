@@ -10,7 +10,7 @@ export function Weather() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [enabled, setEnabled] = useState(true);
-  const [showFeelslike, setShowFeelslike] = useState(true);
+  const [showFeelslike, setShowFeelslike] = useState(false);
 
   useEffect(() => {
     let timer: any;

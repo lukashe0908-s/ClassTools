@@ -48,19 +48,28 @@ export default function WeatherSettings() {
   return (
     <SettingsGroup title='天气' icon={<MapPinIcon className='w-6 h-6' />}>
       <SettingsItem title='启用天气' description='开启后显示天气功能'>
-        <SettingSwitch configName='features.weather.enable' checked={useWeather} onLoaded={setUseWeather} onChange={setUseWeather} />
+        <SettingSwitch
+          configName='features.weather.enable'
+          checked={useWeather}
+          onLoaded={setUseWeather}
+          onChange={setUseWeather}
+        />
       </SettingsItem>
 
       {useWeather && (
         <>
           <SettingsItem title='选择位置'>
-            <Autocomplete selectionMode='single' value={selectedKey} onChange={key => {
-              const selected = cityList.find(c => c.key === String(key ?? ''));
-              if (!selected) return;
-              setLocation(selected);
-              setConfigSync('features.weather.locationKey', selected.key);
-              setConfigSync('features.weather.locationLabel', selected.label);
-            }}>
+            <Autocomplete
+              allowsEmptyCollection
+              selectionMode='single'
+              value={selectedKey}
+              onChange={key => {
+                const selected = cityList.find(c => c.key === String(key ?? ''));
+
+                setLocation(selected);
+                setConfigSync('features.weather.locationKey', selected?.key);
+                setConfigSync('features.weather.locationLabel', selected?.label);
+              }}>
               <Autocomplete.Trigger>
                 <Autocomplete.Value />
                 <Autocomplete.ClearButton />

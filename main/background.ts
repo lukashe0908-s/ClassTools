@@ -128,7 +128,9 @@ function getWindowAlignConfig() {
       ? horizontalRaw
       : mainWindowDefaultHorizontalAlign;
   const vertical: WindowVerticalAlign =
-    verticalRaw === 'top' || verticalRaw === 'center' || verticalRaw === 'bottom' ? verticalRaw : mainWindowDefaultVerticalAlign;
+    verticalRaw === 'top' || verticalRaw === 'center' || verticalRaw === 'bottom'
+      ? verticalRaw
+      : mainWindowDefaultVerticalAlign;
   return { horizontal, vertical };
 }
 
@@ -297,7 +299,11 @@ ipcMain.handle('get-config', async (event, name: string) => {
   return store.get(name);
 });
 ipcMain.handle('set-config', async (event, name: string, value: any) => {
-  store.set(name, value);
+  if (typeof value != 'undefined') {
+    store.set(name, value);
+  } else {
+    store.delete(name);
+  }
   mainWindow_g.webContents.send('sync-config', name);
 
   switch (name) {
