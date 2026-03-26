@@ -114,46 +114,84 @@ function setControlBarHidden(value: boolean | undefined = undefined) {
 }
 const mainWindowDefaultWidthPercent = 0.2;
 const mainWindowDefaultHeightPercent = 1;
-function resizeWindow() {
+const mainWindowDefaultHorizontalAlign = 'right';
+const mainWindowDefaultVerticalAlign = 'top';
+
+type WindowHorizontalAlign = 'left' | 'center' | 'right';
+type WindowVerticalAlign = 'top' | 'center' | 'bottom';
+
+function getWindowAlignConfig() {
+  const horizontalRaw = String(store.get('display.windowHorizontalAlign') ?? mainWindowDefaultHorizontalAlign);
+  const verticalRaw = String(store.get('display.windowVerticalAlign') ?? mainWindowDefaultVerticalAlign);
+  const horizontal: WindowHorizontalAlign =
+    horizontalRaw === 'left' || horizontalRaw === 'center' || horizontalRaw === 'right'
+      ? horizontalRaw
+      : mainWindowDefaultHorizontalAlign;
+  const vertical: WindowVerticalAlign =
+    verticalRaw === 'top' || verticalRaw === 'center' || verticalRaw === 'bottom' ? verticalRaw : mainWindowDefaultVerticalAlign;
+  return { horizontal, vertical };
+}
+
+function getMainWindowSize() {
   const widthP = store.get('display.windowWidth');
   const heightP = store.get('display.windowHeight');
-  if (widthP || heightP) {
-    try {
-      let mainWindowWidth = (() => {
-        let base = screen.getPrimaryDisplay().size.width * Number(widthP || mainWindowDefaultWidthPercent);
-        if (base < 300) base = 300;
-        base = Math.floor(base);
-        return base;
-      })();
-      let mainWindowHeight = (() => {
-        let base = screen.getPrimaryDisplay().workArea.height * Number(heightP || mainWindowDefaultHeightPercent);
-        base = Math.floor(base);
-        return base;
-      })();
-      mainWindow_g.setResizable(true);
-      mainWindow_g.setSize(mainWindowWidth, mainWindowHeight);
-      isProd && mainWindow_g.setResizable(false);
-      mainWindow_g.setPosition(screen.getPrimaryDisplay().workArea.width - mainWindowWidth, 0);
-      mainWindow_g.unmaximize();
-    } catch (error) {
-      console.error(error);
-    }
+  const width = (() => {
+    let base = screen.getPrimaryDisplay().size.width * Number(widthP || mainWindowDefaultWidthPercent);
+    if (base < 300) base = 300;
+    return Math.floor(base);
+  })();
+  const height = (() => {
+    let base = screen.getPrimaryDisplay().workArea.height * Number(heightP || mainWindowDefaultHeightPercent);
+    return Math.floor(base);
+  })();
+  return { width, height };
+}
+
+function getMainWindowPosition(width: number, height: number) {
+  const workArea = screen.getPrimaryDisplay().workArea;
+  const { horizontal, vertical } = getWindowAlignConfig();
+
+  const alignedX =
+    horizontal === 'left'
+      ? workArea.x
+      : horizontal === 'center'
+        ? workArea.x + Math.floor((workArea.width - width) / 2)
+        : workArea.x + workArea.width - width;
+
+  const alignedY =
+    vertical === 'top'
+      ? workArea.y
+      : vertical === 'center'
+        ? workArea.y + Math.floor((workArea.height - height) / 2)
+        : workArea.y + workArea.height - height;
+
+  const maxX = Math.max(workArea.x, workArea.x + workArea.width - width);
+  const maxY = Math.max(workArea.y, workArea.y + workArea.height - height);
+
+  return {
+    x: Math.min(Math.max(alignedX, workArea.x), maxX),
+    y: Math.min(Math.max(alignedY, workArea.y), maxY),
+  };
+}
+
+function resizeWindow() {
+  try {
+    const { width, height } = getMainWindowSize();
+    const { x, y } = getMainWindowPosition(width, height);
+    mainWindow_g.setResizable(true);
+    mainWindow_g.setSize(width, height);
+    isProd && mainWindow_g.setResizable(false);
+    mainWindow_g.setPosition(x, y);
+    mainWindow_g.unmaximize();
+  } catch (error) {
+    console.error(error);
   }
 }
 
 (async () => {
   await app.whenReady();
-  let mainWindowWidth = (() => {
-    let base = screen.getPrimaryDisplay().size.width * mainWindowDefaultWidthPercent;
-    if (base < 200) base = 200;
-    base = Math.floor(base);
-    return base;
-  })();
-  let mainWindowHeight = (() => {
-    let base = screen.getPrimaryDisplay().workArea.height * mainWindowDefaultHeightPercent;
-    base = Math.floor(base);
-    return base;
-  })();
+  const { width: mainWindowWidth, height: mainWindowHeight } = getMainWindowSize();
+  const { x: mainWindowX, y: mainWindowY } = getMainWindowPosition(mainWindowWidth, mainWindowHeight);
 
   const mainWindow = new BrowserWindow({
     webPreferences: {
@@ -165,8 +203,8 @@ function resizeWindow() {
     titleBarOverlay: getOverlayStyle(),
     width: mainWindowWidth,
     height: mainWindowHeight,
-    x: screen.getPrimaryDisplay().workArea.width - mainWindowWidth,
-    y: 0,
+    x: mainWindowX,
+    y: mainWindowY,
     skipTaskbar: true,
     resizable: !isProd,
     minimizable: false,
@@ -267,6 +305,12 @@ ipcMain.handle('set-config', async (event, name: string, value: any) => {
       resizeWindow();
     }
     case 'display.windowHeight': {
+      resizeWindow();
+    }
+    case 'display.windowHorizontalAlign': {
+      resizeWindow();
+    }
+    case 'display.windowVerticalAlign': {
       resizeWindow();
     }
     case 'display.hidden.controlBar': {

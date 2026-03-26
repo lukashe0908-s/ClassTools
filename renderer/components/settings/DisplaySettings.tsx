@@ -9,6 +9,8 @@ import { Separator } from '@heroui/react';
 export function WindowSettings() {
   const [windowWidth, setWindowWidth] = useState(0.2);
   const [windowHeight, setWindowHeight] = useState(1);
+  const [windowHorizontalAlign, setWindowHorizontalAlign] = useState('right');
+  const [windowVerticalAlign, setWindowVerticalAlign] = useState('top');
 
   return (
     <SettingsGroup title='窗口' icon={<WindowIcon className='w-6 h-6' />}>
@@ -33,6 +35,34 @@ export function WindowSettings() {
           value={windowHeight}
           onLoaded={setWindowHeight}
           onChange={setWindowHeight}
+        />
+      </SettingsItem>
+
+      <SettingsItem title='水平对齐方式'>
+        <SettingSelect
+          configName='display.windowHorizontalAlign'
+          value={windowHorizontalAlign}
+          onLoaded={setWindowHorizontalAlign}
+          onChange={setWindowHorizontalAlign}
+          options={[
+            { value: 'left', label: '左对齐' },
+            { value: 'center', label: '居中' },
+            { value: 'right', label: '右对齐' },
+          ]}
+        />
+      </SettingsItem>
+
+      <SettingsItem title='垂直对齐方式'>
+        <SettingSelect
+          configName='display.windowVerticalAlign'
+          value={windowVerticalAlign}
+          onLoaded={setWindowVerticalAlign}
+          onChange={setWindowVerticalAlign}
+          options={[
+            { value: 'top', label: '顶部' },
+            { value: 'center', label: '居中' },
+            { value: 'bottom', label: '底部' },
+          ]}
         />
       </SettingsItem>
     </SettingsGroup>
