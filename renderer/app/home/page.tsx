@@ -307,9 +307,9 @@ function MainContent() {
       const config = await generateConfig();
 
       const display = {
-        slidingPosition: ((await getConfigSync('display.slidingPosition')) as any) ?? 'center',
+        slidingPosition: ((await getConfigSync('display.slidingPosition')) as any) ?? 'start',
         timeDisplay: ((await getConfigSync('display.timeDisplay')) as any) ?? 'always',
-        progressDisplay: ((await getConfigSync('display.progressDisplay')) as any) ?? 'always',
+        progressDisplay: ((await getConfigSync('display.progressDisplay')) as any) ?? 'active',
         hiddenControlBar: ((await getConfigSync('display.hidden.controlBar')) as any) ?? false,
         hiddenRefreshWindow: ((await getConfigSync('display.hidden.refreshWindow')) as any) ?? false,
         useWindowBackgroundMaterial: ((await getConfigSync('display.useWindowBackgroundMaterial')) as any) ?? false,

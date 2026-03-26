@@ -43,9 +43,9 @@ export function AppearanceSettings() {
   const { setTheme } = useTheme();
   const [fontSize, setFontSize] = useState(1);
   const [theme, setThemeValue] = useState<'system' | 'light' | 'dark'>('system');
-  const [slidingPosition, setSlidingPosition] = useState('center');
+  const [slidingPosition, setSlidingPosition] = useState('start');
   const [timeDisplay, setTimeDisplay] = useState('always');
-  const [progressDisplay, setProgressDisplay] = useState('always');
+  const [progressDisplay, setProgressDisplay] = useState('active');
   const [useWindowBackgroundMaterial, setUseWindowBackgroundMaterial] = useState(false);
 
   const handleThemeChange = (value: string) => {
