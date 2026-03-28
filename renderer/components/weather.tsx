@@ -24,7 +24,7 @@ export function Weather() {
         setEnabled(Boolean(useWeather));
         if (!Boolean(useWeather)) return;
 
-        const showWeatherFeelslike = (await getConfigSync('features.weather.showFeelslike')) ?? true;
+        const showWeatherFeelslike = (await getConfigSync('features.weather.showFeelslike')) ?? false;
         setShowFeelslike(Boolean(showWeatherFeelslike));
 
         let requestLocation = (await getConfigSync('features.weather.locationKey')) ?? 'weathercn:101010100';
