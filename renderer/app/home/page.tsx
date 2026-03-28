@@ -25,6 +25,7 @@ import {
   isBingResolution,
   type WallpaperItem,
 } from '@renderer/features/background';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 export default function HomePage() {
   useEffect(() => {
@@ -282,7 +283,7 @@ function MainContent() {
       </div>
 
       {/* Main Content */}
-      <div className='flex flex-col gap-2 py-0 grow overflow-y-auto scrollbar-hide'>
+      <div className='flex flex-col gap-2 py-2 grow overflow-y-auto [scrollbar-width:none]'>
         <ClassList
           schedule={state.classSchedule}
           slidingPosition={state.display.slidingPosition}
@@ -290,82 +291,84 @@ function MainContent() {
           progressDisplay={state.display.progressDisplay}></ClassList>
         {/* Background Picture List */}
         <div className='w-full flex justify-center px-2'>
-          <div
-            ref={wallpaperListRef}
-            className='flex flex-col gap-4 overflow-auto max-h-[40vh] aspect-video scrollbar-hide rounded-lg shadow-md snap-y snap-proximity'>
-            {wallpapersLoading ? (
-              <div className='w-screen grow max-w-full snap-center object-contain'>
-                <Skeleton className='w-full aspect-video rounded-lg'></Skeleton>
-              </div>
-            ) : (
-              wallpapers.map((wallpaper, index) => {
-                const { type, image_url, video_url } = wallpaper;
-                const key = `wallpaper-${index}`;
-                const handleClick = () => updateWallpaper(image_url, index);
+          <OverlayScrollbarsComponent className='max-h-[40vh] aspect-video'>
+            <div
+              ref={wallpaperListRef}
+              className='flex flex-col gap-4 rounded-lg shadow-md snap-y snap-proximity'>
+              {wallpapersLoading ? (
+                <div className='w-screen grow max-w-full snap-center object-contain'>
+                  <Skeleton className='w-full aspect-video rounded-lg'></Skeleton>
+                </div>
+              ) : (
+                wallpapers.map((wallpaper, index) => {
+                  const { type, image_url, video_url } = wallpaper;
+                  const key = `wallpaper-${index}`;
+                  const handleClick = () => updateWallpaper(image_url, index);
 
-                return (
-                  <div
-                    key={key}
-                    className='relative w-full aspect-video rounded-lg snap-center object-contain'
-                    onClick={handleClick}>
-                    {type === 'mixed' ? (
-                      <>
-                        {state.playingMixed ? (
-                          <video
-                            src={video_url}
-                            className='w-full h-full rounded-lg object-contain'
-                            muted
-                            loop
-                            autoPlay
-                            playsInline
-                          />
-                        ) : (
-                          <img
-                            src={image_url}
-                            className='w-full h-full rounded-lg object-contain'
-                            referrerPolicy='no-referrer'
-                          />
-                        )}
-                        <button
-                          onClick={() => {
-                            dispatch({
-                              type: 'SET_PLAYING_MIXED',
-                              payload: !state.playingMixed,
-                            });
-                          }}
-                          className='z-20 absolute bottom-1 left-1 bg-black/30 text-white/60 text-sm p-1 rounded-full hover:bg-black/40 hover:text-white/80 transition-colors'>
+                  return (
+                    <div
+                      key={key}
+                      className='relative w-full aspect-video rounded-lg snap-center object-contain'
+                      onClick={handleClick}>
+                      {type === 'mixed' ? (
+                        <>
                           {state.playingMixed ? (
-                            <PauseIcon className='w-4 h-4'></PauseIcon>
+                            <video
+                              src={video_url}
+                              className='w-full h-full rounded-lg object-contain'
+                              muted
+                              loop
+                              autoPlay
+                              playsInline
+                            />
                           ) : (
-                            <PlayIcon className='w-4 h-4'></PlayIcon>
+                            <img
+                              src={image_url}
+                              className='w-full h-full rounded-lg object-contain'
+                              referrerPolicy='no-referrer'
+                            />
                           )}
-                        </button>
-                      </>
-                    ) : type === 'video' ? (
-                      <video
-                        key={key}
-                        src={video_url}
-                        className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
-                        onClick={handleClick}
-                        muted
-                        loop
-                        autoPlay
-                        playsInline
-                      />
-                    ) : (
-                      <img
-                        key={key}
-                        src={image_url || null}
-                        className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
-                        onClick={handleClick}
-                        referrerPolicy='no-referrer'
-                      />
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
+                          <button
+                            onClick={() => {
+                              dispatch({
+                                type: 'SET_PLAYING_MIXED',
+                                payload: !state.playingMixed,
+                              });
+                            }}
+                            className='z-20 absolute bottom-1 left-1 bg-black/30 text-white/60 text-sm p-1 rounded-full hover:bg-black/40 hover:text-white/80 transition-colors'>
+                            {state.playingMixed ? (
+                              <PauseIcon className='w-4 h-4'></PauseIcon>
+                            ) : (
+                              <PlayIcon className='w-4 h-4'></PlayIcon>
+                            )}
+                          </button>
+                        </>
+                      ) : type === 'video' ? (
+                        <video
+                          key={key}
+                          src={video_url}
+                          className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
+                          onClick={handleClick}
+                          muted
+                          loop
+                          autoPlay
+                          playsInline
+                        />
+                      ) : (
+                        <img
+                          key={key}
+                          src={image_url || null}
+                          className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
+                          onClick={handleClick}
+                          referrerPolicy='no-referrer'
+                        />
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </OverlayScrollbarsComponent>
         </div>
       </div>
 

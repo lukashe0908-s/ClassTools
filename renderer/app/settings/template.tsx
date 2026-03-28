@@ -60,7 +60,7 @@ export default function Template({ children }: { children: ReactNode }) {
         )}
 
         {/* 内容 */}
-        <div className='h-full w-full p-2 overflow-auto'>{children}</div>
+        <div className='h-full w-full p-2 overflow-auto [scrollbar-width:thin]'>{children}</div>
       </div>
     </>
   );

@@ -83,9 +83,9 @@ export default function ClassList({
   }
 
   return (
-    <div className='class-list pt-2' ref={containerRef}>
+    <div className='class-list' ref={containerRef}>
       {!groupedClasses || groupedClasses.length == 0 ? (
-        <div className='mx-2 mb-2 rounded-2xl shadow-md bg-white/60 dark:bg-black/60'>
+        <div className='px-2 pb-2 rounded-2xl shadow-md bg-white/60 dark:bg-black/60'>
           <div
             className='text-center py-6 text-black dark:text-white font-bold'
             style={{ fontSize: `min(1.8em,5rem)` }}>
@@ -96,8 +96,8 @@ export default function ClassList({
         groupedClasses
           .filter(group => group.length > 0)
           .map((group, groupIdx) => (
-            <div key={groupIdx} className='mb-2 '>
-              <div className='mx-2 shadow-md rounded-2xl bg-transparent'>
+            <div key={groupIdx} className='pb-2'>
+              <div className='px-2 shadow-md rounded-2xl bg-transparent'>
                 {group.map((cls, idx) => {
                   const refIndex = groupIdx * 100 + idx; // 避免冲突
 
@@ -145,7 +145,7 @@ export default function ClassList({
                         className={`px-4 py-2 ${baseClass} first:rounded-t-2xl last:rounded-b-2xl`}>
                         {(timeDisplay === 'always' || (timeDisplay === 'active' && state === 'active')) && (
                           <div
-                            className={`mb-0 whitespace-pre text-[0.875em]/[1]  ${
+                            className={`whitespace-pre text-[0.875em]/[1]  ${
                               state === 'before'
                                 ? 'text-neutral-600 dark:text-neutral-300'
                                 : 'text-neutral-800 dark:text-neutral-200'
@@ -154,7 +154,7 @@ export default function ClassList({
                           </div>
                         )}
                         <div
-                          className={`font-semibold mb-0 whitespace-pre-wrap text-[1.5em]/[1.3] ${
+                          className={`font-semibold whitespace-pre-wrap text-[1.5em]/[1.3] ${
                             state === 'before' ? 'text-neutral-800 dark:text-neutral-200' : 'text-black dark:text-white'
                           }`}>
                           {`${cls.subject.replace('\\n', '\n')}`}
@@ -178,10 +178,9 @@ export default function ClassList({
             </div>
           ))
       )}
-      <div className='p-2'>
+      <div className='px-2'>
         <span
-          id='weekNumber'
-          className={`text-neutral-800 dark:text-neutral-200 bg-neutral-100/50 dark:bg-neutral-800 p-2 rounded-md shadow-md`}>
+          className={`inline-block text-black dark:text-white bg-white/60 dark:bg-black/60 px-2 p-1 rounded-xl shadow-md`}>
           {weekInfo.now}周/年{weekInfo.total}周
         </span>
       </div>

@@ -46,9 +46,9 @@ function List({
 }) {
   return (
     <Table className={className}>
-      <Table.ScrollContainer>
+      <Table.ScrollContainer className='overflow-y-auto'>
         <Table.Content aria-label='lessons list table'>
-          <Table.Header>
+          <Table.Header className='sticky top-0 z-20'>
             {columns.map(column => (
               <Table.Column key={column.id} id={column.id} isRowHeader={column.id === 'id'}>
                 <span>{column.label}</span>
@@ -61,7 +61,7 @@ function List({
                 {columns.map(column => (
                   <Table.Cell
                     key={column.id}
-                    className={column.id === 'id' ? 'sticky left-0 bg-white dark:bg-neutral-900 z-10' : 'min-w-[14ch]'}>
+                    className={column.id === 'id' ? 'sticky left-0  z-10' : 'min-w-[14ch]'}>
                     {column.id === 'id' ? rowIndex + 1 : children(row, rowIndex, column.id)}
                   </Table.Cell>
                 ))}

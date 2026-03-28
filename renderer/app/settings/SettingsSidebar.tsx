@@ -6,9 +6,7 @@ import {
   InformationCircleIcon,
   Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
-import { useEffect, useState } from 'react';
 import { Separator } from '@heroui/react';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { SidebarNav, NavNode } from '@renderer/components/SidebarNav';
 const settingsNavNodes: NavNode[] = [
@@ -101,29 +99,16 @@ interface SettingsSidebarProps {
 }
 
 export function SettingsSidebar({ className = '' }: SettingsSidebarProps) {
-  const [isDark, setIsDark] = useState(false);
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(media.matches);
-    const listener = (e: MediaQueryListEvent) => setIsDark(e.matches);
-    media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, []);
-
   return (
-    <OverlayScrollbarsComponent
-      defer
-      className={`overflow-auto scrollbar-hide border-r min-w-50 bg-white dark:bg-[#0a0a0a] ${className}`}
-      options={{ scrollbars: { autoHide: 'move', theme: isDark ? 'os-theme-light' : 'os-theme-dark' } }}>
-      <div className='p-2'>
-        <div className='flex items-center justify-center gap-2 mb-2'>
-          <Cog6ToothIcon className='w-6 h-6'></Cog6ToothIcon>
-          <span className='font-bold text-2xl'>设置</span>
-        </div>
-        <Separator className='mb-2' />
-
-        <SidebarNav nodes={settingsNavNodes} className='min-w-50 pr-1' />
+    <div
+      className={`overflow-auto border-r px-1 bg-white dark:bg-[#0a0a0a] [scrollbar-width:thin] [scrollbar-color:oklch(0%_0_0/.15)_transparent] dark:[scrollbar-color:oklch(100%_0_0/.15)_transparent] ${className}`}>
+      <div className='flex items-center justify-center gap-2 py-2'>
+        <Cog6ToothIcon className='w-6 h-6'></Cog6ToothIcon>
+        <span className='font-bold text-2xl'>设置</span>
       </div>
-    </OverlayScrollbarsComponent>
+      <Separator className='mb-2' />
+
+      <SidebarNav nodes={settingsNavNodes} className='min-w-50' />
+    </div>
   );
 }

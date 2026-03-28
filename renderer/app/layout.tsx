@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-// @ts-ignore
 import '@renderer/styles/globals.css';
-// @ts-ignore
 import 'overlayscrollbars/overlayscrollbars.css';
 import { Toast, toast } from '@heroui/react';
 import * as Sentry from '@sentry/electron/renderer';
