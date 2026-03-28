@@ -7,11 +7,13 @@ export function SettingsGroup({
   description,
   children,
   icon,
+  className,
 }: {
   title?: string | ReactNode;
   description?: string | ReactNode;
   children?: string | React.ReactNode;
   icon?: React.ReactNode;
+  className?: string;
 }) {
   return (
     <Card className='w-full shadow-sm border border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-100 dark:bg-neutral-950 px-0'>
@@ -31,7 +33,7 @@ export function SettingsGroup({
       ) : (
         ''
       )}
-      <Card.Content className='p-6 overflow-auto'>{children}</Card.Content>
+      <Card.Content className={'p-6 overflow-auto ' + className}>{children}</Card.Content>
     </Card>
   );
 }
