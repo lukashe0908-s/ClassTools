@@ -85,19 +85,21 @@ export default function ClassList({
   return (
     <div className='class-list' ref={containerRef}>
       {!groupedClasses || groupedClasses.length == 0 ? (
-        <div className='px-2 pb-2 rounded-2xl shadow-md bg-white/60 dark:bg-black/60'>
-          <div
-            className='text-center py-6 text-black dark:text-white font-bold'
-            style={{ fontSize: `min(1.8em,5rem)` }}>
-            暂无课程
+        <div className='px-2 pb-2'>
+          <div className='shadow-md rounded-2xl bg-white/60 dark:bg-black/60'>
+            <div
+              className='text-center py-6 text-black dark:text-white font-bold'
+              style={{ fontSize: `min(1.8em,5rem)` }}>
+              暂无课程
+            </div>
           </div>
         </div>
       ) : (
         groupedClasses
           .filter(group => group.length > 0)
           .map((group, groupIdx) => (
-            <div key={groupIdx} className='pb-2'>
-              <div className='px-2 shadow-md rounded-2xl bg-transparent'>
+            <div key={groupIdx} className='pb-2 px-2'>
+              <div className='shadow-md rounded-2xl bg-transparent'>
                 {group.map((cls, idx) => {
                   const refIndex = groupIdx * 100 + idx; // 避免冲突
 
