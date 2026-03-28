@@ -131,7 +131,7 @@ export default function ClassList({
                       ? 'bg-blue-200/60 dark:bg-blue-800/60'
                       : state === 'before'
                         ? 'bg-neutral-300/60 dark:bg-neutral-700/60'
-                        : 'bg-white/60 dark:bg-black/60'
+                        : 'bg-neutral-100/60 dark:bg-neutral-800/60'
                   }`;
 
                   return (
@@ -165,7 +165,7 @@ export default function ClassList({
                             value={Math.min(Math.max(percent, 0), 100)}
                             color='accent'
                             className='w-full'>
-                            <ProgressBar.Track className='bg-white/40 dark:bg-black/40'>
+                            <ProgressBar.Track className='bg-white/30 dark:bg-black/30'>
                               <ProgressBar.Fill />
                             </ProgressBar.Track>
                           </ProgressBar>
@@ -180,7 +180,7 @@ export default function ClassList({
       )}
       <div className='px-2'>
         <span
-          className={`inline-block text-black dark:text-white bg-white/60 dark:bg-black/60 px-2 p-1 rounded-xl shadow-md`}>
+          className={`inline-block text-black dark:text-white bg-neutral-100/60 dark:bg-neutral-800/60 px-2 p-1 rounded-xl shadow-md`}>
           {weekInfo.now}周/年{weekInfo.total}周
         </span>
       </div>

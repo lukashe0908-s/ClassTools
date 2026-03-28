@@ -103,14 +103,14 @@ export default function ChangeDayPage() {
           ) : (
             rules.map((rule, index) => (
               <div key={index} className='flex items-center gap-2 w-full'>
-                <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-md'>{rule.from}</span>
+                <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-lg'>{rule.from}</span>
                 <ArrowRightIcon className='w-6 h-6' />
-                <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-md'>{rule.to}</span>
+                <span className='bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-lg'>{rule.to}</span>
                 <Button
                   variant='secondary'
                   isIconOnly
                   size='sm'
-                  className='text-red-600 rounded-lg'
+                  className='text-red-600 rounded-xl'
                   onPress={() => {
                     deleteRule(index);
                   }}>

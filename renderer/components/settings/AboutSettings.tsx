@@ -29,7 +29,7 @@ export function AboutSettings() {
   }, []);
   return (
     <SettingsGroup title='关于应用' icon={<InformationCircleIcon className='w-6 h-6'></InformationCircleIcon>}>
-      <div className='bg-blue-50 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-4'>
+      <div className='bg-blue-50 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-800 rounded-2xl p-6 mb-4'>
         <div className='flex items-center gap-4'>
           <div className='w-16 h-16 bg-linear-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center'>
             <CodeBracketIcon className='w-10 h-10 text-white'></CodeBracketIcon>

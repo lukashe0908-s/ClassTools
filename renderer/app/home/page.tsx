@@ -117,8 +117,16 @@ function MainContent() {
       }
     };
 
+    const id = setInterval(
+      () => {
+        setWallpaperReloadTick(prev => prev + 1);
+      },
+      20 * 60 * 1000,
+    );
+
     window.ipc?.on('sync-config', handler);
     return () => {
+      clearInterval(id);
       window.ipc?.removeListener?.('sync-config', handler);
     };
   }, []);
@@ -259,9 +267,10 @@ function MainContent() {
     <div
       className={`flex flex-col gap-0 p-0 h-full transition-background ${
         (currentWallpaper && !state.display.useWindowBackgroundMaterial) ||
+        state.display.useWindowBackgroundMaterial ||
         (state.display.useWindowBackgroundMaterial && windowFocused)
           ? ''
-          : 'bg-neutral-100 dark:bg-neutral-800'
+          : 'bg-neutral-50 dark:bg-neutral-900'
       }`}
       style={{
         fontSize: fontSize + 'em',
@@ -274,7 +283,7 @@ function MainContent() {
           onPress={() => {
             window.ipc?.send('resize-window');
           }}
-          className='h-6 w-6 flex items-center justify-center'>
+          className='h-6 w-6 flex items-center justify-center rounded-none hover:bg-black/10  hover:dark:bg-white/10'>
           <ArrowUturnLeftIcon className='w-4 h-4 text-neutral-900 dark:text-neutral-100'></ArrowUturnLeftIcon>
         </Button>
         <span className={`text-sm w-full select-none ${state.display.hiddenControlBar || '[app-region:drag]'}`}>
@@ -291,10 +300,14 @@ function MainContent() {
           progressDisplay={state.display.progressDisplay}></ClassList>
         {/* Background Picture List */}
         <div className='w-full flex justify-center px-2'>
-          <OverlayScrollbarsComponent className='max-h-[40vh] aspect-video'>
-            <div
-              ref={wallpaperListRef}
-              className='flex flex-col gap-4 rounded-lg shadow-md snap-y snap-proximity'>
+          <OverlayScrollbarsComponent
+            className='max-h-[40vh] aspect-video rounded-lg'
+            options={{
+              scrollbars: {
+                autoHide: 'move',
+              },
+            }}>
+            <div ref={wallpaperListRef} className='flex flex-col gap-4 shadow-md snap-y snap-proximity'>
               {wallpapersLoading ? (
                 <div className='w-screen grow max-w-full snap-center object-contain'>
                   <Skeleton className='w-full aspect-video rounded-lg'></Skeleton>
@@ -347,7 +360,7 @@ function MainContent() {
                         <video
                           key={key}
                           src={video_url}
-                          className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
+                          className='w-full aspect-video rounded-lg snap-center select-none object-contain'
                           onClick={handleClick}
                           muted
                           loop
@@ -358,7 +371,7 @@ function MainContent() {
                         <img
                           key={key}
                           src={image_url || null}
-                          className='max-w-full aspect-video rounded-lg snap-center select-none object-contain'
+                          className='w-full aspect-video rounded-lg snap-center select-none object-contain'
                           onClick={handleClick}
                           referrerPolicy='no-referrer'
                         />
@@ -373,10 +386,10 @@ function MainContent() {
       </div>
 
       {/* Footer */}
-      <div className='flex gap-1 items-center bg-white/40 dark:bg-black/10 p-1 rounded-lg shrink-0 overflow-x-auto'>
+      <div className='flex gap-1 items-center bg-white/40 dark:bg-black/20 p-1 rounded-t-xl  shrink-0 overflow-x-auto'>
         <Button
           variant='tertiary'
-          className='rounded-xl'
+          className='rounded-2xl'
           isIconOnly
           onPress={() => {
             if (window.ipc) {
@@ -391,7 +404,7 @@ function MainContent() {
         {!state.display.hiddenRefreshWindow && (
           <Button
             variant='tertiary'
-            className='rounded-xl'
+            className='rounded-2xl'
             isIconOnly
             onPress={() => {
               window.location.reload();
@@ -402,7 +415,7 @@ function MainContent() {
         )}
         <div className='flex-1'></div>
         <Modal>
-          <Button variant='tertiary' className='rounded-xl' isIconOnly={true}>
+          <Button variant='tertiary' className='rounded-2xl' isIconOnly={true}>
             <PowerIcon className='w-5 h-5'></PowerIcon>
           </Button>
           <Modal.Backdrop>

@@ -113,7 +113,7 @@ export function DailyWeatherChart() {
       <Skeleton className='h-65 rounded-lg'></Skeleton>
     </div>
   ) : (
-    <div ref={containerRef} className='w-full overflow-x-auto scrollbar-hide'>
+    <div ref={containerRef} className='w-full overflow-x-auto [scrollbar-width:none]'>
       <motion.div
         drag='x'
         dragConstraints={{

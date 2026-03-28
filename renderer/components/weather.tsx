@@ -79,8 +79,8 @@ export function Weather() {
 
   if (!enabled) return;
 
-  if (loading || !weather?.current) {
-    return <Skeleton className='w-28 h-10 rounded-lg' />;
+  if (loading && !weather?.current) {
+    return <Skeleton className='w-28 h-10 rounded-xl' />;
   }
 
   // 判断是否是夜间
@@ -91,7 +91,7 @@ export function Weather() {
 
   return (
     <div
-      className='flex gap-1 items-center bg-accent text-accent-foreground px-3 py-2 rounded-lg cursor-pointer select-none'
+      className='flex gap-1 items-center bg-accent text-accent-foreground px-3 py-2 rounded-xl cursor-pointer select-none'
       onClick={handleClick}>
       {weatherIcon && (
         <img src={`/static/weatherIcons/${weatherIcon}.webp`} className='w-[1.5em] shrink-0' draggable={false}></img>

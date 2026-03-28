@@ -54,7 +54,7 @@ export function DataPrivacySettings() {
       title='数据隐私'
       description='管理你的数据收集和隐私选项'
       icon={<ShieldCheckIcon className='w-6 h-6' />}>
-      <div className='bg-blue-50 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4'>
+      <div className='bg-blue-50 dark:bg-blue-900/60 border border-blue-200 dark:border-blue-800 rounded-2xl p-4 mb-4'>
         <h4 className='font-medium mb-2'>必要诊断数据</h4>
         <p className='text-sm text-content3-foreground'>
           部分运行数据可能会发送到 Sentry 和 Cloudflare Web Analytics（仅在线模式）用于排错和稳定性改进。
