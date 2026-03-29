@@ -52,7 +52,7 @@ const NavNodeItem: React.FC<NavNodeItemProps> = ({ node, pathname, depth = 0 }) 
     return (
       <li className='w-full'>
         <div className='px-3 pt-4 pb-2'>
-          <div className='text-sm font-medium text-neutral-400'>{node.label}</div>
+          <div className='text-sm font-medium text-neutral-600 dark:text-neutral-400'>{node.label}</div>
         </div>
       </li>
     );
@@ -66,7 +66,6 @@ const NavNodeItem: React.FC<NavNodeItemProps> = ({ node, pathname, depth = 0 }) 
     return (
       <li className='w-full rounded-md'>
         <button
-          type='button'
           onClick={() => setOpen(o => !o)}
           aria-expanded={open}
           className={`group/expander cursor-pointer w-full rounded-lg min-h-8.5 px-3 py-0 flex items-center justify-between gap-2.5 text-sm transition-colors text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-neutral-800`}>

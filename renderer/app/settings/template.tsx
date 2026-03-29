@@ -26,7 +26,7 @@ export default function Template({ children }: { children: ReactNode }) {
   return (
     <>
       <title>设置 - Class Tools</title>
-      <div className='flex h-full select-auto bg-neutral-50 dark:bg-black text-neutral-800 dark:text-neutral-200 flex-col md:flex-row'>
+      <div className='flex h-full select-auto bg-background flex-col md:flex-row'>
         <div className='hidden md:flex h-full'>
           <SettingsSidebar />
         </div>
@@ -51,7 +51,7 @@ export default function Template({ children }: { children: ReactNode }) {
               onClick={() => setIsSidebarOpen(false)}
             />
             <div
-              className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[80vw] h-full md:hidden transform transition-transform duration-200 ${
+              className={`fixed inset-y-0 left-0 z-50 max-w-[80vw] h-full md:hidden transform transition-transform duration-200 ${
                 isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
               }`}>
               <SettingsSidebar className='h-full' />

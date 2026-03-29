@@ -19,23 +19,17 @@ function ThemeConfigSync() {
     let active = true;
 
     const syncTheme = async () => {
-      const raw = await getConfigSync('display.theme');
-      const nextTheme = normalizeTheme(raw) ?? 'system';
-      if (!active) return;
-      setTheme(nextTheme);
+      try {
+        const raw = await getConfigSync('display.theme', null, false);
+        const nextTheme = normalizeTheme(raw) ?? 'system';
+        if (!active) return;
+        setTheme(nextTheme);
+      } catch (error) {}
     };
 
     syncTheme();
-    const handler = (name: string) => {
-      if (name === 'display.theme') {
-        syncTheme();
-      }
-    };
-    window.ipc?.on('sync-config', handler);
-
     return () => {
       active = false;
-      window.ipc?.removeListener?.('sync-config', handler);
     };
   }, [setTheme]);
 

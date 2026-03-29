@@ -270,7 +270,7 @@ function MainContent() {
         state.display.useWindowBackgroundMaterial ||
         (state.display.useWindowBackgroundMaterial && windowFocused)
           ? ''
-          : 'bg-neutral-50 dark:bg-neutral-900'
+          : 'bg-background'
       }`}
       style={{
         fontSize: fontSize + 'em',

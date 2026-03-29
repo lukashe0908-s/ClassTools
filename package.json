@@ -23,8 +23,6 @@
     "systeminformation": "^5.31.5"
   },
   "devDependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
     "@heroicons/react": "^2.2.0",
     "@heroui/react": "^3.0.1",
     "@internationalized/date": "^3.12.0",
@@ -35,13 +33,14 @@
     "@types/d3": "^7.4.3",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
+    "arg": "^5.0.2",
     "autoprefixer": "^10.4.27",
-    "axios": "^1.13.6",
+    "axios": "^1.14.0",
     "babel-loader": "^10.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "d3": "^7.9.0",
     "dayjs": "^1.11.20",
-    "electron": "^41.0.4",
+    "electron": "^41.1.0",
     "electron-builder": "26.8.1",
     "esbuild": "^0.27.4",
     "execa": "^9.6.1",
@@ -50,7 +49,7 @@
     "lucide-react": "^1.7.0",
     "next": "^16.2.1",
     "next-themes": "^0.4.6",
-    "nextron": "^9.6.0",
+    "nextron": "^10.0.0",
     "overlayscrollbars": "^2.14.0",
     "overlayscrollbars-react": "^0.5.6",
     "react": "^19.2.4",
@@ -59,5 +58,5 @@
     "typescript": "^6.0.2",
     "workbox-build": "^7.4.0"
   },
-  "packageManager": "yarn@4.12.0"
+  "packageManager": "yarn@4.13.0"
 }
