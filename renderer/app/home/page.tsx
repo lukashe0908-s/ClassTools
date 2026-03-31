@@ -119,7 +119,7 @@ function MainContent() {
 
     const id = setInterval(
       () => {
-        setWallpaperReloadTick(prev => prev + 1);
+        // setWallpaperReloadTick(prev => prev + 1);
       },
       20 * 60 * 1000,
     );
