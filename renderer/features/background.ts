@@ -1,3 +1,7 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getConfigSync } from '@renderer/features/ipc/config';
+
 export type WallpaperType = 'image' | 'video' | 'mixed';
 
 export type WallpaperItem = {
@@ -25,6 +29,164 @@ export const BING_RESOLUTION_OPTIONS = [
 ] as const;
 
 export type BingResolution = (typeof BING_RESOLUTION_OPTIONS)[number];
+
+const MINUTE = 60 * 1000;
+const HOUR = 60 * MINUTE;
+const BING_QUERY_KEY = ['wallpaper', 'bing'] as const;
+const NORMAL_QUERY_KEY = ['wallpaper', 'normal'] as const;
+
+type BackgroundConfig = {
+  useGameBgs: boolean;
+  useGame?: string;
+  useAllowType?: string;
+  useBingBgs: boolean;
+  useNormalBgs: boolean;
+  bingResolution: BingResolution;
+};
+
+const DEFAULT_BACKGROUND_CONFIG: BackgroundConfig = {
+  useGameBgs: false,
+  useBingBgs: true,
+  useNormalBgs: true,
+  bingResolution: 'UHD',
+};
+
+function isNextDay(updatedAt: number): boolean {
+  const updated = new Date(updatedAt);
+  const now = new Date();
+  return (
+    updated.getFullYear() !== now.getFullYear() ||
+    updated.getMonth() !== now.getMonth() ||
+    updated.getDate() !== now.getDate()
+  );
+}
+
+function msUntilNextDay(updatedAt: number): number {
+  const nextDay = new Date(updatedAt);
+  nextDay.setHours(24, 0, 0, 0);
+  return Math.max(0, nextDay.getTime() - Date.now());
+}
+
+async function loadBackgroundConfig(): Promise<BackgroundConfig> {
+  const useGameBgsRaw = await getConfigSync('display.background.useGameBgs');
+  const useGame = String((await getConfigSync('display.background.useGame')) ?? '');
+  const useAllowType = String((await getConfigSync('display.background.useGameBgsAllowType')) ?? 'mixed-video-image');
+  const useBingBgsRaw = await getConfigSync('display.background.useBingBgs');
+  const useNormalBgsRaw = await getConfigSync('display.background.useNormalBgs');
+  const bingResolutionRaw = String((await getConfigSync('display.background.bingResolution')) ?? 'UHD');
+
+  return {
+    useGameBgs: typeof useGameBgsRaw === 'boolean' ? useGameBgsRaw : DEFAULT_BACKGROUND_CONFIG.useGameBgs,
+    useGame,
+    useAllowType,
+    useBingBgs: typeof useBingBgsRaw === 'boolean' ? useBingBgsRaw : DEFAULT_BACKGROUND_CONFIG.useBingBgs,
+    useNormalBgs: typeof useNormalBgsRaw === 'boolean' ? useNormalBgsRaw : DEFAULT_BACKGROUND_CONFIG.useNormalBgs,
+    bingResolution: isBingResolution(bingResolutionRaw) ? bingResolutionRaw : DEFAULT_BACKGROUND_CONFIG.bingResolution,
+  };
+}
+
+export function useWallpapersQuery() {
+  const [backgroundConfig, setBackgroundConfig] = useState<BackgroundConfig | null>(null);
+  const queryClient = useQueryClient();
+  const gameQueryKey = useMemo(
+    () => ['wallpaper', 'game', backgroundConfig?.useGame] as const,
+    [backgroundConfig?.useGame],
+  );
+
+  useEffect(() => {
+    const syncConfig = async () => {
+      try {
+        setBackgroundConfig(await loadBackgroundConfig());
+      } catch (error) {
+        console.error('Failed to load background config:', error);
+      }
+    };
+
+    syncConfig();
+
+    const handler = (name: string) => {
+      if (name.startsWith('display.background.')) {
+        syncConfig();
+        queryClient.invalidateQueries({ queryKey: ['wallpaper'] });
+      }
+    };
+
+    window.ipc?.on('sync-config', handler);
+    return () => {
+      window.ipc?.removeListener?.('sync-config', handler);
+    };
+  }, [queryClient]);
+
+  const configLoaded = !!backgroundConfig;
+
+  const bingQuery = useQuery<WallpaperItem | null>({
+    queryKey: BING_QUERY_KEY,
+    queryFn: () => fetchBingBackground(backgroundConfig.bingResolution),
+    enabled: configLoaded && backgroundConfig.useBingBgs,
+    placeholderData: prev => prev,
+    staleTime: Infinity,
+  });
+
+  const gameQuery = useQuery<WallpaperItem | null>({
+    queryKey: gameQueryKey,
+    queryFn: () => fetchGameBackground(backgroundConfig.useGame, backgroundConfig.useAllowType),
+    enabled: configLoaded && backgroundConfig.useGameBgs && !!backgroundConfig.useGame,
+    placeholderData: prev => prev,
+    staleTime: 4 * HOUR,
+    refetchInterval: 4 * HOUR,
+    refetchIntervalInBackground: true,
+  });
+
+  const normalQuery = useQuery<WallpaperItem[]>({
+    queryKey: NORMAL_QUERY_KEY,
+    queryFn: fetchDefaultWallpapersFromDns,
+    enabled: configLoaded && backgroundConfig.useNormalBgs,
+    placeholderData: prev => prev,
+    staleTime: 30 * MINUTE,
+    refetchInterval: 30 * MINUTE,
+    refetchIntervalInBackground: true,
+  });
+
+  // 定时刷新 Bing
+  useEffect(() => {
+    if (!bingQuery.dataUpdatedAt) return;
+
+    const delay = msUntilNextDay(bingQuery.dataUpdatedAt);
+    const id = window.setTimeout(() => {
+      if (isNextDay(bingQuery.dataUpdatedAt)) {
+        queryClient.invalidateQueries({ queryKey: BING_QUERY_KEY });
+      }
+    }, delay);
+
+    return () => clearTimeout(id);
+  }, [bingQuery.dataUpdatedAt, queryClient]);
+
+  // 只显示启用的 query 数据
+  const wallpapers = useMemo(() => {
+    const arr: WallpaperItem[] = [];
+    if (configLoaded) {
+      if (backgroundConfig!.useGameBgs && gameQuery.data) arr.push(gameQuery.data);
+      if (backgroundConfig!.useBingBgs && bingQuery.data) arr.push(bingQuery.data);
+      if (backgroundConfig!.useNormalBgs && normalQuery.data) arr.push(...normalQuery.data);
+    }
+    return arr;
+  }, [
+    configLoaded,
+    backgroundConfig?.useGameBgs,
+    backgroundConfig?.useBingBgs,
+    backgroundConfig?.useNormalBgs,
+    gameQuery.data,
+    bingQuery.data,
+    normalQuery.data,
+  ]);
+
+  const wallpapersLoading =
+    (backgroundConfig?.useBingBgs && bingQuery.isPending) ||
+    (backgroundConfig?.useGameBgs && !!backgroundConfig.useGame && gameQuery.isPending) ||
+    (backgroundConfig?.useNormalBgs && normalQuery.isPending);
+
+  return { wallpapers, wallpapersLoading };
+}
 
 export function isBingResolution(value: string): value is BingResolution {
   return (BING_RESOLUTION_OPTIONS as readonly string[]).includes(value);

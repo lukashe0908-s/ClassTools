@@ -18,13 +18,7 @@ import { Weather } from '@renderer/components/weather';
 import { getConfigSync } from '@renderer/features/ipc/config';
 import { generateConfig } from '@renderer/features/p_function';
 import { reducer, initialState as reducerInitialState } from './reducer';
-import {
-  fetchBingBackground,
-  fetchDefaultWallpapersFromDns,
-  fetchGameBackground,
-  isBingResolution,
-  type WallpaperItem,
-} from '@renderer/features/background';
+import { useWallpapersQuery } from '@renderer/features/background';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 export default function HomePage() {
@@ -51,14 +45,11 @@ export default function HomePage() {
   );
 }
 function MainContent() {
-  const [wallpapers, setWallpapers] = useState<WallpaperItem[]>([]);
-  const [wallpapersLoading, setWallpapersLoading] = useState(true);
   const [currentWallpaper, setCurrentWallpaper] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const wallpaperListRef = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState(1);
-  const [windowFocused, setWindowFocused] = useState(true);
-  const [wallpaperReloadTick, setWallpaperReloadTick] = useState(0);
+  const { wallpapers, wallpapersLoading } = useWallpapersQuery();
 
   useLayoutEffect(() => {
     const loadFontSize = async () => {
@@ -81,18 +72,6 @@ function MainContent() {
       setSelectedIndex(parseInt(savedIndex, 10));
     }
   }, []);
-  useEffect(() => {
-    const handleFocus = () => setWindowFocused(true);
-    const handleBlur = () => setWindowFocused(false);
-
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-    };
-  }, []);
   const updateWallpaper = (newWallpaper: string | null | undefined, index: number) => {
     localStorage.setItem('default_wallpaper_select', index.toString());
     setSelectedIndex(index);
@@ -111,106 +90,16 @@ function MainContent() {
   };
 
   useEffect(() => {
-    const handler = (name: string) => {
-      if (name.startsWith('display.background.')) {
-        setWallpaperReloadTick(prev => prev + 1);
-      }
-    };
+    if (wallpapersLoading || wallpapers.length === 0) {
+      setCurrentWallpaper(null);
+      return;
+    }
 
-    const id = setInterval(
-      () => {
-        setWallpaperReloadTick(prev => prev + 1);
-      },
-      20 * 60 * 1000,
-    );
-
-    window.ipc?.on('sync-config', handler);
-    return () => {
-      clearInterval(id);
-      window.ipc?.removeListener?.('sync-config', handler);
-    };
-  }, []);
-
-  useEffect(() => {
-    const CACHE_KEY = 'default_wallpaper';
-    const EXPIRES_KEY = 'default_wallpaper_expires';
-    const CACHE_DURATION = 5 * 60 * 1000;
-    const now = Date.now();
-
-    const applyWallpaperList = (wallpaperList: WallpaperItem[]) => {
-      setWallpapers(wallpaperList);
-      setWallpapersLoading(false);
-
-      if (wallpaperList.length === 0) {
-        setCurrentWallpaper(null);
-        setSelectedIndex(0);
-        localStorage.removeItem('default_wallpaper_select');
-        return;
-      }
-
-      const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
-      const validIndex =
-        Number.isFinite(savedIndex) && savedIndex >= 0 && savedIndex < wallpaperList.length ? savedIndex : 0;
-      updateWallpaper(wallpaperList[validIndex].image_url, validIndex);
-    };
-
-    (async () => {
-      setWallpapersLoading(true);
-
-      const useGameBgsRaw = await getConfigSync('display.background.useGameBgs');
-      const useGameBgs = typeof useGameBgsRaw === 'boolean' ? useGameBgsRaw : false;
-      const useGame = String((await getConfigSync('display.background.useGame')) ?? '');
-      const useAllowType = String(
-        (await getConfigSync('display.background.useGameBgsAllowType')) ?? 'mixed-video-image',
-      );
-      const useBingBgsRaw = await getConfigSync('display.background.useBingBgs');
-      const useBingBgs = typeof useBingBgsRaw === 'boolean' ? useBingBgsRaw : true;
-      const useNormalBgsRaw = await getConfigSync('display.background.useNormalBgs');
-      const useNormalBgs = typeof useNormalBgsRaw === 'boolean' ? useNormalBgsRaw : true;
-      const bingResolutionRaw = String((await getConfigSync('display.background.bingResolution')) ?? 'UHD');
-      const bingResolution = isBingResolution(bingResolutionRaw) ? bingResolutionRaw : 'UHD';
-
-      const prefixes: WallpaperItem[] = [];
-
-      if (useGameBgs && useGame) {
-        const gameBg = await fetchGameBackground(useGame, useAllowType);
-        if (gameBg) prefixes.push(gameBg);
-      }
-
-      if (useBingBgs) {
-        const bingBg = await fetchBingBackground(bingResolution);
-        if (bingBg) prefixes.push(bingBg);
-      }
-
-      let normalWallpapers: WallpaperItem[] = [];
-      if (useNormalBgs) {
-        const cached = localStorage.getItem(CACHE_KEY);
-        const expires = parseInt(localStorage.getItem(EXPIRES_KEY) || '0', 10);
-
-        if (cached && now < expires) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed)) {
-              normalWallpapers = parsed as WallpaperItem[];
-            }
-          } catch (error) {
-            console.error('Failed to parse cached wallpapers:', error);
-          }
-        }
-
-        if (normalWallpapers.length === 0) {
-          normalWallpapers = await fetchDefaultWallpapersFromDns();
-          localStorage.setItem(CACHE_KEY, JSON.stringify(normalWallpapers));
-          localStorage.setItem(EXPIRES_KEY, (now + CACHE_DURATION).toString());
-        }
-      }
-
-      applyWallpaperList([...prefixes, ...normalWallpapers]);
-    })().catch(error => {
-      console.error('Failed to load wallpapers:', error);
-      setWallpapersLoading(false);
-    });
-  }, [wallpaperReloadTick]);
+    const savedIndex = parseInt(localStorage.getItem('default_wallpaper_select') || '0', 10);
+    const validIndex =
+      Number.isFinite(savedIndex) && savedIndex >= 0 && savedIndex < wallpapers.length ? savedIndex : 0;
+    updateWallpaper(wallpapers[validIndex].image_url, validIndex);
+  }, [wallpapers]);
 
   // Scroll to selected wallpaper after list is rendered.
   useEffect(() => {
@@ -266,9 +155,7 @@ function MainContent() {
   return (
     <div
       className={`flex flex-col gap-0 p-0 h-full transition-background ${
-        (currentWallpaper && !state.display.useWindowBackgroundMaterial) ||
-        state.display.useWindowBackgroundMaterial ||
-        (state.display.useWindowBackgroundMaterial && windowFocused)
+        (currentWallpaper && !state.display.useWindowBackgroundMaterial) || state.display.useWindowBackgroundMaterial
           ? ''
           : 'bg-background'
       }`}

@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { useTheme } from 'next-themes';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getConfigSync } from '@renderer/features/ipc/config';
 
 type AppTheme = 'system' | 'light' | 'dark';
@@ -37,10 +38,23 @@ function ThemeConfigSync() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  );
+
   return (
-    <NextThemesProvider attribute='class' defaultTheme='system'>
-      <ThemeConfigSync />
-      {children}
-    </NextThemesProvider>
+    <QueryClientProvider client={queryClient}>
+      <NextThemesProvider attribute='class' defaultTheme='system'>
+        <ThemeConfigSync />
+        {children}
+      </NextThemesProvider>
+    </QueryClientProvider>
   );
 }
