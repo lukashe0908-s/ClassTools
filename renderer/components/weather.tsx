@@ -84,10 +84,10 @@ export function Weather() {
   }
 
   // 判断是否是夜间
-  const isNight = timeIsNight(weather.forecastDaily.sunRiseSet.value);
+  const isNight = timeIsNight(weather?.forecastDaily?.sunRiseSet.value);
 
-  const weatherName = getXiaomiWeatherName(Number(weather.current.weather));
-  const weatherIcon = getXiaomiWeatherIcon(Number(weather.current.weather), isNight);
+  const weatherName = getXiaomiWeatherName(Number(weather?.current?.weather));
+  const weatherIcon = getXiaomiWeatherIcon(Number(weather?.current?.weather), isNight);
 
   return (
     <div
@@ -97,11 +97,11 @@ export function Weather() {
         <img src={`/static/weatherIcons/${weatherIcon}.webp`} className='w-[1.5em] shrink-0' draggable={false}></img>
       )}
       <span className='whitespace-nowrap'>
-        {`${weatherName ? `${weatherName} ` : ''}${weather.current.temperature.value}°`}
+        {`${weatherName ? `${weatherName} ` : ''}${weather?.current?.temperature?.value}°`}
       </span>
       {showFeelslike && (
         <span className='text-[0.875em] text-neutral-300 hidden min-[20em]:inline whitespace-nowrap'>
-          体感 {weather.current.feelsLike.value}°
+          体感 {weather.current?.feelsLike?.value}°
         </span>
       )}
     </div>
