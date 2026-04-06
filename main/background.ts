@@ -75,7 +75,7 @@ function isAutoDownloadUpdateEnabled() {
 
 function getProviderPath(params: string) {
   if (isProd) {
-    if (store.get('useOnlineVersion')) return `https://class-tools.mise.run.place${params}`;
+    if (store.get('useOnlineVersion')) return `https://classtool.pages.dev${params}`;
     return `app://-${params}`;
   } else {
     const port = process.argv[2];

@@ -62,7 +62,7 @@ export function DataPrivacySettings() {
       </div>
 
       <SettingsItem title='配置云端备份' description='启用配置文件的云端备份能力'>
-        <SettingSwitch checked={cloudBackup} onChange={setCloudBackup} />
+        <SettingSwitch checked={cloudBackup} onChange={setCloudBackup} isDisabled={true} />
       </SettingsItem>
     </SettingsGroup>
   );
@@ -172,12 +172,7 @@ export function BackupSettings() {
   return (
     <SettingsGroup title='数据备份' icon={<CloudArrowUpIcon className='w-6 h-6' />} className='gap-2'>
       <div className='flex gap-2'>
-        <SettingInput
-          className='w-full'
-          placeholder='名称'
-          value={name}
-          onChange={setName}
-        />
+        <SettingInput className='w-full' placeholder='名称' value={name} onChange={setName} />
 
         <Button onPress={() => saveByName(name)} isDisabled={!name.trim() || ioLoading} isIconOnly>
           <Upload className='w-4 h-4' />
