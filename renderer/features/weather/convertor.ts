@@ -111,18 +111,22 @@ export function getXiaomiWeatherIcon(code: number, isNight = false): string {
  * @param time 想判断的时间，默认当前时间
  */
 export function timeIsNight(sunRiseSetList: SunRiseSet[], time = dayjs()) {
-  const todaySet = sunRiseSetList.find(s => {
-    const date = dayjs(s.from).format('YYYY-MM-DD');
-    return date === time.format('YYYY-MM-DD');
-  });
+  try {
+    const todaySet = sunRiseSetList.find(s => {
+      const date = dayjs(s.from).format('YYYY-MM-DD');
+      return date === time.format('YYYY-MM-DD');
+    });
 
-  if (!todaySet) return false;
+    if (!todaySet) return false;
 
-  const sunriseTime = dayjs(todaySet.from);
-  const sunsetTime = dayjs(todaySet.to);
+    const sunriseTime = dayjs(todaySet.from);
+    const sunsetTime = dayjs(todaySet.to);
 
-  // 夜晚 = 当前时间 < 日出 || 当前时间 > 日落
-  return time.isBefore(sunriseTime) || time.isAfter(sunsetTime);
+    // 夜晚 = 当前时间 < 日出 || 当前时间 > 日落
+    return time.isBefore(sunriseTime) || time.isAfter(sunsetTime);
+  } catch (error) {
+    return false;
+  }
 }
 
 const WIND_DIRECTIONS_CN = ['北风', '东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风'];
