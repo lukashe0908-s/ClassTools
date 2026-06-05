@@ -288,7 +288,7 @@ export function SettingDatePicker({
   return (
     <DatePicker
       className={className}
-      value={parsedDate}
+      value={parsedDate as any}
       onChange={next => {
         const nextString = next ? next.toString() : '';
         onChange?.(nextString);
