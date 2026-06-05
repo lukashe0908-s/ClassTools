@@ -234,7 +234,7 @@ export function SettingTimeField({
   return (
     <TimeField
       className={className}
-      value={parsedValue}
+      value={parsedValue as any}
       onChange={next => {
         const nextString = next ? `${String(next.hour).padStart(2, '0')}:${String(next.minute).padStart(2, '0')}` : '';
         onChange?.(nextString);
